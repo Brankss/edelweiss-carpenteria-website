@@ -1,0 +1,35 @@
+---
+import PaginaLegale from '@/components/PaginaLegale.astro';
+import { azienda } from '@/data/sito';
+---
+
+<PaginaLegale
+  titolo="Note legali"
+  descrizione="Dati societari di Edelweiss Carpenteria S.a.s. di Di Bello Luca, Trento."
+  url="/note-legali/"
+  intro="Dati dell'azienda e condizioni d'uso del sito."
+  aggiornamento="5 ottobre 2026"
+>
+  <h2>Dati dell'azienda</h2>
+  <p>
+    {azienda.ragioneSociale}<br />
+    Sede: {azienda.indirizzo.via}, {azienda.indirizzo.frazione}, {azienda.indirizzo.cap} {azienda.indirizzo.citta} ({azienda.indirizzo.provincia})<br />
+    Partita IVA e codice fiscale: {azienda.piva}<br />
+    {azienda.rea ? <>Numero REA: {azienda.rea}<br /></> : <>Numero REA: da completare<br /></>}
+    {azienda.pec ? <>PEC: {azienda.pec}<br /></> : <>PEC: da completare<br /></>}
+    Telefono: <a href={azienda.telefonoLink}>{azienda.telefono}</a><br />
+    Email: <a href={`mailto:${azienda.email}`}>{azienda.email}</a>
+  </p>
+
+  <h2>Contenuti e fotografie</h2>
+  <p>
+    Testi, disegni e fotografie di questo sito appartengono a Edelweiss Carpenteria, salvo dove indicato. Le fotografie mostrano lavori
+    realizzati dalla nostra squadra. Non è consentito riprodurli senza autorizzazione scritta.
+  </p>
+
+  <h2>Informazioni sul sito</h2>
+  <p>
+    Le informazioni sul sito sono generali e non sostituiscono un preventivo o un progetto. Tempi, prezzi e soluzioni tecniche dipendono da
+    ogni singolo cantiere e vengono definiti dopo il sopralluogo.
+  </p>
+</PaginaLegale>

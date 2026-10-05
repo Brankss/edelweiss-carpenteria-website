@@ -1,0 +1,216 @@
+---
+import { Image } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import Metodo from '@/components/Metodo.astro';
+import { foto } from '@/lib/foto';
+
+// Testi della squadra dal sito attuale del cliente, riscritti in terza persona
+const squadra = [
+  { nome: 'Luca', ruolo: 'Titolare', testo: 'Geometra, diplomato in tecnica delle costruzioni in legno alla HTL di Rankweil, in Austria. Carpentiere specializzato con certificazione Certis.' },
+  { nome: 'Stefano', ruolo: 'Carpentiere', testo: 'Porta avanti la tradizione di famiglia: è in cantiere da quando aveva 16 anni e segue tutte le novità del settore.' },
+  { nome: 'Francesco', ruolo: 'Carpentiere', testo: 'Ha un passato da lattoniere: un aiuto prezioso quando si discutono i dettagli delle coperture più complesse.' },
+  { nome: 'Alessio', ruolo: 'Carpentiere', testo: 'Viene dalla falegnameria, dove ha imparato i lavori di fino. Arrampicatore sportivo, in quota si muove con disinvoltura.' },
+  { nome: 'Edelberto', ruolo: 'Carpentiere', testo: 'Carpentiere da una vita: ha iniziato quando i tetti si tagliavano a mano. Se in cantiere serve una modifica con segaccio e bindella, è lui il riferimento.' },
+  { nome: 'Riccardo', ruolo: 'Carpentiere', testo: 'Ottima manualità e tanta voglia di fare. Prima ha costruito scenografie per teatro e cinema, anche a Cinecittà.' },
+];
+const abilitazioni = [
+  'Gru da cantiere a torre',
+  'Sollevatori telescopici fissi e rotativi',
+  'Piattaforme di lavoro elevabili',
+  'Dispositivi di protezione individuale di terza categoria, per il lavoro in quota',
+  'Prevenzione incendi e primo soccorso',
+];
+const galleria = [3, 5, 6, 7];
+---
+
+<Base
+  titolo="Chi siamo: la squadra di Edelweiss Carpenteria"
+  descrizione="Edelweiss Carpenteria è una carpenteria del legno di Trento guidata da Luca Di Bello, diplomato alla HTL di Rankweil. Conoscete la squadra che monta i vostri tetti."
+  immagine={foto('squadra', 1)}
+  briciole={[{ nome: 'Chi siamo', url: '/chi-siamo/' }]}
+>
+  <IntestazionePagina
+    titolo="Chi siamo"
+    intro="Una carpenteria del legno con sede a Cognola, sopra Trento. Siamo carpentieri: progettiamo e costruiamo noi quello che vi proponiamo, dal primo sopralluogo all'ultima vite."
+    foto={foto('squadra', 1)}
+    alt="Un carpentiere della squadra taglia una trave con la sega circolare, con le montagne sullo sfondo"
+    briciole={[{ nome: 'Chi siamo', url: '/chi-siamo/' }]}
+  />
+
+  <section class="sezione storia" aria-labelledby="storia-titolo">
+    <div class="contenitore storia__griglia">
+      <div class="storia__foto">
+        <Image src={foto('squadra', 2)} alt="Luca Di Bello dentro una struttura in pannelli di legno in cantiere" widths={[480, 720, 960]} sizes="(min-width: 64rem) 40vw, 100vw" loading="lazy" quality={70} layout="none" />
+      </div>
+      <div class="testo">
+        <h2 id="storia-titolo">Dal Vorarlberg a Trento</h2>
+        <p>
+          Dopo il diploma di geometra, Luca Di Bello è andato a specializzarsi in Austria, alla HTL di Rankweil, nel Vorarlberg: una delle
+          regioni d'Europa dove l'architettura in legno contemporanea è nata e cresciuta. Lì ha preso il diploma austriaco in tecnica delle
+          costruzioni in legno.
+        </p>
+        <p>
+          Tornato in Italia ha ottenuto la certificazione Certis di carpentiere specializzato e ha lavorato per anni tra ufficio tecnico e
+          cantiere. Poi ha fondato Edelweiss Carpenteria.
+        </p>
+        <p>
+          Oggi lavoriamo sia con gli studi tecnici sia direttamente con le famiglie. La struttura è piccola e agile: possiamo seguire una
+          tettoia come una casa intera, con le stesse persone dall'inizio alla fine.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sezione squadra" aria-labelledby="squadra-titolo">
+    <div class="contenitore">
+      <h2 id="squadra-titolo">La squadra</h2>
+      <ul class="squadra__elenco" role="list">
+        {
+          squadra.map((p) => (
+            <li>
+              <h3>{p.nome}</h3>
+              <p class="squadra__ruolo">{p.ruolo}</p>
+              <p>{p.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="squadra__foto" role="list">
+        {
+          galleria.map((n) => (
+            <li>
+              <Image src={foto('squadra', n)} alt="La squadra al lavoro in cantiere" widths={[320, 480, 640]} sizes="(min-width: 64rem) 23vw, 46vw" loading="lazy" quality={66} layout="none" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="sezione abilitazioni" aria-labelledby="abil-titolo">
+    <div class="contenitore abilitazioni__griglia">
+      <div>
+        <h2 id="abil-titolo">Abilitazioni</h2>
+        <p class="secondario">Ogni persona in cantiere ha i patentini per il lavoro che fa.</p>
+      </div>
+      <ul>
+        {abilitazioni.map((a) => <li>{a}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <Metodo />
+</Base>
+
+<style>
+  .storia__griglia {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .storia__foto {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--calcare-scuro);
+  }
+  .storia__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .storia h2 {
+    margin-bottom: 0.5rem;
+  }
+  @media (min-width: 64rem) {
+    .storia__griglia {
+      grid-template-columns: 5fr 6fr;
+      gap: 5rem;
+    }
+  }
+  .squadra {
+    background: var(--calcare-scuro);
+  }
+  .squadra h2 {
+    margin-bottom: 2.5rem;
+  }
+  .squadra__elenco {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 2rem 2.5rem;
+  }
+  .squadra__elenco li {
+    padding-top: 1rem;
+    border-top: 1px solid var(--nebbia);
+  }
+  .squadra__elenco h3 {
+    font-size: var(--t-2);
+  }
+  .squadra__ruolo {
+    font-size: var(--t-piccolo);
+    color: #74491f;
+    font-weight: 540;
+    margin: 0.2rem 0 0.6rem;
+  }
+  .squadra__elenco p:last-child {
+    max-width: 32rem;
+  }
+  @media (min-width: 48rem) {
+    .squadra__elenco {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 64rem) {
+    .squadra__elenco {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .squadra__foto {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3.5rem;
+  }
+  .squadra__foto li {
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .squadra__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (min-width: 64rem) {
+    .squadra__foto {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  .abilitazioni__griglia {
+    display: grid;
+    gap: 2rem;
+  }
+  .abilitazioni__griglia h2 {
+    margin-bottom: 0.75rem;
+  }
+  .abilitazioni ul {
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid var(--nebbia);
+  }
+  .abilitazioni li {
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--nebbia);
+    font-size: var(--t-1);
+    font-stretch: 108%;
+  }
+  @media (min-width: 64rem) {
+    .abilitazioni__griglia {
+      grid-template-columns: 4fr 8fr;
+      gap: 4rem;
+    }
+  }
+</style>

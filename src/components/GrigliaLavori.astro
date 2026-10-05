@@ -1,0 +1,140 @@
+---
+// Lavori in evidenza: carosello a scorrimento su mobile, griglia asimmetrica su desktop.
+import { Image } from 'astro:assets';
+import { fotoDi, luogoDi, type Realizzazione } from '@/lib/foto';
+
+interface Props {
+  lavori: Realizzazione[];
+  titolo?: string;
+  conLink?: boolean;
+}
+const { lavori, titolo = 'Lavori recenti', conLink = true } = Astro.props;
+---
+
+<section class="sezione lavori" aria-labelledby="lavori-titolo">
+  <div class="contenitore lavori__testa">
+    <h2 id="lavori-titolo">{titolo}</h2>
+    {conLink && <a class="link-forte" href="/realizzazioni/">Tutte le realizzazioni</a>}
+  </div>
+  <ul class="contenitore lavori__griglia" role="list">
+    {
+      lavori.map((r, i) => {
+        const luogo = luogoDi(r);
+        return (
+          <li class={`lavoro lavoro--${i + 1}`}>
+            <a href={`/realizzazioni/${r.id}/`}>
+              <div class="lavoro__foto">
+                <Image
+                  src={fotoDi(r.data.cartella)[r.data.copertina - 1]}
+                  alt=""
+                  widths={[400, 640, 900, 1200]}
+                  sizes={i === 0 ? '(min-width: 64rem) 55vw, 82vw' : '(min-width: 64rem) 40vw, 82vw'}
+                  loading="lazy"
+                  quality={68}
+                  layout="none"
+                />
+              </div>
+              <h3>{r.data.titolo}</h3>
+              {luogo && <p class="secondario">{luogo}</p>}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</section>
+
+<style>
+  .lavori__testa {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .lavori__griglia {
+    list-style: none;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
+  }
+  .lavoro {
+    scroll-snap-align: start;
+  }
+  .lavoro a {
+    display: grid;
+    gap: 0.35rem;
+    text-decoration: none;
+  }
+  .lavoro__foto {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--calcare-scuro);
+    margin-bottom: 0.6rem;
+  }
+  .lavoro__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .lavoro a:hover :global(img) {
+    transform: scale(1.03);
+  }
+  .lavoro h3 {
+    font-size: var(--t-1);
+  }
+  .lavoro p {
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 64rem) {
+    .lavori__griglia {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 3rem 2rem;
+      overflow: visible;
+      padding-bottom: 0;
+    }
+    .lavoro--1 {
+      grid-column: 1 / 8;
+      grid-row: span 2;
+    }
+    .lavoro--1 .lavoro__foto {
+      aspect-ratio: 4 / 4.4;
+    }
+    .lavoro--2,
+    .lavoro--3 {
+      grid-column: 8 / 13;
+    }
+    .lavoro--2 .lavoro__foto,
+    .lavoro--3 .lavoro__foto {
+      aspect-ratio: 16 / 10;
+    }
+    .lavoro--4 {
+      grid-column: 1 / 6;
+    }
+    .lavoro--4 .lavoro__foto {
+      aspect-ratio: 4 / 3;
+    }
+    .lavoro--5 {
+      grid-column: 6 / 13;
+    }
+    .lavoro--5 .lavoro__foto {
+      aspect-ratio: 16 / 8.2;
+    }
+    .lavoro--6 {
+      grid-column: 1 / 13;
+    }
+    .lavoro--6 .lavoro__foto {
+      aspect-ratio: 21 / 8;
+    }
+  }
+</style>

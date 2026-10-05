@@ -1,0 +1,104 @@
+---
+import Base from '@/layouts/Base.astro';
+import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import Domande from '@/components/Domande.astro';
+import { foto } from '@/lib/foto';
+
+const ragioni = [
+  {
+    titolo: 'Pesa poco, si monta in fretta',
+    testo: 'Una struttura in legno pesa molto meno di una in calcestruzzo o in laterizio. Arriva in cantiere già preparata e si monta a secco: niente tempi di asciugatura, cantiere aperto per meno giorni.',
+  },
+  {
+    titolo: 'Regge bene i terremoti',
+    testo: 'Leggerezza ed elasticità sono le due qualità che contano con il sisma. Con collegamenti in acciaio ben progettati, una struttura in legno dissipa l’energia senza crollare. Il progetto SOFIE del CNR-IVALSA lo ha mostrato su un edificio in XLAM di sette piani.',
+  },
+  {
+    titolo: 'Con il fuoco cede piano',
+    testo: 'Il legno massiccio brucia lentamente e solo in superficie: lo strato carbonizzato protegge l’interno della trave, che continua a portare. Al contrario, l’acciaio non protetto perde resistenza all’improvviso quando si scalda.',
+  },
+  {
+    titolo: 'Una casa più confortevole',
+    testo: 'Il legno si porta in fretta alla temperatura dell’ambiente e, essendo igroscopico, assorbe e restituisce l’umidità dell’aria. Una struttura nuova in legno parte già asciutta, senza l’acqua di un getto in calcestruzzo.',
+  },
+  {
+    titolo: 'Isola con meno spessore',
+    testo: 'Il legno isola molto meglio del calcestruzzo. A parità di prestazioni le pareti sono più sottili e si guadagna superficie utile dentro casa.',
+  },
+  {
+    titolo: 'Progettato al millimetro',
+    testo: 'Nel nostro ufficio tecnico disegniamo ogni struttura in 3D con il software SEMA. Dal modello escono le misure di ogni pezzo: in cantiere si monta, non si improvvisa. I materiali sono certificati e documentati.',
+  },
+];
+const faq = [
+  {
+    d: 'Una casa in legno dura quanto una in muratura?',
+    r: 'Sì, se è progettata e costruita bene: il legno va tenuto lontano dall’acqua e lasciato respirare. In montagna ci sono case e tetti in legno in piedi da secoli.',
+  },
+  {
+    d: 'Il legno costa di più?',
+    r: 'Il prezzo della struttura può essere simile o di poco superiore, ma i tempi di cantiere più brevi e la maggiore efficienza energetica spesso compensano la differenza. Ve lo mostriamo nel preventivo, voce per voce.',
+  },
+];
+---
+
+<Base
+  titolo="Perché costruire in legno: vantaggi di tetti e case in legno"
+  descrizione="Leggerezza, resistenza al sisma, comportamento al fuoco, comfort e isolamento: i vantaggi di costruire tetti e case in legno, spiegati da una carpenteria di Trento."
+  immagine={foto('quattro-falde', 1)}
+  briciole={[{ nome: 'Perché il legno', url: '/perche-il-legno/' }]}
+>
+  <IntestazionePagina
+    titolo="Perché il legno"
+    intro="Sei ragioni concrete per costruire in legno, senza slogan. Sono le stesse cose che spieghiamo a chi ci chiede un sopralluogo."
+    foto={foto('quattro-falde', 1)}
+    alt="Soffitto in legno a vista sotto un tetto a quattro falde"
+    briciole={[{ nome: 'Perché il legno', url: '/perche-il-legno/' }]}
+  />
+
+  <section class="sezione ragioni">
+    <div class="contenitore">
+      <ul class="ragioni__elenco" role="list">
+        {
+          ragioni.map((r) => (
+            <li>
+              <h2>{r.titolo}</h2>
+              <p>{r.testo}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Domande domande={faq} />
+</Base>
+
+<style>
+  .ragioni {
+    padding-top: 0;
+  }
+  .ragioni__elenco {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0 3rem;
+  }
+  .ragioni__elenco li {
+    display: grid;
+    gap: 0.75rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--nebbia);
+  }
+  .ragioni__elenco h2 {
+    font-size: var(--t-2);
+  }
+  .ragioni__elenco p {
+    max-width: 34rem;
+  }
+  @media (min-width: 64rem) {
+    .ragioni__elenco {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

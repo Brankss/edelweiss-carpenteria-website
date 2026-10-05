@@ -1,0 +1,69 @@
+---
+import Base from '@/layouts/Base.astro';
+import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import { azienda } from '@/data/sito';
+---
+
+<Base
+  titolo="Contatti e sopralluogo gratuito"
+  descrizione="Chiamate, scrivete su WhatsApp o richiedete un sopralluogo gratuito a Edelweiss Carpenteria, Via Masetti 39, Cognola, Trento. Lunedì–venerdì 8–12 e 13:30–18."
+  briciole={[{ nome: 'Contatti', url: '/contatti/' }]}
+  modulo
+>
+  <IntestazionePagina
+    titolo="Contatti"
+    intro="Il modo più veloce è una telefonata o un messaggio su WhatsApp. Se preferite, compilate la richiesta di sopralluogo qui sotto: vi richiamiamo noi."
+    briciole={[{ nome: 'Contatti', url: '/contatti/' }]}
+  >
+    <ul class="recapiti">
+      <li>
+        <span class="secondario">Telefono e WhatsApp</span>
+        <a href={azienda.telefonoLink}>{azienda.telefono}</a>
+      </li>
+      <li>
+        <span class="secondario">Email</span>
+        <a href={`mailto:${azienda.email}`}>{azienda.email}</a>
+      </li>
+      <li>
+        <span class="secondario">Sede</span>
+        <a href={azienda.mappa} rel="noopener">{azienda.indirizzo.via}, {azienda.indirizzo.frazione}, {azienda.indirizzo.citta}</a>
+      </li>
+      <li>
+        <span class="secondario">Orari</span>
+        <span>Lun – ven, 8:00 – 12:00 e 13:30 – 18:00</span>
+      </li>
+    </ul>
+  </IntestazionePagina>
+</Base>
+
+<style>
+  .recapiti {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem 3rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .recapiti li {
+    display: grid;
+    gap: 0.2rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--nebbia);
+  }
+  .recapiti span.secondario {
+    font-size: var(--t-piccolo);
+  }
+  .recapiti a,
+  .recapiti li > span:last-child {
+    font-size: var(--t-1);
+    font-weight: 540;
+    font-stretch: 108%;
+    overflow-wrap: anywhere;
+  }
+  @media (min-width: 48rem) {
+    .recapiti {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

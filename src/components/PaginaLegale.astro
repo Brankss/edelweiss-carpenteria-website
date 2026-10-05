@@ -1,0 +1,50 @@
+---
+import Base from '@/layouts/Base.astro';
+import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import { ANTEPRIMA } from '@/data/sito';
+
+interface Props {
+  titolo: string;
+  descrizione: string;
+  url: string;
+  intro: string;
+  aggiornamento: string;
+}
+const { titolo, descrizione, url, intro, aggiornamento } = Astro.props;
+---
+
+<Base titolo={titolo} descrizione={descrizione} briciole={[{ nome: titolo, url }]}>
+  <IntestazionePagina titolo={titolo} intro={intro} briciole={[{ nome: titolo, url }]}>
+    <p class="secondario">Ultimo aggiornamento: {aggiornamento}</p>
+  </IntestazionePagina>
+  <section class="contenitore legale">
+    {
+      ANTEPRIMA && (
+        <p class="legale__bozza">
+          Bozza preparata per l'anteprima del sito. Prima della pubblicazione va verificata da un consulente privacy e completata con i dati
+          mancanti.
+        </p>
+      )
+    }
+    <div class="testo">
+      <slot />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legale {
+    padding-bottom: var(--sezione);
+  }
+  .legale__bozza {
+    max-width: var(--misura);
+    margin-bottom: 2.5rem;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--larice);
+    background: var(--calcare-scuro);
+    font-size: var(--t-piccolo);
+  }
+  .legale :global(h2) {
+    font-size: var(--t-1);
+  }
+</style>

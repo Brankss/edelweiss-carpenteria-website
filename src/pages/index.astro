@@ -1,0 +1,66 @@
+---
+import Base from '@/layouts/Base.astro';
+import Apertura from '@/components/Apertura.astro';
+import IndiceServizi from '@/components/IndiceServizi.astro';
+import Stratigrafia from '@/components/Stratigrafia.astro';
+import GrigliaLavori from '@/components/GrigliaLavori.astro';
+import Metodo from '@/components/Metodo.astro';
+import Squadra from '@/components/Squadra.astro';
+import Zona from '@/components/Zona.astro';
+import { azienda } from '@/data/sito';
+import { realizzazioni } from '@/lib/foto';
+import hero from '@/assets/foto/folgaria/folgaria-hero.jpg';
+
+const inEvidenza = (await realizzazioni()).filter((r) => r.data.inEvidenza).slice(0, 5);
+---
+
+<Base
+  titolo="Carpenteria in legno a Trento: tetti, case e sopraelevazioni | Edelweiss"
+  descrizione="Edelweiss Carpenteria progetta e costruisce tetti in legno, case in XLAM e a telaio, sopraelevazioni e facciate in provincia di Trento. Sopralluogo e preventivo gratuiti."
+  immagine={hero}
+  modulo
+>
+  <Apertura
+    foto={hero}
+    alt="Un abbaino in legno appeso alla gru sopra i tetti di Folgaria, con le montagne all'orizzonte"
+    didascalia="Folgaria, 1166 m. Un abbaino assemblato a terra sale in quota con la gru."
+  >
+    <Fragment slot="titolo">Tetti e case in legno, costruiti in Trentino.</Fragment>
+    <p>
+      Siamo una carpenteria di Trento: progettiamo e montiamo tetti, case, sopraelevazioni e facciate in legno. Sopralluogo e preventivo
+      sono gratuiti in tutta la provincia.
+    </p>
+    <div class="azioni">
+      <a class="pulsante" href="#richiesta">Richiedi un sopralluogo</a>
+      <a class="pulsante pulsante--vuoto" href={azienda.telefonoLink}>Chiama {azienda.telefono}</a>
+    </div>
+  </Apertura>
+
+  <IndiceServizi />
+
+  <section class="sezione tetto">
+    <div class="contenitore">
+      <Stratigrafia />
+    </div>
+  </section>
+
+  <GrigliaLavori lavori={inEvidenza} />
+
+  <Metodo />
+
+  <Squadra />
+
+  <Zona />
+</Base>
+
+<style>
+  .tetto {
+    background: var(--calcare-scuro);
+  }
+  .tetto :global(.strg__fondo) {
+    fill: var(--calcare-scuro);
+  }
+  .tetto :global(.strg__tag circle) {
+    fill: var(--calcare-scuro);
+  }
+</style>

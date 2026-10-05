@@ -1,0 +1,226 @@
+---
+import Logo from './Logo.astro';
+import { azienda, navigazione } from '@/data/sito';
+
+const corrente = Astro.url.pathname;
+const attivo = (href: string) => corrente === href || (href !== '/' && corrente.startsWith(href));
+---
+
+<header class="testata">
+  <div class="contenitore testata__riga">
+    <a href="/" class="testata__logo">
+      <Logo />
+    </a>
+
+    <nav class="testata__nav" aria-label="Principale">
+      <ul>
+        {
+          navigazione.map((v) => (
+            <li>
+              <a href={v.href} aria-current={attivo(v.href) ? 'page' : undefined}>
+                {v.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a class="testata__telefono" href={azienda.telefonoLink}>{azienda.telefono}</a>
+
+    <button class="testata__menu" type="button" aria-haspopup="dialog" aria-controls="menu-mobile" data-apri-menu>
+      Menu
+    </button>
+  </div>
+</header>
+
+<dialog id="menu-mobile" class="menu" aria-label="Menu">
+  <div class="menu__testa">
+    <Logo />
+    <button type="button" class="menu__chiudi" data-chiudi-menu>Chiudi</button>
+  </div>
+  <nav aria-label="Menu mobile">
+    <ul class="menu__voci">
+      <li><a href="/">Home</a></li>
+      {
+        navigazione.map((v) => (
+          <li>
+            <a href={v.href} aria-current={attivo(v.href) ? 'page' : undefined}>
+              {v.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <div class="menu__contatti">
+    <a class="pulsante" href={azienda.telefonoLink}>Chiama {azienda.telefono}</a>
+    <a class="pulsante pulsante--vuoto" href={azienda.whatsapp}>Scrivi su WhatsApp</a>
+  </div>
+</dialog>
+
+<script>
+  const menu = document.getElementById('menu-mobile') as HTMLDialogElement | null;
+  document.querySelector('[data-apri-menu]')?.addEventListener('click', () => menu?.showModal());
+  document.querySelector('[data-chiudi-menu]')?.addEventListener('click', () => menu?.close());
+  menu?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) menu.close();
+  });
+</script>
+
+<style>
+  .testata {
+    position: relative;
+    z-index: 10;
+  }
+  .testata__riga {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    min-height: 4.5rem;
+    padding-block: 0.75rem;
+  }
+  .testata__logo {
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .testata__nav {
+    display: none;
+  }
+  .testata__nav ul {
+    display: flex;
+    gap: clamp(1rem, 1.6vw, 1.75rem);
+    list-style: none;
+    padding: 0;
+  }
+  .testata__nav a {
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding-block: 0.5rem;
+    border-bottom: 1px solid transparent;
+  }
+  .testata__nav a:hover,
+  .testata__nav a[aria-current='page'] {
+    border-bottom-color: var(--larice);
+  }
+  .testata__telefono {
+    display: none;
+    font-size: 0.9375rem;
+    font-weight: 560;
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .testata__menu {
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 1px solid var(--abete);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 540;
+    cursor: pointer;
+  }
+
+  @media (min-width: 64rem) {
+    .testata__riga {
+      min-height: 5.5rem;
+    }
+    .testata__nav {
+      display: block;
+    }
+    .testata__menu {
+      display: none;
+    }
+  }
+  @media (min-width: 80rem) {
+    .testata__telefono {
+      display: inline;
+    }
+  }
+
+  /* Menu a tutto schermo */
+  .menu {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0.75rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
+    border: 0;
+    background: var(--abete);
+    color: var(--neve);
+    display: none;
+    flex-direction: column;
+  }
+  .menu[open] {
+    display: flex;
+  }
+  .menu::backdrop {
+    background: var(--abete);
+  }
+  .menu__testa {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 3rem;
+  }
+  .menu__chiudi {
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 1px solid rgb(247 247 244 / 0.5);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 540;
+  }
+  .menu__voci {
+    list-style: none;
+    padding: 0;
+    margin-top: 2.5rem;
+  }
+  .menu__voci a {
+    display: block;
+    padding-block: 0.45rem;
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
+    font-weight: 540;
+    font-stretch: 122%;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  .menu__voci a[aria-current='page'] {
+    color: var(--larice-chiaro);
+  }
+  .menu__contatti {
+    margin-top: auto;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .menu .pulsante {
+    background: var(--neve);
+    color: var(--abete);
+    border-color: var(--neve);
+  }
+  .menu .pulsante--vuoto {
+    background: transparent;
+    color: var(--neve);
+    border-color: rgb(247 247 244 / 0.5);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .menu[open] {
+      animation: menu-entra 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    @keyframes menu-entra {
+      from {
+        opacity: 0;
+        transform: translateY(0.75rem);
+      }
+    }
+  }
+</style>

@@ -1,0 +1,66 @@
+---
+import PaginaLegale from '@/components/PaginaLegale.astro';
+import { azienda } from '@/data/sito';
+---
+
+<PaginaLegale
+  titolo="Informativa privacy"
+  descrizione="Come Edelweiss Carpenteria tratta i dati personali di chi visita il sito e di chi richiede un sopralluogo, ai sensi del Regolamento UE 2016/679."
+  url="/privacy/"
+  intro="Come trattiamo i dati di chi visita il sito e di chi ci chiede un sopralluogo, ai sensi dell'articolo 13 del Regolamento UE 2016/679 (GDPR)."
+  aggiornamento="5 ottobre 2026"
+>
+  <h2>Titolare del trattamento</h2>
+  <p>
+    {azienda.ragioneSociale}, {azienda.indirizzo.via}, {azienda.indirizzo.cap} {azienda.indirizzo.citta} ({azienda.indirizzo.provincia}), P.IVA {azienda.piva}.
+    Per qualsiasi richiesta sui vostri dati: <a href={`mailto:${azienda.email}`}>{azienda.email}</a>.
+  </p>
+
+  <h2>Quali dati trattiamo</h2>
+  <ul>
+    <li>
+      <strong>Dati che ci inviate con il modulo di richiesta:</strong> nome e cognome, telefono, comune del cantiere, email (facoltativa), tipo
+      di lavoro e il messaggio che scrivete.
+    </li>
+    <li>
+      <strong>Dati che ci inviate per telefono, email o WhatsApp:</strong> quelli che decidete di comunicarci per descrivere il lavoro.
+    </li>
+    <li>
+      <strong>Dati tecnici di navigazione:</strong> indirizzo IP e informazioni sul browser, registrati dal fornitore di hosting per la sicurezza
+      e il funzionamento del sito.
+    </li>
+  </ul>
+
+  <h2>Perché li trattiamo e su quale base</h2>
+  <p>
+    Usiamo i dati del modulo e dei vostri messaggi solo per rispondere alla richiesta, organizzare il sopralluogo e preparare il preventivo.
+    La base giuridica è l'esecuzione di misure precontrattuali richieste da voi (art. 6, par. 1, lett. b del GDPR). Se poi affidate il lavoro,
+    i dati servono anche per il contratto e per gli obblighi fiscali e contabili (art. 6, par. 1, lett. b e c).
+  </p>
+  <p>I dati tecnici di navigazione sono trattati per il nostro legittimo interesse a un sito sicuro e funzionante (art. 6, par. 1, lett. f).</p>
+  <p>Non usiamo i vostri dati per pubblicità, non li vendiamo e non facciamo profilazione.</p>
+
+  <h2>Per quanto tempo li conserviamo</h2>
+  <p>
+    Le richieste che non diventano un lavoro sono cancellate entro 24 mesi. Se il lavoro viene affidato, conserviamo i dati per la durata del
+    contratto e per i 10 anni previsti dalla legge per i documenti contabili.
+  </p>
+
+  <h2>Chi può vederli</h2>
+  <p>
+    I dati sono trattati da noi e da fornitori che ci danno servizi tecnici, nominati responsabili del trattamento: il fornitore di hosting
+    del sito e il servizio che ci recapita le richieste via email. Alcuni hanno sede negli Stati Uniti e aderiscono all'EU-US Data Privacy
+    Framework, che garantisce un livello di protezione adeguato secondo la Commissione europea. L'elenco aggiornato dei fornitori è
+    disponibile su richiesta.
+  </p>
+
+  <h2>I vostri diritti</h2>
+  <p>
+    Potete chiederci in ogni momento di accedere ai vostri dati, correggerli, cancellarli, limitarne il trattamento, opporvi o riceverli in
+    un formato leggibile (articoli 15–22 del GDPR), scrivendo a <a href={`mailto:${azienda.email}`}>{azienda.email}</a>. Avete anche il
+    diritto di presentare reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" rel="noopener">garanteprivacy.it</a>).
+  </p>
+
+  <h2>Cookie</h2>
+  <p>Il sito usa solo cookie tecnici. I dettagli sono nella <a href="/cookie/">cookie policy</a>.</p>
+</PaginaLegale>

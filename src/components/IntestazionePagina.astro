@@ -1,0 +1,113 @@
+---
+// Testata delle pagine interne: titolo e introduzione, foto nella stessa capanna della home (ferma).
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  titolo: string;
+  intro: string;
+  foto?: ImageMetadata;
+  alt?: string;
+  briciole?: { nome: string; url: string }[];
+}
+const { titolo, intro, foto, alt = '', briciole = [] } = Astro.props;
+---
+
+<section class:list={['intestazione', { 'intestazione--foto': foto }]}>
+  <div class="contenitore intestazione__griglia">
+    <div class="intestazione__testo">
+      {
+        briciole.length > 0 && (
+          <nav aria-label="Percorso" class="briciole">
+            <ol>
+              <li>
+                <a href="/">Home</a>
+              </li>
+              {briciole.map((b, i) => (
+                <li>{i === briciole.length - 1 ? <span aria-current="page">{b.nome}</span> : <a href={b.url}>{b.nome}</a>}</li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <h1>{titolo}</h1>
+      <p class="introduzione">{intro}</p>
+      <slot />
+    </div>
+    {
+      foto && (
+        <div class="intestazione__foto capanna">
+          <Picture
+            src={foto}
+            alt={alt}
+            formats={['avif', 'webp']}
+            widths={[480, 720, 960, 1280]}
+            sizes="(min-width: 64rem) 50vw, 100vw"
+            loading="eager"
+            fetchpriority="high"
+            quality={70}
+            layout="none"
+          />
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .intestazione {
+    padding-block: clamp(1.5rem, 1rem + 3vw, 4rem) clamp(3rem, 2rem + 4vw, 6rem);
+  }
+  .intestazione__griglia {
+    display: grid;
+    gap: 2.5rem;
+    align-items: end;
+  }
+  .intestazione__testo {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+  .intestazione h1 {
+    font-size: var(--t-4);
+    max-width: 16ch;
+  }
+  .intestazione__foto {
+    --gronda: 28%;
+    aspect-ratio: 4 / 3.4;
+    overflow: hidden;
+    background: var(--calcare-scuro);
+  }
+  .intestazione__foto :global(picture) {
+    display: block;
+    height: 100%;
+  }
+  .intestazione__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (min-width: 64rem) {
+    .intestazione--foto .intestazione__griglia {
+      grid-template-columns: 6fr 6fr;
+      gap: 4rem;
+    }
+  }
+  .briciole ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    font-size: var(--t-piccolo);
+    color: var(--nebbia-testo);
+  }
+  .briciole li + li::before {
+    content: '/';
+    margin-right: 0.4rem;
+    color: var(--nebbia);
+  }
+  .briciole a {
+    color: inherit;
+  }
+</style>

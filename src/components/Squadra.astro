@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import { foto } from '@/lib/foto';
+---
+
+<section class="sezione squadra" aria-labelledby="squadra-titolo">
+  <div class="contenitore squadra__griglia">
+    <div class="squadra__foto">
+      <Image
+        src={foto('squadra', 1)}
+        alt="Un carpentiere della squadra taglia una trave con la sega circolare, con le montagne sullo sfondo"
+        widths={[480, 720, 1000]}
+        sizes="(min-width: 64rem) 45vw, 100vw"
+        loading="lazy"
+        quality={68}
+        layout="none"
+      />
+    </div>
+    <div class="squadra__testo">
+      <h2 id="squadra-titolo">Chi monta il vostro tetto</h2>
+      <p>
+        Luca Di Bello è geometra e si è diplomato in tecnica delle costruzioni in legno alla HTL di Rankweil, nel Vorarlberg, una delle
+        regioni d'Europa dove si costruisce meglio in legno. È carpentiere specializzato con certificazione Certis.
+      </p>
+      <p>
+        Con lui lavora una squadra di carpentieri con anni di cantiere alle spalle, abilitati all'uso di gru, sollevatori e piattaforme.
+        Sono le stesse persone che vengono al sopralluogo e poi montano il tetto.
+      </p>
+      <a class="link-forte" href="/chi-siamo/">Conoscere la squadra</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .squadra__griglia {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .squadra__foto {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--calcare-scuro);
+  }
+  .squadra__foto :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .squadra__testo {
+    display: grid;
+    gap: 1.1rem;
+    justify-items: start;
+  }
+  .squadra__testo p {
+    max-width: 34rem;
+  }
+  @media (min-width: 64rem) {
+    .squadra__griglia {
+      grid-template-columns: 6fr 5fr;
+      gap: 5rem;
+    }
+  }
+</style>

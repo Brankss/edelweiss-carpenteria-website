@@ -1,0 +1,317 @@
+/* Edelweiss Carpenteria — sistema visivo "Il profilo del tetto" */
+
+@font-face {
+  font-family: 'Mona Sans';
+  src: url('/fonts/mona-sans-var.woff2') format('woff2-variations');
+  font-weight: 380 660;
+  font-stretch: 100% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Arial ritoccato sulle metriche di Mona Sans: niente salti quando arriva il font */
+@font-face {
+  font-family: 'Mona Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Helvetica');
+  size-adjust: 104.5%;
+  ascent-override: 104.3%;
+  descent-override: 30.6%;
+  line-gap-override: 0%;
+}
+
+:root {
+  /* Materiali */
+  --calcare: #ecede9;
+  --calcare-scuro: #e1e3de;
+  --abete: #1e2723;
+  --abete-chiaro: #2b3530;
+  --larice: #8c5a2b;
+  --larice-chiaro: #c08a50;
+  --nebbia: #8d979a;
+  --nebbia-testo: #4e5853;
+  --porfido: #6a3a3d;
+  --porfido-scuro: #57302f;
+  --neve: #f7f7f4;
+
+  --font: 'Mona Sans', 'Mona Fallback', system-ui, sans-serif;
+
+  /* Scala tipografica: 1,25 su mobile → 1,333 su desktop */
+  --t-piccolo: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
+  --t-base: clamp(1.0625rem, 1.03rem + 0.15vw, 1.125rem);
+  --t-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.5rem);
+  --t-2: clamp(1.5625rem, 1.38rem + 0.8vw, 2rem);
+  --t-3: clamp(1.95rem, 1.6rem + 1.5vw, 2.67rem);
+  --t-4: clamp(2.2rem, 1.6rem + 2.7vw, 3.55rem);
+  --t-5: clamp(2.3rem, 1.3rem + 4.4vw, 4.75rem);
+
+  --gutter: clamp(1.25rem, 0.6rem + 2.8vw, 2.5rem);
+  --max: 82.5rem;
+  --sezione: clamp(4.5rem, 3rem + 6vw, 8.5rem);
+  --misura: 38rem;
+  --barra-mobile: 0px;
+
+  color-scheme: light;
+}
+
+@media (max-width: 47.99rem) {
+  :root {
+    --barra-mobile: calc(4rem + env(safe-area-inset-bottom));
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 1.5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--calcare);
+  color: var(--abete);
+  font-family: var(--font);
+  font-size: var(--t-base);
+  font-weight: 400;
+  font-stretch: 100%;
+  line-height: 1.55;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: var(--barra-mobile);
+}
+
+img,
+svg,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 560;
+  font-stretch: 122%;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--t-5);
+  line-height: 1.02;
+}
+h2 {
+  font-size: var(--t-3);
+}
+h3 {
+  font-size: var(--t-1);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+p,
+ul,
+ol,
+dl,
+figure,
+blockquote {
+  margin: 0;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-color: var(--larice);
+}
+
+:focus-visible {
+  outline: 2px solid var(--larice);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--larice-chiaro);
+  color: var(--abete);
+}
+
+/* Struttura */
+.contenitore {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.sezione {
+  padding-block: var(--sezione);
+}
+
+.sezione--scura {
+  background: var(--abete);
+  color: var(--neve);
+}
+
+.testo {
+  max-width: var(--misura);
+}
+
+.testo > * + * {
+  margin-top: 1em;
+}
+
+.testo h2,
+.testo h3 {
+  margin-top: 1.6em;
+}
+
+.testo ul {
+  padding-left: 1.1em;
+}
+
+.testo li + li {
+  margin-top: 0.4em;
+}
+
+.introduzione {
+  font-size: var(--t-1);
+  line-height: 1.45;
+  max-width: 34rem;
+}
+
+.secondario {
+  color: var(--nebbia-testo);
+}
+
+.sezione--scura .secondario {
+  color: #b9c1bd;
+}
+
+.salta {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--abete);
+  color: var(--neve);
+}
+
+.salta:focus {
+  top: 1rem;
+}
+
+.solo-lettori {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Pulsanti: due soli tipi */
+.pulsante {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--abete);
+  border-radius: 999px;
+  background: var(--abete);
+  color: var(--neve);
+  font: inherit;
+  font-weight: 540;
+  font-stretch: 108%;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.pulsante:hover {
+  background: var(--larice);
+  border-color: var(--larice);
+}
+
+.pulsante--vuoto {
+  background: transparent;
+  color: var(--abete);
+}
+
+.pulsante--vuoto:hover {
+  background: var(--abete);
+  border-color: var(--abete);
+  color: var(--neve);
+}
+
+.sezione--scura .pulsante,
+.chiaro .pulsante {
+  background: var(--neve);
+  border-color: var(--neve);
+  color: var(--abete);
+}
+
+.sezione--scura .pulsante:hover,
+.chiaro .pulsante:hover {
+  background: var(--larice-chiaro);
+  border-color: var(--larice-chiaro);
+}
+
+.sezione--scura .pulsante--vuoto,
+.chiaro .pulsante--vuoto {
+  background: transparent;
+  color: var(--neve);
+  border-color: rgb(247 247 244 / 0.5);
+}
+
+.link-forte {
+  font-weight: 540;
+  text-decoration: underline;
+  text-decoration-color: var(--larice);
+}
+
+/* Forma a capanna riutilizzabile: sezione di una casa */
+.capanna {
+  --gronda: 34%;
+  clip-path: polygon(50% 0, 100% var(--gronda), 100% 100%, 0 100%, 0 var(--gronda));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,23 @@
+---
+import PaginaServizio from '@/components/PaginaServizio.astro';
+import Stratigrafia from '@/components/Stratigrafia.astro';
+import { servizioPer } from '@/data/servizi';
+---
+
+<PaginaServizio servizio={servizioPer('tetti-in-legno')}>
+  <section class="sezione tetto">
+    <div class="contenitore">
+      <Stratigrafia />
+    </div>
+  </section>
+</PaginaServizio>
+
+<style>
+  .tetto {
+    background: var(--calcare-scuro);
+  }
+  .tetto :global(.strg__fondo),
+  .tetto :global(.strg__tag circle) {
+    fill: var(--calcare-scuro);
+  }
+</style>

@@ -1,0 +1,253 @@
+---
+// "Com'è fatto un nostro tetto": sezione tecnica in SVG collegata a un elenco a fisarmonica.
+// Nessun JavaScript: aprire uno strato lo evidenzia nel disegno tramite :has().
+interface Props {
+  titoloLivello?: 'h2' | 'h3';
+}
+const { titoloLivello = 'h2' } = Astro.props;
+const Titolo = titoloLivello;
+
+// dall'esterno verso l'interno
+const strati = [
+  { n: 1, nome: 'Manto di copertura', testo: "Tegole, coppi, lamiera o scandole: è lo strato che prende pioggia e neve e le porta in gronda." },
+  { n: 2, nome: 'Listelli e ventilazione', testo: "Un'intercapedine d'aria che sale dalla gronda al colmo. D'estate porta via il calore, d'inverno l'umidità, e riduce il ghiaccio sulle gronde." },
+  { n: 3, nome: 'Telo traspirante', testo: "Ferma l'acqua che dovesse passare sotto il manto ma lascia uscire il vapore. È la seconda difesa del tetto." },
+  { n: 4, nome: 'Isolante', testo: "Fibra di legno o lana di roccia ad alta densità, almeno 140 kg/m³. Un isolante pesante tiene fuori il freddo d'inverno e rallenta il caldo d'estate." },
+  { n: 5, nome: 'Freno al vapore', testo: "Regola il vapore che sale dalle stanze, così l'isolante resta asciutto e lavora come deve per tutta la vita del tetto." },
+  { n: 6, nome: 'Perlinato', testo: "Le tavole che vedete dall'interno, in abete o larice. Chiudono la struttura e restano a vista come soffitto." },
+  { n: 7, nome: 'Travi', testo: "La struttura portante, dimensionata dal nostro ufficio tecnico in base alla luce da coprire e al carico neve del luogo." },
+];
+
+// Geometria (coordinate locali, y verso l'alto negativo). Ogni strato finisce un po' prima di quello sotto: sezione "a gradini".
+const L = 600;
+const g = {
+  travi: { y: -70, h: 70, fine: L },
+  perlinato: { y: -86, h: 16, fine: L - 46 },
+  freno: { y: -90, h: 4, fine: L - 92 },
+  isolante: { y: -164, h: 74, fine: L - 138 },
+  telo: { y: -168, h: 4, fine: L - 184 },
+  listelli: { y: -194, h: 26, fine: L - 230 },
+  manto: { y: -214, h: 20, fine: L - 276 },
+};
+
+// tratteggio dell'isolante: onda continua
+const onda = (() => {
+  const { y, h, fine } = g.isolante;
+  let d = `M0 ${y + h - 6}`;
+  for (let x = 0; x < fine - 14; x += 14) {
+    const su = (x / 14) % 2 === 0;
+    d += ` Q${x + 7} ${su ? y + 2 : y + h - 2} ${x + 14} ${su ? y + 6 : y + h - 6}`;
+  }
+  return d;
+})();
+const giunti = Array.from({ length: Math.floor(g.perlinato.fine / 48) }, (_, i) => 30 + i * 48);
+const listelli = Array.from({ length: Math.floor(g.listelli.fine / 62) }, (_, i) => 14 + i * 62);
+const tegole = Array.from({ length: Math.ceil(g.manto.fine / 46) }, (_, i) => i * 46);
+const venature = [-56, -38, -20];
+
+// etichette numerate sul gradino scoperto di ogni strato
+const ordine = ['manto', 'listelli', 'telo', 'isolante', 'freno', 'perlinato', 'travi'] as const;
+const etichette = ordine.map((k, i) => {
+  const s = g[k];
+  const sopra = i === 0 ? null : g[ordine[i - 1]];
+  const x = sopra ? (sopra.fine + s.fine) / 2 : s.fine - 40;
+  return { n: i + 1, k, x, y: s.y - 16 };
+});
+
+const evidenzia = strati
+  .map(
+    (s) =>
+      `.strg:has(details[data-s="${s.n}"]:is([open], :hover)) .strg__strato--${s.n} { opacity: 1; color: var(--larice); }` +
+      `.strg:has(details[data-s="${s.n}"]:is([open], :hover)) .strg__strato--${s.n} .strg__fondo { fill: rgb(192 138 80 / 0.16); }` +
+      `.strg:has(details[data-s="${s.n}"]:is([open], :hover)) .strg__tag--${s.n} circle { fill: var(--larice); stroke: var(--larice); }` +
+      `.strg:has(details[data-s="${s.n}"]:is([open], :hover)) .strg__tag--${s.n} text { fill: var(--neve); }`,
+  )
+  .join('\n');
+const n = (k: (typeof ordine)[number]) => ordine.indexOf(k) + 1;
+---
+
+<div class="strg">
+  <div class="strg__intro">
+    <Titolo class="strg__titolo">Com'è fatto un nostro tetto</Titolo>
+    <p>
+      Sette strati, dall'esterno verso l'interno. Ognuno ha un compito preciso: se ne manca uno, prima o poi il tetto lo fa sapere.
+      Aprite uno strato per leggere a cosa serve.
+    </p>
+  </div>
+
+  <figure class="strg__disegno">
+    <svg viewBox="0 70 680 320" role="img" aria-labelledby="strg-desc">
+      <desc id="strg-desc">Sezione di un tetto ventilato in legno a sette strati: manto, listelli di ventilazione, telo traspirante, isolante, freno al vapore, perlinato e travi.</desc>
+      <g transform="translate(30 330) rotate(-14)" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round">
+        <g class={`strg__strato strg__strato--${n('travi')}`}>
+          <rect class="strg__fondo" x="0" y={g.travi.y} width={g.travi.fine} height={g.travi.h} fill="var(--calcare)"></rect>
+          {venature.map((v, i) => <path d={`M${8 + i * 20} ${v} C ${180} ${v - 4}, ${360} ${v + 5}, ${g.travi.fine - 10 - i * 30} ${v}`} stroke-width="0.8" />)}
+        </g>
+        <g class={`strg__strato strg__strato--${n('perlinato')}`}>
+          <rect class="strg__fondo" x="0" y={g.perlinato.y} width={g.perlinato.fine} height={g.perlinato.h} fill="var(--calcare)"></rect>
+          {giunti.map((x) => <path d={`M${x} ${g.perlinato.y} v${g.perlinato.h}`} stroke-width="0.8" />)}
+        </g>
+        <g class={`strg__strato strg__strato--${n('freno')}`}>
+          <rect class="strg__fondo" x="0" y={g.freno.y} width={g.freno.fine} height={g.freno.h} fill="var(--calcare)"></rect>
+          <path d={`M0 ${g.freno.y + 2} H${g.freno.fine}`} stroke-dasharray="7 4" />
+        </g>
+        <g class={`strg__strato strg__strato--${n('isolante')}`}>
+          <rect class="strg__fondo" x="0" y={g.isolante.y} width={g.isolante.fine} height={g.isolante.h} fill="var(--calcare)"></rect>
+          <path d={onda} stroke-width="0.9" />
+        </g>
+        <g class={`strg__strato strg__strato--${n('telo')}`}>
+          <rect class="strg__fondo" x="0" y={g.telo.y} width={g.telo.fine} height={g.telo.h} fill="var(--calcare)"></rect>
+          <path d={`M0 ${g.telo.y + 2} H${g.telo.fine}`} stroke-width="1.6" />
+        </g>
+        <g class={`strg__strato strg__strato--${n('listelli')}`}>
+          <path class="strg__fondo" d={`M0 ${g.listelli.y + g.listelli.h} H${g.listelli.fine}`} fill="none" />
+          {listelli.map((x) => <rect class="strg__fondo" x={x} y={g.listelli.y} width="20" height={g.listelli.h} fill="var(--calcare)" />)}
+          {listelli.slice(0, -1).map((x) => <path d={`M${x + 32} ${g.listelli.y + 17} l8 -4 -8 -4 M${x + 44} ${g.listelli.y + 17} l8 -4 -8 -4`} stroke-width="0.9" />)}
+        </g>
+        <g class={`strg__strato strg__strato--${n('manto')}`}>
+          {tegole.map((x) => <path class="strg__fondo" d={`M${x} ${g.manto.y + g.manto.h} L${x} ${g.manto.y + 4} L${x + 52} ${g.manto.y} L${x + 52} ${g.manto.y + g.manto.h - 4} Z`} fill="var(--calcare)" />)}
+        </g>
+        {
+          etichette.map((e) => (
+            <g class={`strg__tag strg__tag--${e.n}`} transform={`translate(${e.x} ${e.y}) rotate(14)`}>
+              <circle r="11" fill="var(--calcare)" />
+              <text text-anchor="middle" dy="4.5" fill="currentColor" stroke="none">{e.n}</text>
+            </g>
+          ))
+        }
+      </g>
+    </svg>
+  </figure>
+
+  <ol class="strg__elenco">
+    {
+      strati.map((s) => (
+        <li>
+          <details name="strati" data-s={s.n}>
+            <summary>
+              <span class="strg__num" aria-hidden="true">{s.n}</span>
+              <span>{s.nome}</span>
+            </summary>
+            <p>{s.testo}</p>
+          </details>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<Fragment set:html={`<style>${evidenzia}</style>`} />
+
+<style>
+  .strg {
+    display: grid;
+    gap: 2rem;
+  }
+  .strg__intro {
+    display: grid;
+    gap: 1rem;
+  }
+  .strg__intro p {
+    max-width: 32rem;
+  }
+  .strg__titolo {
+    font-size: var(--t-3);
+  }
+  .strg__disegno svg {
+    width: 100%;
+    height: auto;
+    color: var(--abete);
+    overflow: visible;
+  }
+  .strg__strato {
+    transition: opacity 0.25s ease, color 0.25s ease;
+  }
+  .strg:has(details:is([open], :hover)) .strg__strato {
+    opacity: 0.3;
+  }
+  .strg__tag text {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .strg__tag circle {
+    stroke: currentColor;
+    stroke-width: 1;
+  }
+  .strg__elenco {
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid var(--nebbia);
+  }
+  .strg__elenco li {
+    border-bottom: 1px solid var(--nebbia);
+  }
+  .strg__elenco summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding-block: 0.6rem;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 540;
+    font-stretch: 110%;
+  }
+  .strg__elenco summary::-webkit-details-marker {
+    display: none;
+  }
+  .strg__elenco summary::after {
+    content: '';
+    margin-left: auto;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(45deg) translateY(-25%);
+    transition: transform 0.2s ease;
+  }
+  .strg__elenco details[open] summary::after {
+    transform: rotate(225deg) translateY(-25%);
+  }
+  .strg__num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-size: 0.8125rem;
+    font-stretch: 100%;
+    flex: none;
+  }
+  .strg__elenco details[open] .strg__num {
+    background: var(--larice);
+    border-color: var(--larice);
+    color: var(--neve);
+  }
+  .strg__elenco p {
+    padding: 0 0 1.25rem 2.6rem;
+    max-width: 34rem;
+    color: var(--nebbia-testo);
+  }
+
+  @media (min-width: 64rem) {
+    .strg {
+      grid-template-columns: 7fr 5fr;
+      grid-template-areas:
+        'intro intro'
+        'disegno elenco';
+      column-gap: 4rem;
+      align-items: center;
+    }
+    .strg__intro {
+      grid-area: intro;
+    }
+    .strg__disegno {
+      grid-area: disegno;
+    }
+    .strg__elenco {
+      grid-area: elenco;
+    }
+  }
+</style>

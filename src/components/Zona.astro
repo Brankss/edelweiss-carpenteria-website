@@ -1,0 +1,98 @@
+---
+// Mappa della provincia di Trento disegnata in SVG (confini openpolis/ISTAT semplificati): nessuna mappa esterna, nessun cookie.
+import mappa from '@/data/trentino.json';
+import { quote } from '@/data/sito';
+
+const punti = Object.entries(mappa.punti as unknown as Record<string, [number, number]>);
+// posizione dell'etichetta rispetto al punto, per non sovrapporle
+const lato: Record<string, 'destra' | 'sinistra'> = { Trento: 'sinistra', Lavis: 'sinistra', Civezzano: 'destra', Folgaria: 'destra', Brentonico: 'sinistra' };
+---
+
+<section class="sezione zona" aria-labelledby="zona-titolo">
+  <div class="contenitore zona__griglia">
+    <div class="zona__testo">
+      <h2 id="zona-titolo">Dove lavoriamo</h2>
+      <p>
+        In tutta la provincia di Trento, dal fondovalle ai paesi di montagna, per tetti, sopraelevazioni, facciate e lavori su misura. Il
+        sopralluogo è gratuito ovunque in provincia.
+      </p>
+      <p class="secondario">
+        Per le strutture al grezzo in XLAM e a telaio lavoriamo anche nel resto del Nord Italia, e in Veneto abbiamo costruito in Cadore.
+      </p>
+    </div>
+    <figure class="zona__mappa">
+      <svg viewBox={mappa.viewBox} role="img" aria-labelledby="zona-desc">
+        <desc id="zona-desc">Mappa della provincia di Trento con alcuni dei nostri cantieri: {punti.map(([n]) => n).join(', ')}.</desc>
+        <path d={mappa.path} fill="var(--calcare-scuro)" stroke="var(--abete)" stroke-width="1.2" stroke-linejoin="round"></path>
+        {
+          punti.map(([nome, [x, y]]) => {
+            const dx = lato[nome] === 'sinistra' ? -14 : 14;
+            return (
+              <g class={nome === 'Trento' ? 'zona__sede' : undefined}>
+                <circle cx={x} cy={y} r={nome === 'Trento' ? 8 : 6.5} />
+                <text x={x + dx} y={y + 6} text-anchor={lato[nome] === 'sinistra' ? 'end' : 'start'}>
+                  {nome}
+                  <tspan class="zona__quota"> {quote[nome]} m</tspan>
+                </text>
+              </g>
+            );
+          })
+        }
+      </svg>
+      <figcaption class="secondario">La sede è a Cognola, sopra Trento. Quote dei centri abitati in metri sul livello del mare.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .zona__griglia {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  .zona__testo {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 32rem;
+  }
+  .zona__mappa svg {
+    width: 100%;
+    max-width: 34rem;
+    height: auto;
+    margin-inline: auto;
+    overflow: visible;
+  }
+  .zona__mappa circle {
+    fill: var(--larice);
+    stroke: var(--calcare);
+    stroke-width: 2;
+  }
+  .zona__sede circle {
+    fill: var(--abete);
+  }
+  .zona__mappa text {
+    font-family: var(--font);
+    font-size: 19px;
+    font-weight: 560;
+    fill: var(--abete);
+    paint-order: stroke;
+    stroke: var(--calcare-scuro);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+  .zona__quota {
+    font-weight: 400;
+    fill: var(--nebbia-testo);
+  }
+  figcaption {
+    margin-top: 1rem;
+    font-size: var(--t-piccolo);
+    text-align: center;
+  }
+  @media (min-width: 64rem) {
+    .zona__griglia {
+      grid-template-columns: 5fr 7fr;
+      gap: 5rem;
+    }
+  }
+</style>

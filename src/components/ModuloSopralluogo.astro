@@ -1,0 +1,238 @@
+---
+import { ANTEPRIMA } from '@/data/sito';
+
+const tipi = ['Tetto', 'Casa o sopraelevazione', 'Facciata', 'Tettoia o altro'];
+---
+
+<form class="modulo" method="post" action="/api/sopralluogo" data-anteprima={ANTEPRIMA ? '' : undefined} novalidate>
+  <div class="modulo__campi">
+    <div class="campo">
+      <label for="m-nome">Nome e cognome</label>
+      <input id="m-nome" name="nome" type="text" autocomplete="name" required />
+      <p class="campo__errore" data-errore="nome">Scrivete il vostro nome, così sappiamo chi richiamare.</p>
+    </div>
+    <div class="campo">
+      <label for="m-tel">Telefono</label>
+      <input id="m-tel" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9+ ()./\-]{6,}" />
+      <p class="campo__errore" data-errore="telefono">Serve un numero di telefono valido per fissare il sopralluogo.</p>
+    </div>
+    <div class="campo">
+      <label for="m-comune">Comune del cantiere</label>
+      <input id="m-comune" name="comune" type="text" autocomplete="address-level2" required />
+      <p class="campo__errore" data-errore="comune">Indicate il comune, ci serve per organizzare il sopralluogo.</p>
+    </div>
+    <div class="campo">
+      <label for="m-email">Email <span class="campo__facoltativo">(facoltativa)</span></label>
+      <input id="m-email" name="email" type="email" autocomplete="email" inputmode="email" />
+      <p class="campo__errore" data-errore="email">Controllate l'indirizzo email, sembra incompleto.</p>
+    </div>
+  </div>
+
+  <fieldset class="scelte">
+    <legend>Che lavoro avete in mente?</legend>
+    <div class="scelte__opzioni">
+      {
+        tipi.map((t, i) => (
+          <label class="scelta">
+            <input type="radio" name="tipo" value={t} checked={i === 0} />
+            <span>{t}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div class="campo">
+    <label for="m-msg">Due righe sul lavoro <span class="campo__facoltativo">(facoltativo)</span></label>
+    <textarea id="m-msg" name="messaggio" rows="4"></textarea>
+  </div>
+
+  <div class="trappola" aria-hidden="true">
+    <label>Lasciare vuoto <input name="sito" type="text" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="modulo__invio">
+    <button class="pulsante" type="submit">Invia la richiesta</button>
+    <p class="modulo__nota">
+      Usiamo questi dati solo per rispondervi e preparare il preventivo. Dettagli nell'<a href="/privacy/">informativa privacy</a>.
+    </p>
+  </div>
+
+  <div class="modulo__esito" role="status" tabindex="-1" hidden>
+    <h3>Richiesta pronta</h3>
+    <p data-testo-esito>Grazie. Vi richiamiamo per fissare il sopralluogo.</p>
+  </div>
+</form>
+
+<script>
+  for (const form of document.querySelectorAll<HTMLFormElement>('form.modulo')) {
+    const mostraErrori = () => {
+      let primo: HTMLInputElement | null = null;
+      for (const el of form.querySelectorAll<HTMLInputElement>('input[name]:not([type=radio]), textarea')) {
+        const msg = form.querySelector<HTMLElement>(`[data-errore="${el.name}"]`);
+        const ok = el.checkValidity();
+        el.toggleAttribute('aria-invalid', !ok);
+        if (msg) {
+          msg.id ||= `err-${el.name}`;
+          msg.hidden = ok;
+          if (!ok) el.setAttribute('aria-describedby', msg.id);
+          else el.removeAttribute('aria-describedby');
+        }
+        if (!ok && !primo) primo = el;
+      }
+      primo?.focus();
+      return !primo;
+    };
+    form.querySelectorAll<HTMLElement>('.campo__errore').forEach((m) => (m.hidden = true));
+    form.addEventListener('input', (e) => {
+      const el = e.target as HTMLInputElement;
+      if (el.hasAttribute('aria-invalid') && el.checkValidity()) {
+        el.removeAttribute('aria-invalid');
+        const msg = form.querySelector<HTMLElement>(`[data-errore="${el.name}"]`);
+        if (msg) msg.hidden = true;
+      }
+    });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!mostraErrori()) return;
+      const esito = form.querySelector<HTMLElement>('.modulo__esito')!;
+      const testo = form.querySelector<HTMLElement>('[data-testo-esito]')!;
+      if (form.hasAttribute('data-anteprima')) {
+        testo.textContent =
+          "Questa è un'anteprima: l'invio verrà attivato con la messa online. Da quel momento la richiesta arriverà direttamente a Edelweiss Carpenteria.";
+      } else {
+        const r = await fetch(form.action, { method: 'POST', body: new FormData(form) }).catch(() => null);
+        if (!r?.ok) {
+          testo.textContent = `Non siamo riusciti a inviare la richiesta. Riprovate tra poco oppure chiamate il 349 864 8360.`;
+          esito.hidden = false;
+          esito.focus();
+          return;
+        }
+      }
+      form.querySelector('.modulo__invio')?.setAttribute('hidden', '');
+      esito.hidden = false;
+      esito.focus();
+    });
+  }
+</script>
+
+<style>
+  .modulo {
+    display: grid;
+    gap: 1.75rem;
+  }
+  .modulo__campi {
+    display: grid;
+    gap: 1.5rem 2rem;
+  }
+  @media (min-width: 40rem) {
+    .modulo__campi {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .campo {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .campo label,
+  .scelte legend {
+    font-size: var(--t-piccolo);
+    font-weight: 540;
+  }
+  .campo__facoltativo {
+    font-weight: 400;
+    opacity: 0.75;
+  }
+  .campo input,
+  .campo textarea {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.75rem 0;
+    border: 0;
+    border-bottom: 1px solid currentColor;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: max(1rem, var(--t-base));
+  }
+  .campo textarea {
+    resize: vertical;
+    min-height: 6rem;
+    border: 1px solid currentColor;
+    padding: 0.75rem;
+  }
+  .campo input:focus-visible,
+  .campo textarea:focus-visible {
+    outline: none;
+    border-color: var(--larice-chiaro);
+    box-shadow: 0 2px 0 0 var(--larice-chiaro);
+  }
+  .campo [aria-invalid] {
+    border-color: #f2c6b8;
+  }
+  .campo__errore {
+    font-size: var(--t-piccolo);
+    color: #f6d4c8;
+  }
+  .scelte {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .scelte__opzioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .scelta {
+    position: relative;
+  }
+  .scelta input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+  }
+  .scelta span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+  .scelta input:checked + span {
+    background: var(--neve);
+    color: var(--porfido);
+    border-color: var(--neve);
+    font-weight: 560;
+  }
+  .scelta input:focus-visible + span {
+    outline: 2px solid var(--larice-chiaro);
+    outline-offset: 3px;
+  }
+  .trappola {
+    position: absolute;
+    left: -9999px;
+  }
+  .modulo__invio {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .modulo__nota {
+    font-size: var(--t-piccolo);
+    max-width: 34rem;
+    opacity: 0.85;
+  }
+  .modulo__esito {
+    padding: 1.5rem;
+    border: 1px solid currentColor;
+  }
+  .modulo__esito h3 {
+    margin-bottom: 0.5rem;
+  }
+</style>

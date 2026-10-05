@@ -1,0 +1,141 @@
+---
+import { Image } from 'astro:assets';
+import Base from '@/layouts/Base.astro';
+import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import GrigliaLavori from '@/components/GrigliaLavori.astro';
+import Domande from '@/components/Domande.astro';
+import type { Servizio } from '@/data/servizi';
+import { azienda } from '@/data/sito';
+import { realizzazioni } from '@/lib/foto';
+
+interface Props {
+  servizio: Servizio;
+}
+const { servizio: s } = Astro.props;
+const url = `/${s.slug}/`;
+const lavori = (await realizzazioni()).filter((r) => s.categorie.includes(r.data.categoria)).slice(0, 5);
+const sito = Astro.site!.href.replace(/\/$/, '');
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: s.h1,
+    description: s.descrizione,
+    serviceType: s.nome,
+    provider: { '@id': `${sito}/#impresa` },
+    areaServed: { '@type': 'AdministrativeArea', name: 'Provincia autonoma di Trento' },
+    url: new URL(url, Astro.site).href,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: s.faq.map((q) => ({ '@type': 'Question', name: q.d, acceptedAnswer: { '@type': 'Answer', text: q.r } })),
+  },
+];
+---
+
+<Base titolo={s.titoloSeo} descrizione={s.descrizione} immagine={s.copertina} briciole={[{ nome: s.h1, url }]} jsonLd={jsonLd}>
+  <IntestazionePagina titolo={s.h1} intro={s.intro} foto={s.copertina} alt={s.altCopertina} briciole={[{ nome: s.h1, url }]}>
+    <div class="azioni">
+      <a class="pulsante" href="/contatti/#richiesta">Richiedi un sopralluogo</a>
+      <a class="pulsante pulsante--vuoto" href={azienda.telefonoLink}>Chiama {azienda.telefono}</a>
+    </div>
+  </IntestazionePagina>
+
+  <section class="sezione dettaglio">
+    <div class="contenitore">
+      {
+        s.sezioni.map((sez, i) => (
+          <>
+            <div class="dettaglio__blocco">
+              <h2>{sez.titolo}</h2>
+              <div class="testo">
+                {sez.testo.map((t) => (
+                  <p>{t}</p>
+                ))}
+              </div>
+            </div>
+            {i === 1 && (
+              <ul class="striscia" role="list">
+                {s.striscia.map((f) => (
+                  <li>
+                    <Image src={f.foto} alt={f.alt} widths={[400, 640, 900]} sizes="(min-width: 64rem) 31vw, 80vw" loading="lazy" quality={68} layout="none" />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        ))
+      }
+    </div>
+  </section>
+
+  <slot />
+
+  {lavori.length > 0 && <GrigliaLavori lavori={lavori} titolo="Lavori di questo tipo" />}
+
+  <Domande domande={s.faq} />
+</Base>
+
+<style>
+  .azioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .dettaglio {
+    padding-top: 0;
+  }
+  .dettaglio__blocco {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+    border-top: 1px solid var(--nebbia);
+  }
+  .dettaglio__blocco h2 {
+    font-size: var(--t-2);
+  }
+  @media (min-width: 64rem) {
+    .dettaglio__blocco {
+      grid-template-columns: 5fr 7fr;
+      gap: 4rem;
+    }
+  }
+  .striscia {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 80%;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-block: 1rem 2.5rem;
+    padding-bottom: 0.5rem;
+  }
+  .striscia li {
+    scroll-snap-align: start;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--calcare-scuro);
+  }
+  .striscia :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (min-width: 64rem) {
+    .striscia {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      overflow: visible;
+      gap: 2rem;
+    }
+    .striscia li:nth-child(2) {
+      aspect-ratio: 3 / 4;
+      margin-top: -3rem;
+    }
+  }
+</style>

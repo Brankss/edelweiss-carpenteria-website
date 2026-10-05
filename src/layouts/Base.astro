@@ -1,0 +1,110 @@
+---
+import '@/styles/global.css';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Header from '@/components/Header.astro';
+import Chiusura from '@/components/Chiusura.astro';
+import BarraMobile from '@/components/BarraMobile.astro';
+import { ANTEPRIMA, azienda } from '@/data/sito';
+import fotoDefault from '@/assets/foto/folgaria/folgaria-hero.jpg';
+
+interface Briciola {
+  nome: string;
+  url: string;
+}
+interface Props {
+  titolo: string;
+  descrizione: string;
+  immagine?: ImageMetadata;
+  modulo?: boolean;
+  briciole?: Briciola[];
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { titolo, descrizione, immagine = fotoDefault, modulo = false, briciole = [], jsonLd = [] } = Astro.props;
+const canonico = new URL(Astro.url.pathname, Astro.site).href;
+const og = await getImage({ src: immagine, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 80 });
+const ogUrl = new URL(og.src, Astro.site).href;
+
+const sito = Astro.site!.href.replace(/\/$/, '');
+const impresa = {
+  '@context': 'https://schema.org',
+  '@type': ['GeneralContractor', 'RoofingContractor'],
+  '@id': `${sito}/#impresa`,
+  name: azienda.nome,
+  legalName: azienda.ragioneSociale,
+  vatID: `IT${azienda.piva}`,
+  url: `${sito}/`,
+  logo: `${sito}/logo.svg`,
+  image: ogUrl,
+  telephone: azienda.telefono.replace(/\s/g, ''),
+  email: azienda.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: azienda.indirizzo.via,
+    addressLocality: azienda.indirizzo.citta,
+    postalCode: azienda.indirizzo.cap,
+    addressRegion: azienda.indirizzo.provincia,
+    addressCountry: 'IT',
+  },
+  areaServed: { '@type': 'AdministrativeArea', name: 'Provincia autonoma di Trento' },
+  openingHoursSpecification: [
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '12:00' },
+    { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '13:30', closes: '18:00' },
+  ],
+  founder: { '@type': 'Person', name: 'Luca Di Bello' },
+  sameAs: [azienda.social.facebook, azienda.social.instagram],
+};
+const schemi: Record<string, unknown>[] = [impresa, ...jsonLd];
+if (briciole.length) {
+  schemi.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ nome: 'Home', url: '/' }, ...briciole].map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.nome,
+      item: new URL(b.url, Astro.site).href,
+    })),
+  });
+}
+const titoloCompleto = Astro.url.pathname === '/' ? titolo : `${titolo} | Edelweiss Carpenteria`;
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{titoloCompleto}</title>
+    <meta name="description" content={descrizione} />
+    <link rel="canonical" href={canonico} />
+    {ANTEPRIMA && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="preload" href="/fonts/mona-sans-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#ecede9" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="it_IT" />
+    <meta property="og:site_name" content="Edelweiss Carpenteria" />
+    <meta property="og:title" content={titoloCompleto} />
+    <meta property="og:description" content={descrizione} />
+    <meta property="og:url" content={canonico} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {schemi.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="salta" href="#contenuto">Vai al contenuto</a>
+    <Header />
+    <main id="contenuto">
+      <slot />
+    </main>
+    <Chiusura modulo={modulo} />
+    <BarraMobile />
+  </body>
+</html>

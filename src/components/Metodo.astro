@@ -1,0 +1,90 @@
+---
+// Le fasi sono una vera sequenza: le numeriamo con i segni romani che i carpentieri incidono sulle travi per il montaggio.
+const fasi = [
+  {
+    segno: 'I',
+    titolo: 'Sopralluogo',
+    testo: 'Veniamo a vedere il tetto o l’edificio, prendiamo le misure e ascoltiamo cosa vi serve. Gratuito in tutta la provincia di Trento.',
+  },
+  {
+    segno: 'II',
+    titolo: 'Progetto',
+    testo: 'Il nostro ufficio tecnico disegna la struttura in 3D con il software SEMA e la dimensiona. Ricevete un preventivo chiaro, voce per voce.',
+  },
+  {
+    segno: 'III',
+    titolo: 'Preparazione',
+    testo: 'Ogni elemento viene preparato su misura partendo dal modello 3D, con materiali certificati e documentati.',
+  },
+  {
+    segno: 'IV',
+    titolo: 'Montaggio',
+    testo: 'La nostra squadra monta con gru e piattaforme, con tutte le abilitazioni. Il cantiere resta aperto il meno possibile.',
+  },
+];
+---
+
+<section class="sezione sezione--scura metodo" aria-labelledby="metodo-titolo">
+  <div class="contenitore">
+    <h2 id="metodo-titolo">Come lavoriamo</h2>
+    <ol class="metodo__fasi">
+      {
+        fasi.map((f) => (
+          <li>
+            <span class="metodo__segno" aria-hidden="true">
+              {f.segno}
+            </span>
+            <h3>{f.titolo}</h3>
+            <p>{f.testo}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .metodo h2 {
+    margin-bottom: clamp(2.5rem, 2rem + 2vw, 4rem);
+    max-width: 14ch;
+  }
+  .metodo__fasi {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 2.5rem;
+  }
+  .metodo__fasi li {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(247 247 244 / 0.25);
+  }
+  .metodo__segno {
+    font-size: var(--t-3);
+    font-weight: 400;
+    font-stretch: 125%;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--larice-chiaro);
+    margin-bottom: 0.6rem;
+  }
+  .metodo h3 {
+    font-size: var(--t-1);
+  }
+  .metodo p {
+    color: #c9d0cc;
+    max-width: 30rem;
+  }
+  @media (min-width: 48rem) {
+    .metodo__fasi {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem 2.5rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .metodo__fasi {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>
