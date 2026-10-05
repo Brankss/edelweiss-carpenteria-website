@@ -1,0 +1,78 @@
+---
+// Un capitolo del cantiere: mentre la sezione scorre, nel modello 3D si monta la parte di cui parla.
+// Il testo resta fermo (sticky) a sinistra su desktop e in basso su mobile.
+interface Props {
+  capitolo: string;
+  titolo: string;
+  testo: string;
+  link: { href: string; label: string };
+}
+const { capitolo, titolo, testo, link } = Astro.props;
+const id = `capitolo-${capitolo}`;
+---
+
+<section class="capitolo" data-capitolo={capitolo} aria-labelledby={id}>
+  <div class="contenitore capitolo__binario">
+    <div class="capitolo__testo">
+      <h2 id={id} class="capitolo__titolo">{titolo}</h2>
+      <p class="capitolo__corpo">{testo}</p>
+      <a class="collegamento capitolo__link" href={link.href}>{link.label}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .capitolo {
+    position: relative;
+    min-height: 150svh;
+  }
+  .capitolo__binario {
+    position: relative;
+    height: 100%;
+    min-height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  /* Mobile: il testo resta agganciato in basso mentre sopra si monta il pezzo */
+  .capitolo__testo {
+    position: sticky;
+    bottom: calc(var(--margine) + 4.5rem + env(safe-area-inset-bottom));
+    display: grid;
+    gap: 0.9rem;
+    max-width: 30rem;
+    padding-bottom: calc(var(--margine) + 4.5rem);
+  }
+  /* --a = avanzamento del capitolo (0-1), scritto dallo script del cantiere. Senza script resta 0.5: tutto visibile */
+  :global(.movimento) .capitolo__testo {
+    opacity: clamp(0, min(var(--a, 0.5) * 7, (0.9 - var(--a, 0.5)) * 8), 1);
+    translate: 0 calc((0.5 - clamp(0.35, var(--a, 0.5), 0.65)) * 6rem);
+  }
+  .capitolo__titolo {
+    font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.4rem);
+    line-height: 1.02;
+  }
+  .capitolo__corpo {
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: var(--testo-2);
+  }
+  .capitolo__link {
+    justify-self: start;
+    font-family: var(--mono);
+    font-size: 0.875rem;
+    letter-spacing: 0.01em;
+  }
+  /* Desktop: testo fermo a metà altezza, nella colonna di sinistra */
+  @media (min-width: 64rem) and (orientation: landscape) {
+    .capitolo__binario {
+      justify-content: flex-start;
+    }
+    .capitolo__testo {
+      top: 34svh;
+      bottom: auto;
+      margin-top: 30svh;
+      padding-bottom: 0;
+    }
+  }
+</style>

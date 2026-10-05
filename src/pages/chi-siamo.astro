@@ -18,10 +18,15 @@ const abilitazioni = [
   'Gru da cantiere a torre',
   'Sollevatori telescopici fissi e rotativi',
   'Piattaforme di lavoro elevabili',
-  'Dispositivi di protezione individuale di terza categoria, per il lavoro in quota',
+  'Dispositivi di protezione di terza categoria, per il lavoro in quota',
   'Prevenzione incendi e primo soccorso',
 ];
-const galleria = [3, 5, 6, 7];
+const mosaico = [
+  { n: 5, alt: 'Un carpentiere fissa con l’avvitatore i travetti di una copertura' },
+  { n: 7, alt: 'Due carpentieri tagliano una trave con la sega circolare in cantiere' },
+  { n: 6, alt: 'Un carpentiere sul tavolato di un tetto in costruzione, in mezzo alla campagna' },
+  { n: 4, alt: 'Un carpentiere sega i pannelli di una parete in legno sul ponteggio' },
+];
 ---
 
 <Base
@@ -32,55 +37,63 @@ const galleria = [3, 5, 6, 7];
 >
   <IntestazionePagina
     titolo="Chi siamo"
-    intro="Una carpenteria del legno con sede a Cognola, sopra Trento. Siamo carpentieri: progettiamo e costruiamo noi quello che vi proponiamo, dal primo sopralluogo all'ultima vite."
+    intro="Una carpenteria del legno con sede a Cognola, sopra Trento. Progettiamo e costruiamo noi quello che vi proponiamo, dal primo sopralluogo all’ultima vite."
     foto={foto('squadra', 1)}
     alt="Un carpentiere della squadra taglia una trave con la sega circolare, con le montagne sullo sfondo"
+    posizione="50% 35%"
     briciole={[{ nome: 'Chi siamo', url: '/chi-siamo/' }]}
   />
 
   <section class="sezione storia" aria-labelledby="storia-titolo">
     <div class="contenitore storia__griglia">
-      <div class="storia__foto">
-        <Image src={foto('squadra', 2)} alt="Luca Di Bello dentro una struttura in pannelli di legno in cantiere" widths={[480, 720, 960]} sizes="(min-width: 64rem) 40vw, 100vw" loading="lazy" quality={70} layout="none" />
-      </div>
-      <div class="testo">
-        <h2 id="storia-titolo">Dal Vorarlberg a Trento</h2>
-        <p>
-          Dopo il diploma di geometra, Luca Di Bello è andato a specializzarsi in Austria, alla HTL di Rankweil, nel Vorarlberg: una delle
-          regioni d'Europa dove l'architettura in legno contemporanea è nata e cresciuta. Lì ha preso il diploma austriaco in tecnica delle
-          costruzioni in legno.
-        </p>
-        <p>
-          Tornato in Italia ha ottenuto la certificazione Certis di carpentiere specializzato e ha lavorato per anni tra ufficio tecnico e
-          cantiere. Poi ha fondato Edelweiss Carpenteria.
-        </p>
-        <p>
-          Oggi lavoriamo sia con gli studi tecnici sia direttamente con le famiglie. La struttura è piccola e agile: possiamo seguire una
-          tettoia come una casa intera, con le stesse persone dall'inizio alla fine.
-        </p>
+      <figure class="storia__foto">
+        <div class="foto rivela">
+          <Image src={foto('squadra', 2)} alt="Luca Di Bello dentro una struttura in pannelli di legno in cantiere" widths={[480, 720, 960]} sizes="(min-width: 64rem) 36vw, 100vw" loading="lazy" quality={68} layout="none" />
+        </div>
+        <figcaption class="secondario">Luca Di Bello, titolare</figcaption>
+      </figure>
+      <div class="storia__testo">
+        <h2 id="storia-titolo" class="t-h2">Dal Vorarlberg a Trento.</h2>
+        <div class="prosa">
+          <p>
+            Dopo il diploma di geometra, Luca Di Bello è andato a specializzarsi in Austria, alla HTL di Rankweil, nel Vorarlberg: una delle
+            regioni d’Europa dove l’architettura in legno contemporanea è nata e cresciuta. Lì ha preso il diploma austriaco in tecnica delle
+            costruzioni in legno.
+          </p>
+          <p>
+            Tornato in Italia ha ottenuto la certificazione Certis di carpentiere specializzato e ha lavorato per anni tra ufficio tecnico e
+            cantiere. Poi ha fondato Edelweiss Carpenteria.
+          </p>
+          <p>
+            Oggi lavoriamo sia con gli studi tecnici sia direttamente con le famiglie. La struttura è piccola e agile: possiamo seguire una
+            tettoia come una casa intera, con le stesse persone dall’inizio alla fine.
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="sezione squadra" aria-labelledby="squadra-titolo">
     <div class="contenitore">
-      <h2 id="squadra-titolo">La squadra</h2>
-      <ul class="squadra__elenco" role="list">
+      <h2 id="squadra-titolo" class="t-h2">La squadra</h2>
+      <ul role="list" class="squadra__elenco">
         {
           squadra.map((p) => (
             <li>
-              <h3>{p.nome}</h3>
+              <h3 class="squadra__nome">{p.nome}</h3>
               <p class="squadra__ruolo">{p.ruolo}</p>
-              <p>{p.testo}</p>
+              <p class="secondario">{p.testo}</p>
             </li>
           ))
         }
       </ul>
-      <ul class="squadra__foto" role="list">
+      <ul role="list" class="mosaico">
         {
-          galleria.map((n) => (
-            <li>
-              <Image src={foto('squadra', n)} alt="La squadra al lavoro in cantiere" widths={[320, 480, 640]} sizes="(min-width: 64rem) 23vw, 46vw" loading="lazy" quality={66} layout="none" />
+          mosaico.map((m, i) => (
+            <li class={`mosaico__voce mosaico__voce--${i + 1}`}>
+              <div class="foto rivela">
+                <Image src={foto('squadra', m.n)} alt={m.alt} widths={[360, 540, 720, 960]} sizes={i === 0 ? '(min-width: 64rem) 50vw, 100vw' : '(min-width: 64rem) 25vw, 50vw'} loading="lazy" quality={64} layout="none" />
+              </div>
             </li>
           ))
         }
@@ -91,10 +104,10 @@ const galleria = [3, 5, 6, 7];
   <section class="sezione abilitazioni" aria-labelledby="abil-titolo">
     <div class="contenitore abilitazioni__griglia">
       <div>
-        <h2 id="abil-titolo">Abilitazioni</h2>
-        <p class="secondario">Ogni persona in cantiere ha i patentini per il lavoro che fa.</p>
+        <h2 id="abil-titolo" class="t-h2">Abilitazioni</h2>
+        <p class="t-lead">Ogni persona in cantiere ha i patentini per il lavoro che fa.</p>
       </div>
-      <ul>
+      <ul role="list" class="abilitazioni__elenco">
         {abilitazioni.map((a) => <li>{a}</li>)}
       </ul>
     </div>
@@ -106,57 +119,54 @@ const galleria = [3, 5, 6, 7];
 <style>
   .storia__griglia {
     display: grid;
-    gap: 2.5rem;
-    align-items: center;
+    gap: 3rem;
   }
   .storia__foto {
+    display: grid;
+    gap: 0.75rem;
+    font-size: var(--t-piccolo);
+  }
+  .storia__foto .foto {
     aspect-ratio: 4 / 5;
-    overflow: hidden;
-    background: var(--calcare-scuro);
   }
-  .storia__foto :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .storia h2 {
-    margin-bottom: 0.5rem;
+  .storia__testo {
+    display: grid;
+    gap: 2rem;
+    align-content: start;
   }
   @media (min-width: 64rem) {
     .storia__griglia {
-      grid-template-columns: 5fr 6fr;
-      gap: 5rem;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 6rem;
+      align-items: center;
     }
   }
-  .squadra {
-    background: var(--calcare-scuro);
-  }
-  .squadra h2 {
-    margin-bottom: 2.5rem;
+
+  .squadra .t-h2 {
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
   }
   .squadra__elenco {
-    list-style: none;
-    padding: 0;
     display: grid;
-    gap: 2rem 2.5rem;
+    gap: 2.5rem 2rem;
   }
   .squadra__elenco li {
-    padding-top: 1rem;
-    border-top: 1px solid var(--nebbia);
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--linea);
   }
-  .squadra__elenco h3 {
-    font-size: var(--t-2);
+  .squadra__nome {
+    font-size: var(--t-h3);
+    font-weight: 300;
+    letter-spacing: -0.03em;
   }
   .squadra__ruolo {
     font-size: var(--t-piccolo);
-    color: #74491f;
-    font-weight: 540;
-    margin: 0.2rem 0 0.6rem;
+    color: var(--cuoio);
+    margin-bottom: 0.4rem;
   }
-  .squadra__elenco p:last-child {
-    max-width: 32rem;
-  }
-  @media (min-width: 48rem) {
+  @media (min-width: 40rem) {
     .squadra__elenco {
       grid-template-columns: 1fr 1fr;
     }
@@ -164,53 +174,83 @@ const galleria = [3, 5, 6, 7];
   @media (min-width: 64rem) {
     .squadra__elenco {
       grid-template-columns: repeat(3, 1fr);
+      gap: 3.5rem 2.5rem;
     }
   }
-  .squadra__foto {
-    list-style: none;
-    padding: 0;
+
+  .mosaico {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 3.5rem;
+    gap: 0.75rem;
+    margin-top: clamp(3.5rem, 7vw, 6rem);
   }
-  .squadra__foto li {
+  .mosaico .foto {
     aspect-ratio: 1;
-    overflow: hidden;
-  }
-  .squadra__foto :global(img) {
-    width: 100%;
     height: 100%;
-    object-fit: cover;
+  }
+  .mosaico__voce--1 {
+    grid-column: 1 / -1;
+  }
+  .mosaico__voce--1 .foto {
+    aspect-ratio: 16 / 10;
   }
   @media (min-width: 64rem) {
-    .squadra__foto {
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
+    .mosaico {
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1.25rem;
+    }
+    .mosaico__voce--1 {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+    .mosaico__voce--1 .foto {
+      aspect-ratio: auto;
+    }
+    .mosaico__voce--4 {
+      grid-column: 2 / span 2;
+    }
+    .mosaico__voce--4 .foto {
+      aspect-ratio: 2 / 1;
     }
   }
+
   .abilitazioni__griglia {
     display: grid;
-    gap: 2rem;
+    gap: 2.5rem;
   }
-  .abilitazioni__griglia h2 {
-    margin-bottom: 0.75rem;
+  .abilitazioni__griglia > div {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
   }
-  .abilitazioni ul {
-    list-style: none;
-    padding: 0;
-    border-top: 1px solid var(--nebbia);
+  .abilitazioni__elenco {
+    display: grid;
+    gap: 0;
+    counter-reset: abil;
   }
-  .abilitazioni li {
-    padding-block: 1rem;
-    border-bottom: 1px solid var(--nebbia);
-    font-size: var(--t-1);
-    font-stretch: 108%;
+  .abilitazioni__elenco li {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    padding-block: 1.1rem;
+    font-size: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+    font-weight: 300;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+  }
+  .abilitazioni__elenco li::before {
+    content: '';
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--cuoio);
+    transform: translateY(-0.15rem);
   }
   @media (min-width: 64rem) {
     .abilitazioni__griglia {
-      grid-template-columns: 4fr 8fr;
-      gap: 4rem;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 5rem;
     }
   }
 </style>

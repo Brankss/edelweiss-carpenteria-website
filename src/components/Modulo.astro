@@ -1,0 +1,286 @@
+---
+// Richiesta di sopralluogo. Etichette sopra i campi, errori sotto il campo e riepilogo in alto dopo un invio non valido.
+// Tastiere giuste su mobile (tel, email), campo trappola contro lo spam.
+// Finché il sito è in anteprima l'invio non parte: si mostra la conferma con la nota.
+import Icona from './Icona.astro';
+import { ANTEPRIMA, azienda } from '@/data/sito';
+
+const tipi = ['Tetto', 'Casa o sopraelevazione', 'Facciata', 'Tettoia o altro'];
+---
+
+<form class="modulo" method="post" action="/api/sopralluogo" novalidate data-modulo data-anteprima={ANTEPRIMA ? '' : undefined}>
+  <div class="modulo__riepilogo" tabindex="-1" data-riepilogo hidden>
+    <p>Controllate i campi segnati:</p>
+    <ul data-riepilogo-elenco></ul>
+  </div>
+
+  <div class="modulo__campi">
+    <div class="campo">
+      <label for="m-nome">Nome e cognome</label>
+      <input id="m-nome" name="nome" type="text" autocomplete="name" required aria-describedby="m-nome-err" />
+      <p class="campo__errore" id="m-nome-err">Scrivete il vostro nome, così sappiamo chi richiamare.</p>
+    </div>
+    <div class="campo">
+      <label for="m-tel">Telefono</label>
+      <input id="m-tel" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9+ \(\)\.\/\-]{6,}" aria-describedby="m-tel-err" />
+      <p class="campo__errore" id="m-tel-err">Serve un numero di telefono valido per fissare il sopralluogo.</p>
+    </div>
+    <div class="campo">
+      <label for="m-comune">Comune del cantiere</label>
+      <input id="m-comune" name="comune" type="text" autocomplete="address-level2" required aria-describedby="m-comune-err" />
+      <p class="campo__errore" id="m-comune-err">Indicate il comune: ci serve per organizzare il sopralluogo.</p>
+    </div>
+    <div class="campo">
+      <label for="m-email">Email <span class="campo__facoltativo">(facoltativa)</span></label>
+      <input id="m-email" name="email" type="email" inputmode="email" autocomplete="email" spellcheck="false" autocapitalize="off" aria-describedby="m-email-err" />
+      <p class="campo__errore" id="m-email-err">L’indirizzo email sembra incompleto: controllate la chiocciola e il dominio.</p>
+    </div>
+  </div>
+
+  <fieldset class="campo scelte">
+    <legend>Che lavoro avete in mente?</legend>
+    <div class="scelte__opzioni">
+      {
+        tipi.map((t, i) => (
+          <label class="scelta">
+            <input type="radio" name="tipo" value={t} checked={i === 0} />
+            <span>{t}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div class="campo">
+    <label for="m-msg">Due righe sul lavoro <span class="campo__facoltativo">(facoltativo)</span></label>
+    <textarea id="m-msg" name="messaggio" rows="4" aria-describedby="m-msg-aiuto"></textarea>
+    <p class="campo__aiuto" id="m-msg-aiuto">Per esempio: superficie del tetto, cosa non funziona, quando vorreste iniziare.</p>
+  </div>
+
+  <div class="trappola" aria-hidden="true">
+    <label>Lasciare vuoto <input name="sito" type="text" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="modulo__invio">
+    <button class="pulsante" type="submit" data-invia>Invia la richiesta</button>
+    <p class="modulo__nota">
+      Usiamo questi dati solo per rispondervi e preparare il preventivo. Dettagli nell’<a href="/privacy/">informativa privacy</a>.
+    </p>
+  </div>
+
+  <div class="modulo__esito" role="status" tabindex="-1" data-esito hidden>
+    <Icona nome="telefono" dimensione="1.75rem" />
+    <div>
+      <p class="modulo__esito-titolo">Grazie, richiesta ricevuta.</p>
+      <p class="secondario">
+        Vi richiamiamo noi per fissare il sopralluogo. Se è urgente chiamate il <a href={azienda.telefonoLink}>{azienda.telefono}</a>.
+      </p>
+      {ANTEPRIMA && <p class="modulo__anteprima">Anteprima: l’invio sarà attivo alla messa online del sito.</p>}
+    </div>
+  </div>
+</form>
+
+<style>
+  .modulo {
+    display: grid;
+    gap: 1.75rem;
+  }
+  .modulo__campi {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 40rem) {
+    .modulo__campi {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 1.25rem;
+    }
+  }
+  .scelte {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .scelte legend {
+    margin-bottom: 0.75rem;
+  }
+  .scelte__opzioni {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .scelta {
+    position: relative;
+  }
+  .scelta input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .scelta span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--testo-2);
+    border: 1px solid var(--linea-forte);
+    transition:
+      color 0.2s,
+      background-color 0.2s,
+      border-color 0.2s;
+  }
+  .scelta:hover span {
+    color: var(--testo);
+    border-color: var(--testo-2);
+  }
+  .scelta input:checked + span {
+    color: var(--fondo);
+    background: var(--cuoio);
+    border-color: var(--cuoio);
+  }
+  .scelta input:focus-visible + span {
+    outline: 2px solid var(--cuoio);
+    outline-offset: 3px;
+  }
+  .trappola {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .modulo__invio {
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+  }
+  .modulo__invio .pulsante {
+    justify-self: start;
+  }
+  @media (max-width: 30rem) {
+    .modulo__invio .pulsante {
+      justify-self: stretch;
+    }
+  }
+  .modulo__nota {
+    max-width: 30rem;
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+  .modulo__nota a,
+  .modulo__esito a {
+    color: var(--testo);
+  }
+  .modulo__riepilogo {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--errore);
+    color: var(--testo);
+    font-size: var(--t-piccolo);
+  }
+  .modulo__riepilogo ul {
+    margin-top: 0.5rem;
+    padding-left: 1.1rem;
+  }
+  .modulo__riepilogo a {
+    color: var(--errore);
+  }
+  .modulo__esito {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--cuoio);
+    background: var(--fondo-3);
+    color: var(--cuoio);
+  }
+  .modulo__esito[hidden] {
+    display: none;
+  }
+  .modulo__esito-titolo {
+    color: var(--testo);
+    font-size: 1.25rem;
+    margin-bottom: 0.35rem;
+  }
+  .modulo__anteprima {
+    margin-top: 0.75rem;
+    font-size: var(--t-micro);
+    color: var(--testo-2);
+  }
+  .modulo[data-inviato] > :not([data-esito]) {
+    display: none;
+  }
+</style>
+
+<script>
+  const modulo = document.querySelector<HTMLFormElement>('[data-modulo]');
+  if (modulo) {
+    const riepilogo = modulo.querySelector<HTMLElement>('[data-riepilogo]')!;
+    const elenco = modulo.querySelector<HTMLElement>('[data-riepilogo-elenco]')!;
+    const esito = modulo.querySelector<HTMLElement>('[data-esito]')!;
+    const campi = [...modulo.querySelectorAll<HTMLInputElement>('input[required], input[type="email"]')];
+
+    const valido = (c: HTMLInputElement) => {
+      if (c.type === 'email' && !c.value) return true;
+      return c.checkValidity() && c.value.trim().length > (c.required ? 1 : 0);
+    };
+    const segna = (c: HTMLInputElement) => {
+      const ok = valido(c);
+      const box = c.closest('.campo')!;
+      box.toggleAttribute('data-errato', !ok);
+      c.setAttribute('aria-invalid', String(!ok));
+      return ok;
+    };
+    // Controllo quando si esce dal campo, non a ogni tasto
+    campi.forEach((c) => {
+      c.addEventListener('blur', () => c.value && segna(c));
+      c.addEventListener('input', () => c.closest('.campo')!.hasAttribute('data-errato') && segna(c));
+    });
+
+    modulo.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errati = campi.filter((c) => !segna(c));
+      if (errati.length) {
+        elenco.replaceChildren(
+          ...errati.map((c) => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = `#${c.id}`;
+            a.textContent = modulo.querySelector(`label[for="${c.id}"]`)?.firstChild?.textContent?.trim() ?? c.name;
+            a.addEventListener('click', (ev) => {
+              ev.preventDefault();
+              c.focus();
+            });
+            li.append(a);
+            return li;
+          }),
+        );
+        riepilogo.hidden = false;
+        riepilogo.focus();
+        return;
+      }
+      riepilogo.hidden = true;
+      const pulsante = modulo.querySelector<HTMLButtonElement>('[data-invia]')!;
+      pulsante.disabled = true;
+      pulsante.textContent = 'Invio in corso…';
+
+      if (!modulo.hasAttribute('data-anteprima')) {
+        try {
+          const r = await fetch(modulo.action, { method: 'POST', body: new FormData(modulo) });
+          if (!r.ok) throw new Error(String(r.status));
+        } catch {
+          pulsante.disabled = false;
+          pulsante.textContent = 'Riprova a inviare';
+          riepilogo.hidden = false;
+          elenco.replaceChildren();
+          riepilogo.querySelector('p')!.textContent = 'L’invio non è riuscito. Riprovate tra poco, oppure chiamateci: rispondiamo dal lunedì al venerdì.';
+          riepilogo.focus();
+          return;
+        }
+      }
+      esito.hidden = false;
+      modulo.setAttribute('data-inviato', '');
+      esito.focus();
+    });
+  }
+</script>

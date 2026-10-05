@@ -1,0 +1,239 @@
+---
+// Galleria di un progetto: griglia di miniature e visore a tutto schermo (<dialog> nativo + scorrimento a scatto).
+// Si sfoglia col dito, con le frecce della tastiera o con i pulsanti. Nessuna libreria.
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Icona from './Icona.astro';
+
+interface Props {
+  foto: ImageMetadata[];
+  titolo: string;
+}
+const { foto, titolo } = Astro.props;
+const grandi = await Promise.all(foto.map((f) => getImage({ src: f, width: Math.min(1600, f.width), format: 'webp', quality: 76 })));
+---
+
+<section class="galleria" aria-label={`Foto: ${titolo}`} data-galleria>
+  <ul role="list" class="galleria__griglia">
+    {
+      foto.map((f, i) => (
+        <li class:list={['galleria__voce', { 'galleria__voce--larga': i % 5 === 0 }]}>
+          <button type="button" class="galleria__apri" data-indice={i} aria-label={`Apri la foto ${i + 1} di ${foto.length}`}>
+            <span class="foto rivela">
+              <Image src={f} alt="" widths={[360, 540, 720, 840, 1050]} sizes={i % 5 === 0 ? '(min-width: 64rem) 66vw, 100vw' : '(min-width: 64rem) 33vw, 50vw'} quality={62} loading="lazy" layout="none" />
+            </span>
+          </button>
+        </li>
+      ))
+    }
+  </ul>
+
+  <dialog class="visore" aria-label={`Foto di ${titolo}`} data-visore data-lenis-prevent>
+    <div class="visore__barra">
+      <p class="visore__contatore numeri" aria-live="polite" data-contatore>1 / {foto.length}</p>
+      <button type="button" class="visore__pulsante" data-chiudi aria-label="Chiudi le foto"><Icona nome="chiudi" dimensione="1.5rem" /></button>
+    </div>
+    <ul role="list" class="visore__binario" data-binario tabindex="0" aria-label="Foto, scorrete in orizzontale">
+      {
+        grandi.map((g, i) => (
+          <li class="visore__scena">
+            <img src={g.src} width={g.attributes.width} height={g.attributes.height} alt={`${titolo}, foto ${i + 1} di ${foto.length}`} loading="lazy" decoding="async" />
+          </li>
+        ))
+      }
+    </ul>
+    <button type="button" class="visore__pulsante visore__prec" data-prec aria-label="Foto precedente"><Icona nome="sinistra" dimensione="1.5rem" /></button>
+    <button type="button" class="visore__pulsante visore__succ" data-succ aria-label="Foto successiva"><Icona nome="destra" dimensione="1.5rem" /></button>
+  </dialog>
+</section>
+
+<style>
+  .galleria__griglia {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .galleria__voce--larga {
+    grid-column: 1 / -1;
+  }
+  .galleria__apri {
+    display: block;
+    width: 100%;
+    cursor: zoom-in;
+  }
+  .galleria__apri .foto {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .galleria__apri :global(img) {
+    transition: transform 0.9s var(--curva);
+  }
+  .galleria__apri:hover :global(img) {
+    transform: scale(1.04);
+  }
+  @media (min-width: 64rem) {
+    .galleria__griglia {
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-flow: dense;
+      gap: 1.25rem;
+    }
+    .galleria__voce--larga {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    .galleria__voce--larga .foto {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+    .galleria__voce--larga .galleria__apri {
+      height: 100%;
+    }
+  }
+
+  .visore {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    background: rgb(8 8 7 / 0.97);
+    border: 0;
+    color: var(--testo);
+    overflow: hidden;
+  }
+  .visore[open] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+  .visore::backdrop {
+    background: rgb(8 8 7 / 0.97);
+  }
+  .visore__barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(env(safe-area-inset-top) + 0.5rem) var(--margine) 0.5rem;
+  }
+  .visore__contatore {
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+  .visore__binario {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    outline-offset: -3px;
+  }
+  .visore__binario::-webkit-scrollbar {
+    display: none;
+  }
+  .visore__scena {
+    display: grid;
+    place-items: center;
+    padding: 0.5rem var(--margine) calc(env(safe-area-inset-bottom) + 1.5rem);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    min-height: 0;
+  }
+  .visore__scena img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+  .visore__pulsante {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    color: var(--testo);
+    background: rgb(13 13 11 / 0.6);
+    border: 1px solid var(--linea);
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+  .visore__pulsante:hover {
+    background: var(--fondo-3);
+    border-color: var(--linea-forte);
+  }
+  .visore__prec,
+  .visore__succ {
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    display: none;
+  }
+  .visore__prec {
+    left: var(--margine);
+  }
+  .visore__succ {
+    right: var(--margine);
+  }
+  @media (hover: hover) and (min-width: 48rem) {
+    .visore__prec,
+    .visore__succ {
+      display: grid;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-galleria]').forEach((galleria) => {
+    const visore = galleria.querySelector<HTMLDialogElement>('[data-visore]')!;
+    const binario = visore.querySelector<HTMLElement>('[data-binario]')!;
+    const scene = [...binario.children] as HTMLElement[];
+    const contatore = visore.querySelector('[data-contatore]')!;
+    let corrente = 0;
+    let ultimoPulsante: HTMLElement | null = null;
+
+    const vai = (i: number, comportamento: ScrollBehavior = 'smooth') => {
+      const n = Math.max(0, Math.min(scene.length - 1, i));
+      binario.scrollTo({ left: n * binario.clientWidth, behavior: comportamento });
+    };
+
+    // Il contatore segue la foto visibile, anche quando si sfoglia col dito
+    const osservatore = new IntersectionObserver(
+      (voci) => {
+        for (const v of voci) {
+          if (v.isIntersecting) {
+            corrente = scene.indexOf(v.target as HTMLElement);
+            contatore.textContent = `${corrente + 1} / ${scene.length}`;
+          }
+        }
+      },
+      { root: binario, threshold: 0.6 },
+    );
+    scene.forEach((s) => osservatore.observe(s));
+
+    galleria.querySelectorAll<HTMLButtonElement>('[data-indice]').forEach((b) =>
+      b.addEventListener('click', () => {
+        ultimoPulsante = b;
+        visore.showModal();
+        document.dispatchEvent(new CustomEvent('edw:blocca'));
+        vai(Number(b.dataset.indice), 'instant');
+        binario.focus({ preventScroll: true });
+      }),
+    );
+    visore.querySelector('[data-chiudi]')!.addEventListener('click', () => visore.close());
+    visore.querySelector('[data-prec]')!.addEventListener('click', () => vai(corrente - 1));
+    visore.querySelector('[data-succ]')!.addEventListener('click', () => vai(corrente + 1));
+    visore.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        vai(corrente + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        vai(corrente - 1);
+      }
+    });
+    visore.addEventListener('close', () => {
+      document.dispatchEvent(new CustomEvent('edw:sblocca'));
+      ultimoPulsante?.focus();
+    });
+  });
+</script>

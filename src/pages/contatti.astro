@@ -1,69 +1,180 @@
 ---
 import Base from '@/layouts/Base.astro';
 import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import Modulo from '@/components/Modulo.astro';
+import Mappa from '@/components/Mappa.astro';
+import Icona from '@/components/Icona.astro';
 import { azienda } from '@/data/sito';
+
+const canali = [
+  { icona: 'telefono', etichetta: 'Telefono', valore: azienda.telefono, href: azienda.telefonoLink, esterno: false },
+  { icona: 'whatsapp', etichetta: 'WhatsApp', valore: 'Scriveteci un messaggio', href: azienda.whatsapp, esterno: true },
+  { icona: 'email', etichetta: 'Email', valore: azienda.email, href: `mailto:${azienda.email}`, esterno: false },
+] as const;
 ---
 
 <Base
   titolo="Contatti e sopralluogo gratuito"
-  descrizione="Chiamate, scrivete su WhatsApp o richiedete un sopralluogo gratuito a Edelweiss Carpenteria, Via Masetti 39, Cognola, Trento. Lunedì–venerdì 8–12 e 13:30–18."
+  descrizione="Chiamate, scrivete su WhatsApp o richiedete un sopralluogo gratuito a Edelweiss Carpenteria, Via Masetti 39, Cognola, Trento. Dal lunedì al venerdì, 8-12 e 13:30-18."
   briciole={[{ nome: 'Contatti', url: '/contatti/' }]}
-  modulo
+  invito={false}
 >
   <IntestazionePagina
     titolo="Contatti"
-    intro="Il modo più veloce è una telefonata o un messaggio su WhatsApp. Se preferite, compilate la richiesta di sopralluogo qui sotto: vi richiamiamo noi."
+    intro="Il modo più veloce è una telefonata o un messaggio su WhatsApp. Se preferite, compilate la richiesta qui sotto: vi richiamiamo noi."
     briciole={[{ nome: 'Contatti', url: '/contatti/' }]}
-  >
-    <ul class="recapiti">
-      <li>
-        <span class="secondario">Telefono e WhatsApp</span>
-        <a href={azienda.telefonoLink}>{azienda.telefono}</a>
-      </li>
-      <li>
-        <span class="secondario">Email</span>
-        <a href={`mailto:${azienda.email}`}>{azienda.email}</a>
-      </li>
-      <li>
-        <span class="secondario">Sede</span>
-        <a href={azienda.mappa} rel="noopener">{azienda.indirizzo.via}, {azienda.indirizzo.frazione}, {azienda.indirizzo.citta}</a>
-      </li>
-      <li>
-        <span class="secondario">Orari</span>
-        <span>Lun – ven, 8:00 – 12:00 e 13:30 – 18:00</span>
-      </li>
-    </ul>
-  </IntestazionePagina>
+  />
+
+  <section class="canali" aria-label="Recapiti">
+    <div class="contenitore">
+      <ul role="list" class="canali__elenco">
+        {
+          canali.map((c) => (
+            <li>
+              <a class="canale" href={c.href} {...(c.esterno ? { rel: 'noopener', target: '_blank' } : {})}>
+                <Icona nome={c.icona} dimensione="1.75rem" />
+                <span class="canale__etichetta">{c.etichetta}</span>
+                <span class="canale__valore">{c.valore}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="sezione richiesta" id="richiesta" aria-labelledby="richiesta-titolo" data-nascondi-barra>
+    <div class="contenitore richiesta__griglia">
+      <div class="richiesta__testa">
+        <h2 id="richiesta-titolo" class="t-h2">Richiedi un sopralluogo</h2>
+        <p class="t-lead">Gratuito in tutta la provincia di Trento. Veniamo a vedere il lavoro, prendiamo le misure e poi vi mandiamo un preventivo chiaro, voce per voce.</p>
+        <dl class="richiesta__info">
+          <div>
+            <dt>Sede</dt>
+            <dd>
+              <a href={azienda.mappa} rel="noopener" target="_blank">{azienda.indirizzo.via}, {azienda.indirizzo.frazione}<br />{azienda.indirizzo.cap} {azienda.indirizzo.citta}</a>
+            </dd>
+          </div>
+          {
+            azienda.orari.map((o) => (
+              <div>
+                <dt>{o.giorni}</dt>
+                <dd>{o.ore}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <Modulo />
+    </div>
+  </section>
+
+  <section class="sezione dove" aria-labelledby="dove-titolo">
+    <div class="contenitore dove__griglia">
+      <h2 id="dove-titolo" class="t-h2">Dove siamo</h2>
+      <Mappa />
+    </div>
+  </section>
 </Base>
 
 <style>
-  .recapiti {
-    list-style: none;
-    padding: 0;
+  .canali__elenco {
     display: grid;
-    gap: 1.25rem 3rem;
-    margin-top: 1rem;
-    width: 100%;
+    border-top: 1px solid var(--linea);
   }
-  .recapiti li {
+  .canale {
     display: grid;
-    gap: 0.2rem;
-    padding-top: 0.9rem;
-    border-top: 1px solid var(--nebbia);
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--linea);
+    text-decoration: none;
+    color: var(--cuoio);
+    transition: background-color 0.3s;
   }
-  .recapiti span.secondario {
+  .canale :global(svg) {
+    grid-row: span 2;
+  }
+  .canale__etichetta {
     font-size: var(--t-piccolo);
+    color: var(--testo-2);
   }
-  .recapiti a,
-  .recapiti li > span:last-child {
-    font-size: var(--t-1);
-    font-weight: 540;
-    font-stretch: 108%;
+  .canale__valore {
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--testo);
     overflow-wrap: anywhere;
+    transition: color 0.2s;
   }
-  @media (min-width: 48rem) {
-    .recapiti {
-      grid-template-columns: 1fr 1fr;
+  .canale:hover .canale__valore {
+    color: var(--cuoio);
+  }
+  @media (min-width: 64rem) {
+    .canali__elenco {
+      grid-template-columns: repeat(3, 1fr);
+      border-bottom: 1px solid var(--linea);
     }
+    .canale {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      height: 100%;
+      padding: 2rem 2rem 2rem 0;
+      border-bottom: 0;
+    }
+    .canali__elenco li + li .canale {
+      padding-left: 2rem;
+      border-left: 1px solid var(--linea);
+    }
+    .canale :global(svg) {
+      grid-row: auto;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .richiesta__griglia {
+    display: grid;
+    gap: 3rem;
+  }
+  .richiesta__testa {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .richiesta__info {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--linea);
+  }
+  .richiesta__info dt {
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+  .richiesta__info dd {
+    margin: 0.15rem 0 0;
+  }
+  .richiesta__info a {
+    text-decoration-color: var(--linea-forte);
+  }
+  .richiesta__info a:hover {
+    color: var(--cuoio);
+  }
+  @media (min-width: 64rem) {
+    .richiesta__griglia {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: 5rem;
+    }
+    .richiesta__testa {
+      position: sticky;
+      top: calc(var(--testata) + 2rem);
+      align-self: start;
+    }
+  }
+  .dove__griglia {
+    display: grid;
+    gap: 2rem;
   }
 </style>

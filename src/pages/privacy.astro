@@ -1,66 +1,100 @@
 ---
 import PaginaLegale from '@/components/PaginaLegale.astro';
 import { azienda } from '@/data/sito';
+
+const indice = [
+  { id: 'titolare', titolo: 'Titolare del trattamento' },
+  { id: 'dati', titolo: 'Quali dati trattiamo' },
+  { id: 'finalita', titolo: 'Finalità e base giuridica' },
+  { id: 'conferimento', titolo: 'Conferimento dei dati' },
+  { id: 'conservazione', titolo: 'Per quanto tempo' },
+  { id: 'destinatari', titolo: 'Chi può vederli' },
+  { id: 'estero', titolo: 'Trasferimenti fuori dall’UE' },
+  { id: 'diritti', titolo: 'I vostri diritti' },
+  { id: 'cookie', titolo: 'Cookie e mappa' },
+  { id: 'modifiche', titolo: 'Modifiche' },
+];
 ---
 
 <PaginaLegale
   titolo="Informativa privacy"
   descrizione="Come Edelweiss Carpenteria tratta i dati personali di chi visita il sito e di chi richiede un sopralluogo, ai sensi del Regolamento UE 2016/679."
   url="/privacy/"
-  intro="Come trattiamo i dati di chi visita il sito e di chi ci chiede un sopralluogo, ai sensi dell'articolo 13 del Regolamento UE 2016/679 (GDPR)."
+  intro="Come trattiamo i dati di chi visita il sito e di chi ci chiede un sopralluogo, ai sensi dell’articolo 13 del Regolamento UE 2016/679 (GDPR)."
   aggiornamento="5 ottobre 2026"
+  indice={indice}
 >
-  <h2>Titolare del trattamento</h2>
+  <h2 id="titolare">Titolare del trattamento</h2>
   <p>
-    {azienda.ragioneSociale}, {azienda.indirizzo.via}, {azienda.indirizzo.cap} {azienda.indirizzo.citta} ({azienda.indirizzo.provincia}), P.IVA {azienda.piva}.
-    Per qualsiasi richiesta sui vostri dati: <a href={`mailto:${azienda.email}`}>{azienda.email}</a>.
+    {azienda.ragioneSociale}, {azienda.indirizzo.via}, {azienda.indirizzo.cap} {azienda.indirizzo.citta} ({azienda.indirizzo.provincia}),
+    P.IVA {azienda.piva}. Per qualsiasi richiesta sui vostri dati: <a href={`mailto:${azienda.email}`}>{azienda.email}</a>.
   </p>
+  <p>Data la dimensione dell’azienda e il tipo di trattamento, non è stato nominato un responsabile della protezione dei dati (DPO).</p>
 
-  <h2>Quali dati trattiamo</h2>
+  <h2 id="dati">Quali dati trattiamo</h2>
   <ul>
     <li>
-      <strong>Dati che ci inviate con il modulo di richiesta:</strong> nome e cognome, telefono, comune del cantiere, email (facoltativa), tipo
-      di lavoro e il messaggio che scrivete.
+      <strong>Dati che ci inviate con il modulo di richiesta:</strong> nome e cognome, telefono, comune del cantiere, email (facoltativa),
+      tipo di lavoro e il messaggio che scrivete.
     </li>
+    <li><strong>Dati che ci inviate per telefono, email o WhatsApp:</strong> quelli che decidete di comunicarci per descrivere il lavoro.</li>
     <li>
-      <strong>Dati che ci inviate per telefono, email o WhatsApp:</strong> quelli che decidete di comunicarci per descrivere il lavoro.
-    </li>
-    <li>
-      <strong>Dati tecnici di navigazione:</strong> indirizzo IP e informazioni sul browser, registrati dal fornitore di hosting per la sicurezza
-      e il funzionamento del sito.
+      <strong>Dati tecnici di navigazione:</strong> indirizzo IP, data e ora della richiesta, tipo di browser. Li registra il fornitore di
+      hosting per la sicurezza e il funzionamento del sito.
     </li>
   </ul>
+  <p>Vi chiediamo di non inserire nel messaggio dati non necessari, in particolare dati sulla salute o altre categorie particolari.</p>
 
-  <h2>Perché li trattiamo e su quale base</h2>
+  <h2 id="finalita">Finalità e base giuridica</h2>
   <p>
-    Usiamo i dati del modulo e dei vostri messaggi solo per rispondere alla richiesta, organizzare il sopralluogo e preparare il preventivo.
-    La base giuridica è l'esecuzione di misure precontrattuali richieste da voi (art. 6, par. 1, lett. b del GDPR). Se poi affidate il lavoro,
-    i dati servono anche per il contratto e per gli obblighi fiscali e contabili (art. 6, par. 1, lett. b e c).
+    Usiamo i dati del modulo e dei vostri messaggi solo per rispondere alla richiesta, organizzare il sopralluogo e preparare il
+    preventivo. La base giuridica è l’esecuzione di misure precontrattuali richieste da voi (art. 6, par. 1, lett. b del GDPR). Se poi
+    affidate il lavoro, i dati servono anche per il contratto e per gli obblighi fiscali e contabili (art. 6, par. 1, lett. b e c).
   </p>
   <p>I dati tecnici di navigazione sono trattati per il nostro legittimo interesse a un sito sicuro e funzionante (art. 6, par. 1, lett. f).</p>
-  <p>Non usiamo i vostri dati per pubblicità, non li vendiamo e non facciamo profilazione.</p>
+  <p>Non usiamo i vostri dati per pubblicità, non li vendiamo, non facciamo profilazione e non prendiamo decisioni automatizzate.</p>
 
-  <h2>Per quanto tempo li conserviamo</h2>
+  <h2 id="conferimento">Conferimento dei dati</h2>
   <p>
-    Le richieste che non diventano un lavoro sono cancellate entro 24 mesi. Se il lavoro viene affidato, conserviamo i dati per la durata del
-    contratto e per i 10 anni previsti dalla legge per i documenti contabili.
+    Nome, telefono e comune del cantiere sono necessari per richiamarvi e organizzare il sopralluogo: senza questi dati non possiamo dare
+    seguito alla richiesta. Gli altri campi sono facoltativi.
   </p>
 
-  <h2>Chi può vederli</h2>
+  <h2 id="conservazione">Per quanto tempo li conserviamo</h2>
   <p>
-    I dati sono trattati da noi e da fornitori che ci danno servizi tecnici, nominati responsabili del trattamento: il fornitore di hosting
-    del sito e il servizio che ci recapita le richieste via email. Alcuni hanno sede negli Stati Uniti e aderiscono all'EU-US Data Privacy
-    Framework, che garantisce un livello di protezione adeguato secondo la Commissione europea. L'elenco aggiornato dei fornitori è
-    disponibile su richiesta.
+    Le richieste che non diventano un lavoro sono cancellate entro 24 mesi. Se il lavoro viene affidato, conserviamo i dati per la durata
+    del contratto e per i 10 anni previsti dalla legge per i documenti contabili. I dati tecnici di navigazione sono conservati dal
+    fornitore di hosting per il tempo strettamente necessario alla sicurezza del servizio.
   </p>
 
-  <h2>I vostri diritti</h2>
+  <h2 id="destinatari">Chi può vederli</h2>
   <p>
-    Potete chiederci in ogni momento di accedere ai vostri dati, correggerli, cancellarli, limitarne il trattamento, opporvi o riceverli in
-    un formato leggibile (articoli 15–22 del GDPR), scrivendo a <a href={`mailto:${azienda.email}`}>{azienda.email}</a>. Avete anche il
-    diritto di presentare reclamo al Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" rel="noopener">garanteprivacy.it</a>).
+    I dati sono trattati da noi e da fornitori che ci danno servizi tecnici, nominati responsabili del trattamento (art. 28 del GDPR): il
+    fornitore di hosting del sito e il servizio che ci recapita le richieste via email. Non li comunichiamo ad altri, salvo obblighi di
+    legge (per esempio verso il commercialista o le autorità). L’elenco aggiornato dei fornitori è disponibile su richiesta.
   </p>
 
-  <h2>Cookie</h2>
-  <p>Il sito usa solo cookie tecnici. I dettagli sono nella <a href="/cookie/">cookie policy</a>.</p>
+  <h2 id="estero">Trasferimenti fuori dall’Unione europea</h2>
+  <p>
+    Alcuni fornitori hanno sede negli Stati Uniti e aderiscono all’EU-US Data Privacy Framework, che secondo la Commissione europea
+    garantisce un livello di protezione adeguato (art. 45 del GDPR). Dove non è così, il trasferimento è coperto dalle clausole
+    contrattuali tipo approvate dalla Commissione (art. 46).
+  </p>
+
+  <h2 id="diritti">I vostri diritti</h2>
+  <p>
+    Potete chiederci in ogni momento di accedere ai vostri dati, correggerli, cancellarli, limitarne il trattamento, opporvi o riceverli
+    in un formato leggibile (articoli dal 15 al 22 del GDPR), scrivendo a <a href={`mailto:${azienda.email}`}>{azienda.email}</a>. Rispondiamo
+    entro un mese. Avete anche il diritto di presentare reclamo al Garante per la protezione dei dati personali
+    (<a href="https://www.garanteprivacy.it" rel="noopener" target="_blank">garanteprivacy.it</a>).
+  </p>
+
+  <h2 id="cookie">Cookie e mappa</h2>
+  <p>
+    Il sito usa solo strumenti tecnici. La mappa di Google nella pagina Contatti si carica solo se lo consentite: in quel caso Google
+    tratta i dati come titolare autonomo, secondo la sua informativa. I dettagli sono nella <a href="/cookie/">cookie policy</a>.
+  </p>
+
+  <h2 id="modifiche">Modifiche</h2>
+  <p>Se cambiamo il modo di trattare i dati aggiorniamo questa pagina e la data in alto.</p>
 </PaginaLegale>

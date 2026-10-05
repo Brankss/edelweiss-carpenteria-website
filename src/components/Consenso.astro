@@ -1,0 +1,297 @@
+---
+import Icona from "./Icona.astro";
+// Banner cookie secondo le Linee guida del Garante (10 giugno 2021):
+// "Accetta" e "Rifiuta" con lo stesso peso, la X equivale a rifiutare, nessuna casella preselezionata,
+// scelta ricordata per 6 mesi e modificabile in ogni momento dal footer ("Preferenze cookie").
+// Senza consenso il sito usa solo cookie tecnici; la mappa di Google si carica solo dopo il consenso.
+---
+
+<section class="consenso" aria-labelledby="consenso-titolo" data-consenso hidden>
+  <div class="consenso__testa">
+    <h2 id="consenso-titolo">Cookie</h2>
+    <button class="consenso__x" type="button" aria-label="Chiudi e rifiuta i cookie non necessari" data-rifiuta>
+      <Icona nome="chiudi" dimensione="1.25rem" />
+    </button>
+  </div>
+  <p>
+    Usiamo solo cookie tecnici, necessari al sito. Con il vostro consenso carichiamo anche contenuti di terze parti, come la mappa di Google
+    nella pagina Contatti, che possono installare i loro cookie. <a href="/cookie/">Cookie policy</a>
+  </p>
+  <div class="consenso__azioni">
+    <button class="pulsante pulsante--vuoto" type="button" data-rifiuta>Rifiuta</button>
+    <button class="pulsante pulsante--vuoto" type="button" data-accetta>Accetta</button>
+    <button class="consenso__personalizza" type="button" data-apri-consenso>Personalizza</button>
+  </div>
+</section>
+
+<dialog class="preferenze" aria-labelledby="preferenze-titolo" data-preferenze data-lenis-prevent>
+  <form method="dialog" class="preferenze__corpo">
+    <div class="preferenze__testa">
+      <h2 id="preferenze-titolo" class="t-h3">Preferenze cookie</h2>
+      <button type="submit" value="annulla" class="consenso__x" aria-label="Chiudi senza salvare">
+        <Icona nome="chiudi" dimensione="1.25rem" />
+      </button>
+    </div>
+    <p class="secondario">Scegliete quali contenuti attivare. Potete cambiare idea in ogni momento dal link "Preferenze cookie" in fondo a ogni pagina.</p>
+
+    <div class="voce">
+      <div>
+        <h3>Necessari</h3>
+        <p class="secondario">Fanno funzionare il sito e ricordano le scelte che fate qui. Non si possono disattivare.</p>
+      </div>
+      <span class="voce__stato">Sempre attivi</span>
+    </div>
+
+    <div class="voce">
+      <div>
+        <h3 id="voce-mappe">Contenuti di terze parti</h3>
+        <p class="secondario" id="voce-mappe-desc">
+          La mappa interattiva di Google Maps nella pagina Contatti. Google può installare cookie propri, anche di profilazione.
+        </p>
+      </div>
+      <label class="interruttore">
+        <input type="checkbox" role="switch" name="mappe" aria-labelledby="voce-mappe" aria-describedby="voce-mappe-desc" data-scelta-mappe />
+        <span aria-hidden="true"></span>
+      </label>
+    </div>
+
+    <div class="preferenze__azioni">
+      <button class="pulsante pulsante--vuoto" type="submit" value="rifiuta">Rifiuta tutti</button>
+      <button class="pulsante pulsante--vuoto" type="submit" value="salva">Salva le scelte</button>
+      <button class="pulsante pulsante--vuoto" type="submit" value="accetta">Accetta tutti</button>
+    </div>
+  </form>
+</dialog>
+
+<style>
+  .consenso {
+    position: fixed;
+    z-index: var(--z-consenso);
+    inset: auto 0 0 0;
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.25rem max(var(--margine), env(safe-area-inset-left)) calc(1.25rem + env(safe-area-inset-bottom));
+    background: var(--fondo-3);
+    border-top: 1px solid var(--linea-forte);
+    font-size: var(--t-piccolo);
+    line-height: 1.5;
+    color: var(--testo-2);
+    box-shadow: 0 -24px 60px rgb(0 0 0 / 0.45);
+    transform: none;
+    opacity: 1;
+    transition:
+      transform 0.5s var(--curva),
+      opacity 0.5s var(--curva);
+  }
+  @starting-style {
+    .consenso {
+      transform: translateY(1.5rem);
+      opacity: 0;
+    }
+  }
+  .consenso[hidden] {
+    display: none;
+  }
+  .consenso a {
+    color: var(--testo);
+  }
+  .consenso__testa,
+  .preferenze__testa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .consenso h2 {
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--testo);
+  }
+  .consenso__x {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: -0.6rem -0.6rem -0.6rem 0;
+    color: var(--testo-2);
+  }
+  .consenso__x:hover {
+    color: var(--testo);
+  }
+  .consenso__azioni {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .consenso__azioni .pulsante {
+    min-height: 2.875rem;
+    padding-inline: 1rem;
+  }
+  .consenso__personalizza {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-height: 2.75rem;
+    color: var(--testo);
+    text-decoration: underline;
+    text-decoration-color: var(--linea-forte);
+    text-underline-offset: 0.25em;
+  }
+  .consenso__personalizza:hover {
+    text-decoration-color: var(--cuoio);
+  }
+  @media (min-width: 48rem) {
+    .consenso {
+      /* in basso a destra: a sinistra c'è il titolo della hero */
+      inset: auto 1.5rem 1.5rem auto;
+      width: min(29rem, calc(100% - 3rem));
+      padding: 1.5rem;
+      border: 1px solid var(--linea-forte);
+    }
+  }
+
+  .preferenze {
+    width: min(36rem, 100% - 2rem);
+    max-height: min(90dvh, 44rem);
+    margin: auto;
+    padding: 0;
+    background: var(--fondo-2);
+    color: var(--testo);
+    border: 1px solid var(--linea-forte);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .preferenze::backdrop {
+    background: rgb(5 5 4 / 0.72);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+  .preferenze__corpo {
+    display: grid;
+    gap: 1.25rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+  .preferenze__corpo > .secondario {
+    font-size: var(--t-piccolo);
+  }
+  .voce {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: start;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--linea);
+  }
+  .voce h3 {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .voce p {
+    margin-top: 0.3rem;
+    font-size: var(--t-piccolo);
+  }
+  .voce__stato {
+    font-size: var(--t-micro);
+    color: var(--testo-2);
+    padding-top: 0.15rem;
+  }
+  .interruttore {
+    position: relative;
+    display: inline-block;
+    width: 3rem;
+    height: 1.75rem;
+    cursor: pointer;
+  }
+  .interruttore input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+  }
+  .interruttore span {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--linea-forte);
+    background: var(--fondo);
+    transition: background-color 0.25s, border-color 0.25s;
+  }
+  .interruttore span::after {
+    content: '';
+    position: absolute;
+    top: 0.25rem;
+    left: 0.25rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    background: var(--testo-2);
+    transition: transform 0.3s var(--curva), background-color 0.25s;
+  }
+  .interruttore input:checked + span {
+    background: var(--cuoio);
+    border-color: var(--cuoio);
+  }
+  .interruttore input:checked + span::after {
+    transform: translateX(1.25rem);
+    background: var(--fondo);
+  }
+  .interruttore input:focus-visible + span {
+    outline: 2px solid var(--cuoio);
+    outline-offset: 3px;
+  }
+  .preferenze__azioni {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+  }
+  @media (min-width: 36rem) {
+    .preferenze__azioni {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .preferenze__azioni .pulsante {
+      padding-inline: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  import { leggiConsenso, salvaConsenso } from '@/scripts/consenso';
+
+  const banner = document.querySelector<HTMLElement>('[data-consenso]');
+  const dialogo = document.querySelector<HTMLDialogElement>('[data-preferenze]');
+  const sceltaMappe = dialogo?.querySelector<HTMLInputElement>('[data-scelta-mappe]');
+
+  const mostraBanner = (si: boolean) => {
+    if (!banner) return;
+    banner.hidden = !si;
+    document.dispatchEvent(new CustomEvent(si ? 'edw:consenso-aperto' : 'edw:consenso-chiuso'));
+  };
+  const decidi = (mappe: boolean) => {
+    salvaConsenso({ mappe });
+    mostraBanner(false);
+  };
+
+  if (!leggiConsenso()) mostraBanner(true);
+  // Una scelta fatta altrove (per esempio "Mostra la mappa") chiude il banner
+  document.addEventListener('edw:consenso', () => banner && !banner.hidden && mostraBanner(false));
+
+  banner?.querySelectorAll('[data-rifiuta]').forEach((b) => b.addEventListener('click', () => decidi(false)));
+  banner?.querySelector('[data-accetta]')?.addEventListener('click', () => decidi(true));
+
+  document.querySelectorAll('[data-apri-consenso]').forEach((b) =>
+    b.addEventListener('click', () => {
+      if (!dialogo || !sceltaMappe) return;
+      sceltaMappe.checked = leggiConsenso()?.mappe ?? false;
+      dialogo.showModal();
+      document.dispatchEvent(new CustomEvent('edw:blocca'));
+    }),
+  );
+
+  dialogo?.addEventListener('close', () => {
+    document.dispatchEvent(new CustomEvent('edw:sblocca'));
+    const azione = dialogo.returnValue;
+    dialogo.returnValue = '';
+    if (azione === 'accetta') decidi(true);
+    else if (azione === 'rifiuta') decidi(false);
+    else if (azione === 'salva') decidi(Boolean(sceltaMappe?.checked));
+  });
+</script>

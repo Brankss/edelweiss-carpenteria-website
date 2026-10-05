@@ -1,4 +1,7 @@
 ---
+// Domande frequenti: <details> nativi (tastiera e lettori di schermo funzionano senza JS).
+// L'apertura è animata dove il browser supporta ::details-content.
+import Icona from './Icona.astro';
 import type { Faq } from '@/data/servizi';
 
 interface Props {
@@ -10,12 +13,15 @@ const { domande, titolo = 'Domande frequenti' } = Astro.props;
 
 <section class="sezione domande" aria-labelledby="domande-titolo">
   <div class="contenitore domande__griglia">
-    <h2 id="domande-titolo">{titolo}</h2>
+    <h2 id="domande-titolo" class="t-h2">{titolo}</h2>
     <div class="domande__elenco">
       {
         domande.map((q) => (
           <details name="domande">
-            <summary>{q.d}</summary>
+            <summary>
+              <span>{q.d}</span>
+              <Icona nome="piu" dimensione="1.5rem" class="domande__icona" />
+            </summary>
             <p>{q.r}</p>
           </details>
         ))
@@ -27,52 +33,66 @@ const { domande, titolo = 'Domande frequenti' } = Astro.props;
 <style>
   .domande__griglia {
     display: grid;
-    gap: 2rem;
+    gap: 2.5rem;
   }
   .domande__elenco {
-    border-top: 1px solid var(--nebbia);
+    border-top: 1px solid var(--linea);
   }
   details {
-    border-bottom: 1px solid var(--nebbia);
+    border-bottom: 1px solid var(--linea);
   }
   summary {
     display: flex;
-    gap: 1rem;
-    justify-content: space-between;
     align-items: center;
-    min-height: 3.75rem;
-    padding-block: 1rem;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 4.5rem;
+    padding-block: 1.25rem;
+    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.35rem);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
     cursor: pointer;
     list-style: none;
-    font-size: var(--t-1);
-    font-weight: 540;
-    font-stretch: 110%;
-    line-height: 1.3;
+    transition: color 0.2s;
   }
   summary::-webkit-details-marker {
     display: none;
   }
-  summary::after {
-    content: '';
-    flex: none;
-    width: 0.7rem;
-    height: 0.7rem;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: rotate(45deg) translateY(-25%);
-    transition: transform 0.2s ease;
+  summary:hover {
+    color: var(--cuoio);
   }
-  details[open] summary::after {
-    transform: rotate(225deg) translateY(-25%);
+  summary :global(.domande__icona) {
+    flex: none;
+    color: var(--cuoio);
+    transition: transform 0.45s var(--curva);
+  }
+  details[open] summary :global(.domande__icona) {
+    transform: rotate(45deg);
   }
   details p {
+    max-width: 42rem;
     padding-bottom: 1.5rem;
-    max-width: 40rem;
-    color: var(--nebbia-testo);
+    color: var(--testo-2);
+  }
+  @supports (interpolate-size: allow-keywords) {
+    .domande {
+      interpolate-size: allow-keywords;
+    }
+    details::details-content {
+      height: 0;
+      overflow: clip;
+      transition:
+        height 0.5s var(--curva),
+        content-visibility 0.5s allow-discrete;
+    }
+    details[open]::details-content {
+      height: auto;
+    }
   }
   @media (min-width: 64rem) {
     .domande__griglia {
-      grid-template-columns: 4fr 8fr;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       gap: 4rem;
     }
   }

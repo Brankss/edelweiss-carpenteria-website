@@ -1,0 +1,105 @@
+---
+// "Com'è fatto un nostro tetto": il tetto del modello si apre in sette strati e, scorrendo, si accende quello di cui si legge.
+const strati = [
+  { nome: 'Manto di copertura', testo: 'Tegole, coppi, lamiera o scandole: è lo strato che prende pioggia e neve e le porta in gronda.' },
+  { nome: 'Listelli e ventilazione', testo: 'Un’intercapedine d’aria che sale dalla gronda al colmo. D’estate porta via il calore, d’inverno l’umidità, e riduce il ghiaccio sulle gronde.' },
+  { nome: 'Telo traspirante', testo: 'Ferma l’acqua che dovesse passare sotto il manto ma lascia uscire il vapore. È la seconda difesa del tetto.' },
+  { nome: 'Isolante', testo: 'Fibra di legno o lana di roccia ad alta densità, almeno 140 kg/m³: tiene fuori il freddo d’inverno e rallenta il caldo d’estate.' },
+  { nome: 'Freno al vapore', testo: 'Regola il vapore che sale dalle stanze, così l’isolante resta asciutto per tutta la vita del tetto.' },
+  { nome: 'Perlinato', testo: 'Le tavole che vedete dall’interno, in abete o larice. Chiudono la struttura e restano a vista come soffitto.' },
+  { nome: 'Travi', testo: 'La struttura portante, dimensionata dal nostro ufficio tecnico in base alla luce da coprire e al carico neve del luogo.' },
+];
+---
+
+<section class="esploso" data-capitolo="esploso" aria-labelledby="esploso-titolo">
+  <div class="esploso__apertura" data-dissolvi>
+  <div class="contenitore esploso__testa">
+    <h2 id="esploso-titolo" class="esploso__titolo">Com’è fatto un nostro tetto.</h2>
+    <p class="esploso__intro">Sette strati, dall’esterno verso l’interno. Ognuno ha un compito preciso.</p>
+  </div>
+  </div>
+  <ol class="contenitore esploso__strati" role="list">
+    {
+      strati.map((s, i) => (
+        <li class="strato" data-strato-voce={6 - i}>
+          <div class="strato__scheda">
+            <h3>{s.nome}</h3>
+            <p>{s.testo}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .esploso {
+    position: relative;
+    padding-top: 10svh;
+    padding-bottom: 30svh;
+  }
+  .esploso__apertura {
+    display: flex;
+    align-items: center;
+    min-height: 70svh;
+  }
+  .esploso__testa {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (max-width: 63.99rem), (orientation: portrait) {
+    .esploso__apertura {
+      align-items: flex-end;
+      padding-bottom: 5rem;
+    }
+  }
+  .esploso__titolo {
+    max-width: 14ch;
+    font-size: var(--t-h2);
+  }
+  .esploso__intro {
+    max-width: 26rem;
+    font-size: var(--t-lead);
+    color: var(--testo-2);
+  }
+  .esploso__strati {
+    display: grid;
+  }
+  .strato {
+    display: flex;
+    align-items: center;
+    min-height: 40svh;
+  }
+  .strato__scheda {
+    display: grid;
+    gap: 0.6rem;
+    max-width: 26rem;
+    padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+    border-left: 1px solid var(--linea-forte);
+    /* niente backdrop-filter: sopra una tela che si ridisegna costerebbe troppo su mobile */
+    background: rgb(13 13 11 / 0.8);
+    transition: border-color 0.5s var(--curva);
+  }
+  /* Lo strato attivo si riconosce dal colore, non dall'opacità: il testo resta sempre leggibile */
+  .strato h3 {
+    font-size: var(--t-h3);
+    font-weight: 400;
+    color: var(--testo-2);
+    transition: color 0.4s;
+  }
+  .strato[data-attiva] h3 {
+    color: var(--testo);
+  }
+  .strato p {
+    color: var(--testo-2);
+  }
+  .strato[data-attiva] .strato__scheda {
+    border-left-color: var(--cuoio);
+  }
+  @media (max-width: 63.99rem), (orientation: portrait) {
+    .strato {
+      align-items: flex-end;
+      min-height: 52svh;
+    }
+  }
+</style>

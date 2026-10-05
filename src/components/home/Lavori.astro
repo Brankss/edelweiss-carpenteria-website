@@ -1,0 +1,67 @@
+---
+// Realizzazioni in home: sei lavori veri, a misura di foto (mai più larghe della risoluzione originale).
+import SchedaProgetto from '@/components/SchedaProgetto.astro';
+import { realizzazioni } from '@/lib/foto';
+
+const tutte = await realizzazioni();
+const scelte = tutte.filter((r) => r.data.inEvidenza).slice(0, 6);
+---
+
+<section class="lavori" data-capitolo="lavori" aria-labelledby="lavori-titolo">
+  <div class="contenitore">
+    <div class="lavori__testa">
+      <h2 id="lavori-titolo" class="lavori__titolo">Dal modello ai cantieri veri.</h2>
+      <p class="lavori__intro">Alcuni lavori degli ultimi anni, fotografati dalla nostra squadra durante il montaggio.</p>
+      <a class="collegamento lavori__link" href="/realizzazioni/">Tutte le realizzazioni</a>
+    </div>
+    <ul role="list" class="lavori__griglia">
+      {
+        scelte.map((r) => (
+          <li>
+            <SchedaProgetto r={r} sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 100vw" />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .lavori {
+    position: relative;
+    padding-block: 28svh;
+    /* Sfuma dal modello a un fondo pieno, così le foto non si sovrappongono al 3D */
+    background: linear-gradient(to bottom, rgb(13 13 11 / 0) 0, var(--fondo) 22svh, var(--fondo) calc(100% - 22svh), rgb(13 13 11 / 0) 100%);
+  }
+  .lavori__testa {
+    display: grid;
+    gap: 1rem;
+    max-width: 34rem;
+    margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+  .lavori__titolo {
+    font-size: var(--t-h2);
+  }
+  .lavori__intro {
+    font-size: var(--t-lead);
+    color: var(--testo-2);
+  }
+  .lavori__link {
+    justify-self: start;
+  }
+  .lavori__griglia {
+    display: grid;
+    gap: 2.5rem 1.5rem;
+  }
+  @media (min-width: 40rem) {
+    .lavori__griglia {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 64rem) {
+    .lavori__griglia {
+      grid-template-columns: repeat(3, 1fr);
+      row-gap: 3.5rem;
+    }
+  }
+</style>

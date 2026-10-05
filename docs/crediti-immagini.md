@@ -188,3 +188,8 @@ Tutte le foto sono di Edelweiss Carpenteria, prese dai loro siti attuali (edelca
 | foto/generiche/generiche-02.jpg | https://www.edelcarpenteria.com/mt-content/uploads/2021/07/edelweiss-carpenteria-in-legno-1.jpg |
 | foto/generiche/generiche-03.jpg | https://www.edelcarpenteria.com/mt-content/uploads/2021/07/edelweiss-carpenteria-progettare-case-in-legno-trento-8.jpg |
 | foto/folgaria/folgaria-hero.jpg | https://www.edelcarpenteria.com/mt-content/uploads/2023/09/coperture-in-legno-folgaria-15.jpg (ingrandita a 1680 px) |
+| foto/case-xlam/case-xlam-01-hero.jpg | stessa fonte di foto/case-xlam/case-xlam-01.jpg (ingrandita a 1920 px) |
+| foto/case-xlam/case-xlam-10-hero.jpg | stessa fonte di foto/case-xlam/case-xlam-10.jpg (ingrandita a 1920 px) |
+| foto/sopraelevazione-trento/sopraelevazione-trento-01-hero.jpg | stessa fonte di foto/sopraelevazione-trento/sopraelevazione-trento-01.jpg (ingrandita a 1920 px) |
+| foto/facciata-contemporanea/facciata-contemporanea-01-hero.jpg | stessa fonte di foto/facciata-contemporanea/facciata-contemporanea-01.jpg (ingrandita a 1920 px) |
+| foto/veranda-legno-scuro/veranda-legno-scuro-01-hero.jpg | stessa fonte di foto/veranda-legno-scuro/veranda-legno-scuro-01.jpg (ingrandita a 1920 px) |

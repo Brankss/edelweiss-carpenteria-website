@@ -1,11 +1,11 @@
 ---
+// Modello delle pagine servizio: apertura con foto, cosa facciamo, tre foto di cantiere, lavori collegati, domande.
 import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
-import IntestazionePagina from '@/components/IntestazionePagina.astro';
-import GrigliaLavori from '@/components/GrigliaLavori.astro';
-import Domande from '@/components/Domande.astro';
+import IntestazionePagina from './IntestazionePagina.astro';
+import SchedaProgetto from './SchedaProgetto.astro';
+import Domande from './Domande.astro';
 import type { Servizio } from '@/data/servizi';
-import { azienda } from '@/data/sito';
 import { realizzazioni } from '@/lib/foto';
 
 interface Props {
@@ -13,8 +13,9 @@ interface Props {
 }
 const { servizio: s } = Astro.props;
 const url = `/${s.slug}/`;
-const lavori = (await realizzazioni()).filter((r) => s.categorie.includes(r.data.categoria)).slice(0, 5);
 const sito = Astro.site!.href.replace(/\/$/, '');
+
+const lavori = (await realizzazioni()).filter((r) => s.categorie.includes(r.data.categoria)).slice(0, 4);
 
 const jsonLd = [
   {
@@ -22,10 +23,9 @@ const jsonLd = [
     '@type': 'Service',
     name: s.h1,
     description: s.descrizione,
-    serviceType: s.nome,
+    url: new URL(url, Astro.site).href,
     provider: { '@id': `${sito}/#impresa` },
     areaServed: { '@type': 'AdministrativeArea', name: 'Provincia autonoma di Trento' },
-    url: new URL(url, Astro.site).href,
   },
   {
     '@context': 'https://schema.org',
@@ -35,107 +35,175 @@ const jsonLd = [
 ];
 ---
 
-<Base titolo={s.titoloSeo} descrizione={s.descrizione} immagine={s.copertina} briciole={[{ nome: s.h1, url }]} jsonLd={jsonLd}>
-  <IntestazionePagina titolo={s.h1} intro={s.intro} foto={s.copertina} alt={s.altCopertina} briciole={[{ nome: s.h1, url }]}>
-    <div class="azioni">
-      <a class="pulsante" href="/contatti/#richiesta">Richiedi un sopralluogo</a>
-      <a class="pulsante pulsante--vuoto" href={azienda.telefonoLink}>Chiama {azienda.telefono}</a>
-    </div>
-  </IntestazionePagina>
+<Base titolo={s.titoloSeo} descrizione={s.descrizione} immagine={s.copertina} briciole={[{ nome: s.nome, url }]} jsonLd={jsonLd}>
+  <IntestazionePagina titolo={s.h1} intro={s.intro} briciole={[{ nome: s.nome, url }]} foto={s.copertina} alt={s.altCopertina} />
 
-  <section class="sezione dettaglio">
+  <section class="sezione dettagli" aria-label={`${s.h1}: cosa facciamo`}>
     <div class="contenitore">
-      {
-        s.sezioni.map((sez, i) => (
-          <>
-            <div class="dettaglio__blocco">
-              <h2>{sez.titolo}</h2>
-              <div class="testo">
-                {sez.testo.map((t) => (
+      <div class="dettagli__elenco">
+        {
+          s.sezioni.map((x) => (
+            <div class="dettaglio">
+              <h2 class="dettaglio__titolo">{x.titolo}</h2>
+              <div class="dettaglio__testo">
+                {x.testo.map((t) => (
                   <p>{t}</p>
                 ))}
               </div>
             </div>
-            {i === 1 && (
-              <ul class="striscia" role="list">
-                {s.striscia.map((f) => (
-                  <li>
-                    <Image src={f.foto} alt={f.alt} widths={[400, 640, 900]} sizes="(min-width: 64rem) 31vw, 80vw" loading="lazy" quality={68} layout="none" />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        ))
-      }
+          ))
+        }
+      </div>
     </div>
   </section>
 
   <slot />
 
-  {lavori.length > 0 && <GrigliaLavori lavori={lavori} titolo="Lavori di questo tipo" />}
+  <section class="sezione striscia" aria-label="Foto di cantiere">
+    <div class="contenitore striscia__griglia">
+      {
+        s.striscia.map((f, i) => (
+          <figure class={`striscia__voce striscia__voce--${i + 1}`}>
+            <div class="foto rivela">
+              <Image
+                src={f.foto}
+                alt=""
+                widths={[480, 720, 960, 1280]}
+                sizes={i === 0 ? '(min-width: 64rem) 58vw, 100vw' : '(min-width: 64rem) 38vw, 100vw'}
+                quality={64}
+                loading="lazy"
+                layout="none"
+              />
+            </div>
+            <figcaption>{f.alt}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    lavori.length > 0 && (
+      <section class="sezione collegati" aria-labelledby="collegati-titolo">
+        <div class="contenitore">
+          <div class="collegati__testa">
+            <h2 id="collegati-titolo" class="t-h2">
+              Lavori di {s.nome.toLowerCase()}
+            </h2>
+            <a class="collegamento" href="/realizzazioni/">
+              Tutte le realizzazioni
+            </a>
+          </div>
+          <ul role="list" class="collegati__griglia">
+            {lavori.map((r) => (
+              <li>
+                <SchedaProgetto r={r} sizes="(min-width: 64rem) 25vw, (min-width: 40rem) 50vw, 100vw" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 
   <Domande domande={s.faq} />
 </Base>
 
 <style>
-  .azioni {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
+  .dettagli__elenco {
+    display: grid;
   }
   .dettaglio {
+    display: grid;
+    gap: 0.9rem;
+    padding-block: clamp(1.75rem, 4vw, 3rem);
+    border-top: 1px solid var(--linea);
+  }
+  .dettaglio:first-child {
+    border-top: 0;
     padding-top: 0;
   }
-  .dettaglio__blocco {
-    display: grid;
-    gap: 1rem;
-    padding-block: clamp(2rem, 1.5rem + 2vw, 3.25rem);
-    border-top: 1px solid var(--nebbia);
+  .dettaglio__titolo {
+    font-size: var(--t-h3);
+    font-weight: 400;
   }
-  .dettaglio__blocco h2 {
-    font-size: var(--t-2);
+  .dettaglio__testo {
+    display: grid;
+    gap: 1em;
+    max-width: 38rem;
+    margin: 0;
+    color: var(--testo-2);
   }
   @media (min-width: 64rem) {
-    .dettaglio__blocco {
-      grid-template-columns: 5fr 7fr;
+    .dettaglio {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       gap: 4rem;
     }
+    .dettaglio__titolo {
+      position: sticky;
+      top: calc(var(--testata) + 2rem);
+    }
   }
-  .striscia {
-    list-style: none;
-    padding: 0;
+
+  .striscia__griglia {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 80%;
-    gap: 1rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    margin-block: 1rem 2.5rem;
-    padding-bottom: 0.5rem;
+    gap: 2rem;
   }
-  .striscia li {
-    scroll-snap-align: start;
+  .striscia__voce {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .striscia__voce .foto {
     aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background: var(--calcare-scuro);
   }
-  .striscia :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .striscia__voce figcaption {
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+    max-width: 30rem;
   }
   @media (min-width: 64rem) {
-    .striscia {
-      grid-auto-flow: row;
-      grid-template-columns: repeat(3, 1fr);
-      overflow: visible;
-      gap: 2rem;
+    .striscia__griglia {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 1.5rem;
+      row-gap: 3rem;
+      align-items: start;
     }
-    .striscia li:nth-child(2) {
-      aspect-ratio: 3 / 4;
-      margin-top: -3rem;
+    .striscia__voce--1 {
+      grid-column: 1 / span 7;
+      grid-row: span 2;
+    }
+    .striscia__voce--1 .foto {
+      aspect-ratio: 4 / 5;
+    }
+    .striscia__voce--2 {
+      grid-column: 9 / span 4;
+      margin-top: 6rem;
+    }
+    .striscia__voce--3 {
+      grid-column: 8 / span 5;
+    }
+  }
+
+  .collegati__testa {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+  .collegati__griglia {
+    display: grid;
+    gap: 3rem 1.5rem;
+  }
+  @media (min-width: 40rem) {
+    .collegati__griglia {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 64rem) {
+    .collegati__griglia {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 </style>

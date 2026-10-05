@@ -1,35 +1,42 @@
 ---
 import PaginaLegale from '@/components/PaginaLegale.astro';
 import { azienda } from '@/data/sito';
+
+const indice = [
+  { id: 'azienda', titolo: 'Dati dell’azienda' },
+  { id: 'foto', titolo: 'Fotografie' },
+  { id: 'credits', titolo: 'Caratteri e icone' },
+];
 ---
 
 <PaginaLegale
   titolo="Note legali"
-  descrizione="Dati societari di Edelweiss Carpenteria S.a.s. di Di Bello Luca, Trento."
+  descrizione="Dati societari di Edelweiss Carpenteria S.a.s. di Di Bello Luca, Trento: sede, partita IVA e contatti."
   url="/note-legali/"
-  intro="Dati dell'azienda e condizioni d'uso del sito."
+  intro="I dati dell’azienda che gestisce questo sito. Le regole d’uso sono nei termini d’uso."
   aggiornamento="5 ottobre 2026"
+  indice={indice}
 >
-  <h2>Dati dell'azienda</h2>
+  <h2 id="azienda">Dati dell’azienda</h2>
   <p>
-    {azienda.ragioneSociale}<br />
+    <strong>{azienda.ragioneSociale}</strong><br />
     Sede: {azienda.indirizzo.via}, {azienda.indirizzo.frazione}, {azienda.indirizzo.cap} {azienda.indirizzo.citta} ({azienda.indirizzo.provincia})<br />
     Partita IVA e codice fiscale: {azienda.piva}<br />
-    {azienda.rea ? <>Numero REA: {azienda.rea}<br /></> : <>Numero REA: da completare<br /></>}
-    {azienda.pec ? <>PEC: {azienda.pec}<br /></> : <>PEC: da completare<br /></>}
+    {azienda.rea && <>Numero REA: {azienda.rea}<br /></>}
+    {azienda.pec && <>PEC: {azienda.pec}<br /></>}
     Telefono: <a href={azienda.telefonoLink}>{azienda.telefono}</a><br />
     Email: <a href={`mailto:${azienda.email}`}>{azienda.email}</a>
   </p>
 
-  <h2>Contenuti e fotografie</h2>
+  <h2 id="foto">Fotografie</h2>
   <p>
-    Testi, disegni e fotografie di questo sito appartengono a Edelweiss Carpenteria, salvo dove indicato. Le fotografie mostrano lavori
-    realizzati dalla nostra squadra. Non è consentito riprodurli senza autorizzazione scritta.
+    Le fotografie dei cantieri e della squadra sono di Edelweiss Carpenteria e mostrano lavori realizzati dalla nostra squadra. Non sono
+    usate immagini di archivio o generate al computer per rappresentare i nostri lavori.
   </p>
 
-  <h2>Informazioni sul sito</h2>
+  <h2 id="credits">Caratteri e icone</h2>
   <p>
-    Le informazioni sul sito sono generali e non sostituiscono un preventivo o un progetto. Tempi, prezzi e soluzioni tecniche dipendono da
-    ogni singolo cantiere e vengono definiti dopo il sopralluogo.
+    Il carattere tipografico è Geist (licenza SIL Open Font License), ospitato su questo sito. Le icone sono di Phosphor Icons (licenza
+    MIT).
   </p>
 </PaginaLegale>

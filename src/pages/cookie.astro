@@ -1,38 +1,83 @@
 ---
 import PaginaLegale from '@/components/PaginaLegale.astro';
+
+const indice = [
+  { id: 'cosa', titolo: 'Cosa sono i cookie' },
+  { id: 'elenco', titolo: 'Cosa usa questo sito' },
+  { id: 'terze-parti', titolo: 'Contenuti di terze parti' },
+  { id: 'statistiche', titolo: 'Statistiche' },
+  { id: 'scelte', titolo: 'Come cambiare le scelte' },
+  { id: 'link', titolo: 'Link esterni' },
+];
 ---
 
 <PaginaLegale
   titolo="Cookie policy"
-  descrizione="Il sito di Edelweiss Carpenteria usa solo cookie tecnici e statistiche anonime senza cookie: per questo non mostra banner."
+  descrizione="Quali cookie e strumenti usa il sito di Edelweiss Carpenteria: solo tecnici, più la mappa di Google caricata unicamente con il vostro consenso."
   url="/cookie/"
-  intro="Questo sito non usa cookie di profilazione né cookie di terze parti. Per questo non vi chiediamo il consenso con un banner."
+  intro="Il sito usa solo strumenti tecnici. Contenuti di terze parti, come la mappa di Google, si caricano solo se lo consentite."
   aggiornamento="5 ottobre 2026"
+  indice={indice}
 >
-  <h2>Cosa sono i cookie</h2>
+  <h2 id="cosa">Cosa sono i cookie</h2>
   <p>
-    I cookie sono piccoli file che un sito salva nel browser. Quelli tecnici servono a far funzionare il sito; quelli di profilazione
-    servono a seguire le persone per scopi pubblicitari e richiedono il consenso.
+    I cookie sono piccoli file che un sito salva nel browser; strumenti simili sono il localStorage e i pixel. Quelli tecnici servono a far
+    funzionare il sito e non richiedono consenso. Quelli di profilazione o di terze parti servono ad altri scopi e si usano solo con il
+    vostro consenso (art. 122 del Codice privacy e Linee guida del Garante del 10 giugno 2021).
   </p>
 
-  <h2>Cookie che usiamo</h2>
+  <h2 id="elenco">Cosa usa questo sito</h2>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Nome</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">A cosa serve</th>
+        <th scope="col">Durata</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-etichetta="Nome">edw-consenso</td>
+        <td data-etichetta="Tipo">Tecnico, localStorage</td>
+        <td data-etichetta="A cosa serve">Ricorda le scelte fatte nel banner, così non ve lo chiediamo a ogni pagina.</td>
+        <td data-etichetta="Durata">6 mesi</td>
+      </tr>
+      <tr>
+        <td data-etichetta="Nome">Google Maps</td>
+        <td data-etichetta="Tipo">Terze parti, solo con consenso</td>
+        <td data-etichetta="A cosa serve">Mostra la mappa interattiva nella pagina Contatti. Google può installare cookie propri, anche di profilazione.</td>
+        <td data-etichetta="Durata">Decisa da Google</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Il sito non installa cookie di profilazione propri e non usa strumenti pubblicitari.</p>
+
+  <h2 id="terze-parti">Contenuti di terze parti</h2>
   <p>
-    Solo cookie e strumenti tecnici, necessari per il funzionamento e la sicurezza del sito. Non richiedono consenso (art. 122 del Codice
-    privacy e Linee guida del Garante del 10 giugno 2021).
+    La mappa della pagina Contatti è fornita da Google Ireland Limited. Finché non date il consenso, al suo posto vedete un riquadro con
+    l’indirizzo e nessun dato viene inviato a Google. Se la attivate, Google tratta i dati come titolare autonomo: trovate i dettagli
+    nell’<a href="https://policies.google.com/privacy?hl=it" rel="noopener" target="_blank">informativa privacy di Google</a> e nella
+    pagina <a href="https://policies.google.com/technologies/cookies?hl=it" rel="noopener" target="_blank">sui cookie di Google</a>.
   </p>
 
-  <h2>Statistiche</h2>
+  <h2 id="statistiche">Statistiche</h2>
   <p>
-    Per capire quante persone visitano le pagine usiamo uno strumento di statistica che non usa cookie, non salva l'indirizzo IP completo e
-    non permette di identificare chi visita il sito. I dati sono solo aggregati.
+    Al momento il sito non usa strumenti di statistica. Se in futuro ne useremo uno, sarà senza cookie e senza identificare chi visita il
+    sito, e lo indicheremo qui.
   </p>
 
-  <h2>Collegamenti esterni</h2>
+  <h2 id="scelte">Come cambiare le scelte</h2>
   <p>
-    I link a Google Maps, Facebook, Instagram e WhatsApp aprono i rispettivi servizi, che hanno le loro informative sui cookie. Sul nostro sito
-    questi servizi non sono incorporati: nessun loro cookie viene installato finché non cliccate.
+    Potete cambiare idea in ogni momento con il link “Preferenze cookie” in fondo a ogni pagina. Rifiutare non limita l’uso del sito: la
+    sede resta indicata e il link “Apri in Google Maps” funziona sempre. Potete anche cancellare cookie e dati dei siti dalle impostazioni
+    del browser.
   </p>
+  <p>Chiudere il banner con la X equivale a rifiutare. Le scelte valgono 6 mesi, poi ve le chiediamo di nuovo.</p>
 
-  <h2>Come gestire i cookie</h2>
-  <p>Potete cancellare o bloccare i cookie dalle impostazioni del vostro browser. Il sito continuerà a funzionare.</p>
+  <h2 id="link">Link esterni</h2>
+  <p>
+    I link a Google Maps, Facebook, Instagram e WhatsApp aprono i rispettivi servizi, che hanno le loro informative. Sul nostro sito questi
+    servizi non sono incorporati: nessun loro cookie viene installato finché non cliccate.
+  </p>
 </PaginaLegale>

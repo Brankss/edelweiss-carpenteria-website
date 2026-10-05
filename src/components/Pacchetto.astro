@@ -1,0 +1,119 @@
+---
+// "Com'è fatto un nostro tetto" nella pagina Tetti: il render del tetto esploso, preso dallo stesso modello 3D della home,
+// e i sette strati spiegati dall'esterno verso l'interno.
+import { Image } from 'astro:assets';
+import render from '@/assets/render/tetto-esploso.png';
+
+const strati = [
+  { nome: 'Manto di copertura', testo: 'Tegole, coppi, lamiera o scandole: è lo strato che prende pioggia e neve e le porta in gronda.' },
+  { nome: 'Listelli e ventilazione', testo: 'Un’intercapedine d’aria che sale dalla gronda al colmo. D’estate porta via il calore, d’inverno l’umidità, e riduce il ghiaccio sulle gronde.' },
+  { nome: 'Telo traspirante', testo: 'Ferma l’acqua che dovesse passare sotto il manto ma lascia uscire il vapore. È la seconda difesa del tetto.' },
+  { nome: 'Isolante', testo: 'Fibra di legno o lana di roccia ad alta densità, almeno 140 kg/m³. Un isolante pesante tiene fuori il freddo d’inverno e rallenta il caldo d’estate.' },
+  { nome: 'Freno al vapore', testo: 'Regola il vapore che sale dalle stanze, così l’isolante resta asciutto e lavora come deve per tutta la vita del tetto.' },
+  { nome: 'Perlinato', testo: 'Le tavole che vedete dall’interno, in abete o larice. Chiudono la struttura e restano a vista come soffitto.' },
+  { nome: 'Travi', testo: 'La struttura portante, dimensionata dal nostro ufficio tecnico in base alla luce da coprire e al carico neve del luogo.' },
+];
+---
+
+<section class="sezione pacchetto" aria-labelledby="pacchetto-titolo">
+  <div class="contenitore pacchetto__griglia">
+    <div class="pacchetto__testa">
+      <h2 id="pacchetto-titolo" class="t-h2">Com’è fatto un nostro tetto.</h2>
+      <p class="t-lead">Sette strati, dall’esterno verso l’interno. Ognuno ha un compito preciso.</p>
+    </div>
+
+    <figure class="pacchetto__render">
+      <Image
+        src={render}
+        alt="Modello 3D di una casa in legno con il tetto aperto a strati: manto, listelli, telo, isolante, freno al vapore, perlinato e travi"
+        widths={[480, 720, 960, 1400]}
+        sizes="(min-width: 64rem) 50vw, 100vw"
+        quality={72}
+        loading="lazy"
+        layout="none"
+      />
+      <figcaption>Modello illustrativo, dal nostro ufficio tecnico.</figcaption>
+    </figure>
+
+    <ol class="pacchetto__strati" role="list">
+      {
+        strati.map((s) => (
+          <li>
+            <h3>{s.nome}</h3>
+            <p class="secondario">{s.testo}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .pacchetto {
+    background: var(--fondo-2);
+    border-block: 1px solid var(--linea);
+  }
+  .pacchetto + :global(*) {
+    padding-top: var(--sezione);
+  }
+  .pacchetto__griglia {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .pacchetto__testa {
+    display: grid;
+    gap: 1rem;
+  }
+  .pacchetto__testa .t-lead {
+    max-width: 30rem;
+  }
+  .pacchetto__render {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .pacchetto__render :global(img) {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--linea);
+  }
+  .pacchetto__render figcaption {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--testo-2);
+  }
+  .pacchetto__strati {
+    display: grid;
+  }
+  .pacchetto__strati li {
+    display: grid;
+    gap: 0.5rem;
+    padding-block: clamp(1.25rem, 3vw, 2rem);
+    border-top: 1px solid var(--linea);
+  }
+  .pacchetto__strati h3 {
+    font-size: var(--t-h3);
+  }
+  .pacchetto__strati p {
+    max-width: 32rem;
+  }
+  @media (min-width: 64rem) {
+    .pacchetto__griglia {
+      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+      grid-template-rows: auto 1fr;
+      column-gap: 5rem;
+      row-gap: 3rem;
+    }
+    .pacchetto__testa {
+      grid-column: 1 / -1;
+    }
+    .pacchetto__render {
+      position: sticky;
+      top: calc(var(--testata) + 2rem);
+      align-self: start;
+    }
+    .pacchetto__strati li:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+  }
+</style>

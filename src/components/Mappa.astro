@@ -1,0 +1,98 @@
+---
+// Mappa di Google caricata solo con il consenso ai contenuti di terze parti.
+// Prima del consenso: un riquadro con indirizzo, link a Google Maps e pulsante per attivarla.
+import Icona from './Icona.astro';
+import { azienda } from '@/data/sito';
+
+const indirizzo = `${azienda.indirizzo.via}, ${azienda.indirizzo.cap} ${azienda.indirizzo.citta}`;
+const sorgente = `https://www.google.com/maps?q=${encodeURIComponent(`Edelweiss Carpenteria, ${indirizzo}`)}&output=embed`;
+---
+
+<div class="mappa" data-mappa data-src={sorgente}>
+  <div class="mappa__segnaposto" data-segnaposto>
+    <Icona nome="luogo" dimensione="2rem" />
+    <p class="mappa__indirizzo">{azienda.indirizzo.via}<br />{azienda.indirizzo.cap} {azienda.indirizzo.frazione}, {azienda.indirizzo.citta}</p>
+    <p class="secondario mappa__nota">La mappa interattiva è di Google e può installare cookie di terze parti. Si carica solo se lo consentite.</p>
+    <div class="mappa__azioni">
+      <button type="button" class="pulsante pulsante--vuoto" data-attiva-mappa>Mostra la mappa</button>
+      <a class="collegamento" href={azienda.mappa} rel="noopener" target="_blank">Apri in Google Maps</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mappa {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background:
+      linear-gradient(var(--linea) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
+      linear-gradient(90deg, var(--linea) 1px, transparent 1px) 0 0 / 2.5rem 2.5rem,
+      var(--fondo-2);
+    border: 1px solid var(--linea);
+  }
+  @media (min-width: 64rem) {
+    .mappa {
+      aspect-ratio: 16 / 9;
+    }
+  }
+  .mappa__segnaposto {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 1rem;
+    padding: clamp(1.25rem, 5vw, 3rem);
+    color: var(--cuoio);
+  }
+  .mappa__indirizzo {
+    color: var(--testo);
+    font-size: var(--t-h3);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .mappa__nota {
+    max-width: 28rem;
+    font-size: var(--t-piccolo);
+  }
+  .mappa__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+  }
+  .mappa :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: grayscale(0.4) invert(0.9) hue-rotate(180deg) contrast(0.9);
+  }
+</style>
+
+<script>
+  import { leggiConsenso, salvaConsenso, type Consenso } from '@/scripts/consenso';
+
+  document.querySelectorAll<HTMLElement>('[data-mappa]').forEach((mappa) => {
+    const carica = () => {
+      if (mappa.querySelector('iframe')) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = mappa.dataset.src!;
+      iframe.title = 'Mappa: sede di Edelweiss Carpenteria a Cognola, Trento';
+      iframe.loading = 'lazy';
+      iframe.referrerPolicy = 'no-referrer-when-downgrade';
+      mappa.querySelector('[data-segnaposto]')?.remove();
+      mappa.append(iframe);
+    };
+    if (leggiConsenso()?.mappe) carica();
+    // "Mostra la mappa" vale come consenso ai contenuti di terze parti, ed è revocabile dalle preferenze
+    mappa.querySelector('[data-attiva-mappa]')?.addEventListener('click', () => salvaConsenso({ mappe: true }));
+    document.addEventListener('edw:consenso', (e) => {
+      if ((e as CustomEvent<Consenso>).detail.mappe) carica();
+      // Consenso revocato: si ricarica la pagina per togliere la mappa e i suoi script
+      else if (mappa.querySelector('iframe')) location.reload();
+    });
+  });
+</script>

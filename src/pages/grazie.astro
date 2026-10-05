@@ -1,0 +1,42 @@
+---
+// Pagina di conferma per l'invio del modulo senza JavaScript (dopo la messa online). Non indicizzata.
+import Base from '@/layouts/Base.astro';
+import { azienda } from '@/data/sito';
+---
+
+<Base titolo="Richiesta ricevuta" descrizione="Abbiamo ricevuto la vostra richiesta di sopralluogo." indicizza={false} invito={false}>
+  <section class="grazie contenitore">
+    <h1 class="t-display">Grazie, richiesta ricevuta.</h1>
+    <p class="t-lead">Vi richiamiamo noi per fissare il sopralluogo. Se è urgente chiamate il <a href={azienda.telefonoLink}>{azienda.telefono}</a>.</p>
+    <div class="grazie__azioni">
+      <a class="pulsante pulsante--vuoto" href="/realizzazioni/">Guardate le realizzazioni</a>
+      <a class="collegamento" href="/">Pagina iniziale</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .grazie {
+    display: grid;
+    gap: 1.5rem;
+    align-content: center;
+    min-height: 80svh;
+    padding-top: calc(var(--testata) + 4rem);
+    padding-bottom: 4rem;
+  }
+  .grazie h1 {
+    max-width: 12ch;
+  }
+  .grazie .t-lead {
+    max-width: 34rem;
+  }
+  .grazie .t-lead a {
+    color: var(--testo);
+  }
+  .grazie__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+  }
+</style>

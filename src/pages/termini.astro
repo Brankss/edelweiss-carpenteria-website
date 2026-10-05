@@ -1,0 +1,81 @@
+---
+import PaginaLegale from '@/components/PaginaLegale.astro';
+import { azienda } from '@/data/sito';
+
+const indice = [
+  { id: 'oggetto', titolo: 'Oggetto' },
+  { id: 'informazioni', titolo: 'Informazioni sul sito' },
+  { id: 'richieste', titolo: 'Richieste e preventivi' },
+  { id: 'contenuti', titolo: 'Testi e fotografie' },
+  { id: 'uso', titolo: 'Uso corretto del sito' },
+  { id: 'link', titolo: 'Link ad altri siti' },
+  { id: 'responsabilita', titolo: 'Responsabilità' },
+  { id: 'legge', titolo: 'Legge applicabile e foro' },
+  { id: 'modifiche', titolo: 'Modifiche' },
+];
+---
+
+<PaginaLegale
+  titolo="Termini d’uso"
+  descrizione="Le condizioni per usare il sito di Edelweiss Carpenteria: informazioni, richieste di preventivo, proprietà di testi e fotografie, responsabilità."
+  url="/termini/"
+  intro="Le regole per usare questo sito. Sono brevi e scritte in modo semplice: se qualcosa non è chiaro, scriveteci."
+  aggiornamento="5 ottobre 2026"
+  indice={indice}
+>
+  <h2 id="oggetto">Oggetto</h2>
+  <p>
+    Questi termini regolano l’uso del sito di {azienda.ragioneSociale} (di seguito “Edelweiss Carpenteria”), con sede in
+    {' '}{azienda.indirizzo.via}, {azienda.indirizzo.cap} {azienda.indirizzo.citta}, P.IVA {azienda.piva}. Usando il sito li accettate.
+  </p>
+
+  <h2 id="informazioni">Informazioni sul sito</h2>
+  <p>
+    Le informazioni pubblicate descrivono i nostri servizi e i lavori fatti. Sono generali e non sostituiscono un progetto, una verifica
+    strutturale o un preventivo. Tempi, prezzi e soluzioni tecniche dipendono da ogni singolo cantiere e vengono definiti dopo il
+    sopralluogo. Le indicazioni su permessi e normative sono orientative: per il vostro caso fa fede il parere del tecnico incaricato.
+  </p>
+
+  <h2 id="richieste">Richieste e preventivi</h2>
+  <p>
+    Inviare il modulo di richiesta, telefonare o scrivere non crea alcun contratto né obbligo per nessuna delle parti. Il sopralluogo e il
+    preventivo in provincia di Trento sono gratuiti. Un eventuale incarico nasce solo con l’accettazione scritta del preventivo, che
+    contiene condizioni, prezzi e tempi del lavoro.
+  </p>
+  <p>I dati che ci inviate sono trattati come descritto nell’<a href="/privacy/">informativa privacy</a>.</p>
+
+  <h2 id="contenuti">Testi e fotografie</h2>
+  <p>
+    Testi, fotografie, disegni e marchio di questo sito appartengono a Edelweiss Carpenteria, salvo dove indicato. Le fotografie mostrano
+    lavori realizzati dalla nostra squadra. Non è consentito copiarli, modificarli o usarli per scopi commerciali senza autorizzazione
+    scritta. Potete condividere i link alle pagine.
+  </p>
+
+  <h2 id="uso">Uso corretto del sito</h2>
+  <p>
+    Non è consentito usare il sito per inviare contenuti illeciti, offensivi o pubblicitari, per raccogliere dati in modo automatizzato o
+    per tentare di comprometterne il funzionamento e la sicurezza.
+  </p>
+
+  <h2 id="link">Link ad altri siti</h2>
+  <p>
+    Il sito contiene link a servizi di terzi (Google Maps, WhatsApp, Facebook, Instagram). Non siamo responsabili dei loro contenuti né del
+    modo in cui trattano i dati: valgono le loro condizioni e le loro informative.
+  </p>
+
+  <h2 id="responsabilita">Responsabilità</h2>
+  <p>
+    Curiamo il sito perché le informazioni siano corrette e aggiornate, ma non possiamo garantire che sia sempre privo di errori o
+    raggiungibile senza interruzioni. Nei limiti consentiti dalla legge non rispondiamo di danni derivanti dall’uso delle informazioni
+    generali del sito senza una verifica sul caso concreto. Restano salvi i diritti riconosciuti ai consumatori dalla legge.
+  </p>
+
+  <h2 id="legge">Legge applicabile e foro</h2>
+  <p>
+    Questi termini sono regolati dalla legge italiana. Per le controversie con chi non è consumatore è competente il foro di Trento. Per i
+    consumatori resta competente il giudice del luogo di residenza o domicilio, come previsto dal Codice del consumo.
+  </p>
+
+  <h2 id="modifiche">Modifiche</h2>
+  <p>Possiamo aggiornare questi termini; la versione valida è quella pubblicata su questa pagina, con la data in alto.</p>
+</PaginaLegale>

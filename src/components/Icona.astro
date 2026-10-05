@@ -1,0 +1,30 @@
+---
+// Icone Phosphor (stile "light", licenza MIT) inserite inline: nessuna richiesta in più, colore da currentColor.
+import telefono from '@phosphor-icons/core/assets/light/phone-light.svg?raw';
+import whatsapp from '@phosphor-icons/core/assets/light/whatsapp-logo-light.svg?raw';
+import email from '@phosphor-icons/core/assets/light/envelope-simple-light.svg?raw';
+import luogo from '@phosphor-icons/core/assets/light/map-pin-light.svg?raw';
+import orologio from '@phosphor-icons/core/assets/light/clock-light.svg?raw';
+import chiudi from '@phosphor-icons/core/assets/light/x-light.svg?raw';
+import menu from '@phosphor-icons/core/assets/light/list-light.svg?raw';
+import sinistra from '@phosphor-icons/core/assets/light/caret-left-light.svg?raw';
+import destra from '@phosphor-icons/core/assets/light/caret-right-light.svg?raw';
+import piu from '@phosphor-icons/core/assets/light/plus-light.svg?raw';
+import freccia from '@phosphor-icons/core/assets/light/arrow-right-light.svg?raw';
+import esterno from '@phosphor-icons/core/assets/light/arrow-up-right-light.svg?raw';
+import instagram from '@phosphor-icons/core/assets/light/instagram-logo-light.svg?raw';
+import facebook from '@phosphor-icons/core/assets/light/facebook-logo-light.svg?raw';
+
+const icone = { telefono, whatsapp, email, luogo, orologio, chiudi, menu, sinistra, destra, piu, freccia, esterno, instagram, facebook };
+export type NomeIcona = keyof typeof icone;
+
+interface Props {
+  nome: NomeIcona;
+  class?: string;
+  dimensione?: string;
+}
+const { nome, class: classe, dimensione = '1.25em' } = Astro.props;
+const svg = icone[nome].replace('<svg ', `<svg aria-hidden="true" focusable="false" width="${dimensione}" height="${dimensione}" class="icona${classe ? ' ' + classe : ''}" `);
+---
+
+<Fragment set:html={svg} />

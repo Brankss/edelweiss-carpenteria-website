@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import IntestazionePagina from '@/components/IntestazionePagina.astro';
 import Domande from '@/components/Domande.astro';
@@ -40,6 +41,13 @@ const faq = [
     r: 'Il prezzo della struttura può essere simile o di poco superiore, ma i tempi di cantiere più brevi e la maggiore efficienza energetica spesso compensano la differenza. Ve lo mostriamo nel preventivo, voce per voce.',
   },
 ];
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((q) => ({ '@type': 'Question', name: q.d, acceptedAnswer: { '@type': 'Answer', text: q.r } })),
+  },
+];
 ---
 
 <Base
@@ -47,23 +55,27 @@ const faq = [
   descrizione="Leggerezza, resistenza al sisma, comportamento al fuoco, comfort e isolamento: i vantaggi di costruire tetti e case in legno, spiegati da una carpenteria di Trento."
   immagine={foto('quattro-falde', 1)}
   briciole={[{ nome: 'Perché il legno', url: '/perche-il-legno/' }]}
+  jsonLd={jsonLd}
 >
   <IntestazionePagina
     titolo="Perché il legno"
     intro="Sei ragioni concrete per costruire in legno, senza slogan. Sono le stesse cose che spieghiamo a chi ci chiede un sopralluogo."
-    foto={foto('quattro-falde', 1)}
-    alt="Soffitto in legno a vista sotto un tetto a quattro falde"
     briciole={[{ nome: 'Perché il legno', url: '/perche-il-legno/' }]}
   />
 
-  <section class="sezione ragioni">
-    <div class="contenitore">
-      <ul class="ragioni__elenco" role="list">
+  <section class="sezione ragioni" aria-label="Sei ragioni">
+    <div class="contenitore ragioni__griglia">
+      <div class="ragioni__foto">
+        <div class="foto">
+          <Image src={foto('quattro-falde', 1)} alt="Soffitto in legno a vista sotto un tetto a quattro falde" widths={[480, 720, 960, 1280]} sizes="(min-width: 64rem) 40vw, 100vw" loading="eager" quality={66} layout="none" />
+        </div>
+      </div>
+      <ul role="list" class="ragioni__elenco">
         {
           ragioni.map((r) => (
             <li>
-              <h2>{r.titolo}</h2>
-              <p>{r.testo}</p>
+              <h2 class="ragione__titolo">{r.titolo}</h2>
+              <p class="secondario">{r.testo}</p>
             </li>
           ))
         }
@@ -78,27 +90,45 @@ const faq = [
   .ragioni {
     padding-top: 0;
   }
-  .ragioni__elenco {
-    list-style: none;
-    padding: 0;
+  .ragioni__griglia {
     display: grid;
-    gap: 0 3rem;
+    gap: 3rem;
+  }
+  .ragioni__foto .foto {
+    aspect-ratio: 4 / 3;
+  }
+  .ragioni__elenco {
+    display: grid;
   }
   .ragioni__elenco li {
     display: grid;
     gap: 0.75rem;
-    padding-block: 2rem;
-    border-top: 1px solid var(--nebbia);
+    padding-block: clamp(1.75rem, 4vw, 2.75rem);
+    border-top: 1px solid var(--linea);
   }
-  .ragioni__elenco h2 {
-    font-size: var(--t-2);
+  .ragioni__elenco li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .ragione__titolo {
+    font-size: var(--t-h3);
+    font-weight: 400;
   }
   .ragioni__elenco p {
-    max-width: 34rem;
+    max-width: 36rem;
   }
   @media (min-width: 64rem) {
-    .ragioni__elenco {
-      grid-template-columns: 1fr 1fr;
+    .ragioni__griglia {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 6rem;
+    }
+    .ragioni__foto {
+      position: sticky;
+      top: calc(var(--testata) + 2rem);
+      align-self: start;
+    }
+    .ragioni__foto .foto {
+      aspect-ratio: 4 / 5;
     }
   }
 </style>

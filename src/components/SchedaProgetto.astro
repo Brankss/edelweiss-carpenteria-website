@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import { etichetteCategoria, fotoDi, luogoDi, type Realizzazione } from '@/lib/foto';
+
+interface Props {
+  r: Realizzazione;
+  formato?: 'orizzontale' | 'verticale' | 'largo';
+  sizes?: string;
+  livello?: 'h2' | 'h3';
+  // Le prime schede visibili all'apertura si caricano subito
+  prioritaria?: boolean;
+}
+const { r, formato = 'orizzontale', sizes = '(min-width: 64rem) 50vw, 100vw', livello: Titolo = 'h3', prioritaria = false } = Astro.props;
+const copertina = fotoDi(r.data.cartella)[r.data.copertina - 1]!;
+const luogo = luogoDi(r);
+---
+
+<a class:list={['scheda', `scheda--${formato}`]} href={`/realizzazioni/${r.id}/`} data-categoria={r.data.categoria}>
+  <div class:list={['scheda__foto foto', { rivela: !prioritaria }]}>
+    <Image src={copertina} alt="" widths={[400, 560, 760, 960]} {sizes} quality={62} loading={prioritaria ? 'eager' : 'lazy'} fetchpriority={prioritaria ? 'high' : undefined} layout="none" />
+  </div>
+  <div class="scheda__testo">
+    <Titolo class="scheda__titolo">{r.data.titolo}</Titolo>
+    <p class="scheda__meta">
+      <span>{etichetteCategoria[r.data.categoria]}</span>
+      {luogo && <span class="numeri">{luogo}</span>}
+    </p>
+  </div>
+</a>
+
+<style>
+  .scheda {
+    display: grid;
+    gap: 1rem;
+    color: var(--testo);
+    text-decoration: none;
+  }
+  .scheda__foto {
+    aspect-ratio: 4 / 3;
+  }
+  .scheda--verticale .scheda__foto {
+    aspect-ratio: 4 / 5;
+  }
+  .scheda--largo .scheda__foto {
+    aspect-ratio: 16 / 10;
+  }
+  .scheda__foto :global(img) {
+    transition: transform 1.1s var(--curva), filter 0.6s var(--curva);
+  }
+  .scheda:hover .scheda__foto :global(img) {
+    transform: scale(1.045);
+  }
+  .scheda__testo {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .scheda__titolo {
+    font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    transition: color 0.25s;
+  }
+  .scheda:hover .scheda__titolo {
+    color: var(--cuoio);
+  }
+  .scheda__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+</style>

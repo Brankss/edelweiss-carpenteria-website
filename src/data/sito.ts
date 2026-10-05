@@ -21,7 +21,7 @@ export const azienda = {
   email: 'edelcarpenteria@gmail.com',
   mappa: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Edelweiss Carpenteria, Via Masetti 39, 38121 Trento'),
   orari: [
-    { giorni: 'Lunedì – venerdì', ore: '8:00 – 12:00 e 13:30 – 18:00' },
+    { giorni: 'Dal lunedì al venerdì', ore: '8:00-12:00 e 13:30-18:00' },
     { giorni: 'Sabato e domenica', ore: 'Chiuso' },
   ],
   social: {
@@ -39,6 +39,29 @@ export const navigazione = [
   { href: '/chi-siamo/', label: 'Chi siamo' },
   { href: '/contatti/', label: 'Contatti' },
 ];
+
+// Voci del menu completo (mobile e footer): tutti i servizi più le pagine istituzionali
+export const menuCompleto = [
+  { href: '/tetti-in-legno/', label: 'Tetti in legno' },
+  { href: '/case-in-legno/', label: 'Case in legno' },
+  { href: '/sopraelevazioni-in-legno/', label: 'Sopraelevazioni' },
+  { href: '/facciate-in-legno/', label: 'Facciate in legno' },
+  { href: '/tettoie-e-carport/', label: 'Tettoie e su misura' },
+  { href: '/realizzazioni/', label: 'Realizzazioni' },
+  { href: '/perche-il-legno/', label: 'Perché il legno' },
+  { href: '/chi-siamo/', label: 'Chi siamo' },
+  { href: '/contatti/', label: 'Contatti' },
+];
+
+export const legali = [
+  { href: '/privacy/', label: 'Privacy' },
+  { href: '/cookie/', label: 'Cookie' },
+  { href: '/termini/', label: 'Termini d’uso' },
+  { href: '/note-legali/', label: 'Note legali' },
+];
+
+// Unica etichetta per l'invito principale, uguale in tutto il sito
+export const CTA = { label: 'Richiedi un sopralluogo', href: '/contatti/#richiesta' };
 
 // Quote ISTAT del centro abitato (m s.l.m.)
 export const quote: Record<string, number> = {

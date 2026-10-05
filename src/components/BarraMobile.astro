@@ -1,61 +1,75 @@
 ---
-import { azienda } from '@/data/sito';
+// Barra in basso su mobile, a portata di pollice. Si nasconde quando sullo schermo c'è già un invito (hero, modulo, footer).
+import Icona from './Icona.astro';
+import { azienda, CTA } from '@/data/sito';
 ---
 
-<nav class="barra" aria-label="Contatto rapido">
-  <a href={azienda.telefonoLink}>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 3.5h3l1.4 4.2-2 1.4a12 12 0 0 0 5.9 5.9l1.4-2 4.2 1.4v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2Z"></path></svg>
-    Chiama
+<div class="barra" data-barra data-nascosta>
+  <a class="pulsante pulsante--vuoto barra__chiama" href={azienda.telefonoLink} aria-label={`Chiama ${azienda.telefono}`}>
+    <Icona nome="telefono" /> Chiama
   </a>
-  <a href={azienda.whatsapp}>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.6 18.6Z"></path><path d="M9.2 8.6c.3 2.6 2.4 5 5.2 5.6l1.1-1.2"></path></svg>
-    WhatsApp
-  </a>
-  <a href="/contatti/#richiesta" class="barra__principale">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 9.5V20h13V9.5"></path></svg>
-    Sopralluogo
-  </a>
-</nav>
+  <a class="pulsante barra__cta" href={CTA.href}>{CTA.label}</a>
+</div>
 
 <style>
   .barra {
     position: fixed;
     inset: auto 0 0 0;
-    z-index: 20;
+    z-index: var(--z-barra);
     display: grid;
-    grid-template-columns: 1fr 1fr 1.25fr;
-    gap: 1px;
-    padding-bottom: env(safe-area-inset-bottom);
-    background: var(--abete);
-    border-top: 1px solid rgb(247 247 244 / 0.12);
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    padding: 0.625rem max(var(--margine), env(safe-area-inset-left)) calc(0.625rem + env(safe-area-inset-bottom));
+    background: rgb(13 13 11 / 0.88);
+    border-top: 1px solid var(--linea);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    transition:
+      transform 0.45s var(--curva),
+      visibility 0.45s;
   }
-  .barra a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.2rem;
-    min-height: 4rem;
-    color: var(--neve);
-    font-size: 0.8125rem;
-    font-weight: 540;
-    text-decoration: none;
+  .barra[data-nascosta] {
+    transform: translateY(110%);
+    visibility: hidden;
   }
-  .barra__principale {
-    background: var(--larice);
+  .barra .pulsante {
+    min-height: 3rem;
+    padding-inline: 1.1rem;
+    font-size: 0.9375rem;
   }
-  .barra svg {
-    width: 1.35rem;
-    height: 1.35rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+  .barra__chiama {
+    background: var(--fondo);
   }
-  @media (min-width: 48rem) {
+  @media (min-width: 64rem) {
     .barra {
       display: none;
     }
   }
 </style>
+
+<script>
+  const barra = document.querySelector<HTMLElement>('[data-barra]');
+  if (barra) {
+    const visibili = new Set<Element>();
+    let bloccata = false;
+    const aggiorna = () => barra.toggleAttribute('data-nascosta', bloccata || visibili.size > 0);
+    const osservatore = new IntersectionObserver(
+      (voci) => {
+        for (const v of voci) v.isIntersecting ? visibili.add(v.target) : visibili.delete(v.target);
+        aggiorna();
+      },
+      { threshold: 0.15 },
+    );
+    document.querySelectorAll('[data-nascondi-barra]').forEach((el) => osservatore.observe(el));
+    // Mentre il banner dei cookie è aperto la barra resta nascosta, per non sovrapporsi
+    document.addEventListener('edw:consenso-aperto', () => {
+      bloccata = true;
+      aggiorna();
+    });
+    document.addEventListener('edw:consenso-chiuso', () => {
+      bloccata = false;
+      aggiorna();
+    });
+    // L'osservatore richiama sempre "aggiorna" al primo controllo: la barra compare solo se nessun invito è visibile
+  }
+</script>

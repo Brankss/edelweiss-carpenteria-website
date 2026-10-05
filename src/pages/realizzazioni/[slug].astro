@@ -1,9 +1,9 @@
 ---
-import { Image, getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '@/layouts/Base.astro';
 import IntestazionePagina from '@/components/IntestazionePagina.astro';
-import GrigliaLavori from '@/components/GrigliaLavori.astro';
+import Galleria from '@/components/Galleria.astro';
+import SchedaProgetto from '@/components/SchedaProgetto.astro';
 import { etichetteCategoria, fotoDi, luogoDi, realizzazioni, type Realizzazione } from '@/lib/foto';
 
 export async function getStaticPaths() {
@@ -19,8 +19,11 @@ const { r, tutte } = Astro.props;
 const { Content } = await render(r);
 const foto = fotoDi(r.data.cartella);
 const luogo = luogoDi(r);
-const grandi = await Promise.all(foto.map((f) => getImage({ src: f, width: 1600, format: 'webp', quality: 74 })));
-const altri = tutte.filter((x) => x.id !== r.id && x.data.categoria === r.data.categoria).concat(tutte.filter((x) => x.data.categoria !== r.data.categoria && x.data.inEvidenza)).slice(0, 3);
+const copertina = foto[r.data.copertina - 1]!;
+const altri = tutte
+  .filter((x) => x.id !== r.id && x.data.categoria === r.data.categoria)
+  .concat(tutte.filter((x) => x.data.categoria !== r.data.categoria && x.data.inEvidenza))
+  .slice(0, 3);
 
 const servizioCategoria: Record<string, { url: string; nome: string }> = {
   tetti: { url: '/tetti-in-legno/', nome: 'Tetti in legno' },
@@ -38,221 +41,116 @@ const briciole = [
 const descrizione = `${r.data.titolo}${luogo ? ` (${luogo})` : ''}: ${r.data.sintesi} Un lavoro di Edelweiss Carpenteria.`;
 ---
 
-<Base titolo={r.data.titolo} descrizione={descrizione} immagine={foto[0]!} briciole={briciole}>
-  <IntestazionePagina titolo={r.data.titolo} intro={r.data.sintesi} briciole={briciole} foto={foto[r.data.copertina - 1]} alt={`${r.data.titolo}: foto di copertina`}>
-    <dl class="scheda">
-      {
-        luogo && (
-          <div>
-            <dt>Luogo</dt>
-            <dd>{luogo}</dd>
-          </div>
-        )
-      }
-      <div>
-        <dt>Tipo di lavoro</dt>
-        <dd><a href={servizio.url}>{etichetteCategoria[r.data.categoria]}</a></dd>
+<Base titolo={r.data.titolo} descrizione={descrizione} immagine={copertina} briciole={briciole}>
+  <IntestazionePagina titolo={r.data.titolo} intro={r.data.sintesi} briciole={briciole} foto={copertina} alt={`${r.data.titolo}: vista del cantiere`} />
+
+  <section class="sezione progetto">
+    <div class="contenitore progetto__griglia">
+      <dl class="progetto__dati">
+        {
+          luogo && (
+            <div>
+              <dt>Luogo</dt>
+              <dd class="numeri">{luogo}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt>Tipo di lavoro</dt>
+          <dd>{etichetteCategoria[r.data.categoria]}</dd>
+        </div>
+        <div>
+          <dt>Servizio</dt>
+          <dd><a href={servizio.url}>{servizio.nome}</a></dd>
+        </div>
+      </dl>
+      <div class="prosa progetto__testo">
+        <Content />
       </div>
-    </dl>
-  </IntestazionePagina>
-
-  <section class="contenitore progetto">
-    <div class="testo progetto__testo">
-      <Content />
-      <p><a class="link-forte" href={servizio.url}>{servizio.nome}: come lavoriamo</a></p>
     </div>
-
-    <ul class="galleria" role="list">
-      {
-        foto.map((f, i) => (
-          <li>
-            <a href={grandi[i]!.src} data-indice={i} aria-label={`Apri la foto ${i + 1} di ${foto.length} a schermo intero`}>
-              <Image
-                src={f}
-                alt={`${r.data.titolo}, foto ${i + 1}`}
-                widths={[400, 640, 900]}
-                sizes="(min-width: 64rem) 31vw, (min-width: 40rem) 46vw, 100vw"
-                loading="lazy"
-                quality={68}
-                layout="none"
-              />
-            </a>
-          </li>
-        ))
-      }
-    </ul>
   </section>
 
-  <dialog class="visore" aria-label="Foto a schermo intero">
-    <div class="visore__binario">
-      {
-        grandi.map((g, i) => (
-          <figure>
-            <img src={g.src} alt={`${r.data.titolo}, foto ${i + 1}`} loading="lazy" decoding="async" width={g.attributes.width} height={g.attributes.height} />
-          </figure>
-        ))
-      }
+  <section class="sezione">
+    <div class="contenitore">
+      <Galleria foto={foto} titolo={r.data.titolo} />
     </div>
-    <div class="visore__comandi">
-      <button type="button" data-prec>Precedente</button>
-      <span data-conta aria-live="polite"></span>
-      <button type="button" data-succ>Successiva</button>
-      <button type="button" data-chiudi>Chiudi</button>
-    </div>
-  </dialog>
+  </section>
 
-  <GrigliaLavori lavori={altri} titolo="Altri lavori" />
+  <section class="sezione altri" aria-labelledby="altri-titolo">
+    <div class="contenitore">
+      <div class="altri__testa">
+        <h2 id="altri-titolo" class="t-h2">Altri lavori</h2>
+        <a class="collegamento" href="/realizzazioni/">Tutte le realizzazioni</a>
+      </div>
+      <ul role="list" class="altri__griglia">
+        {
+          altri.map((x) => (
+            <li>
+              <SchedaProgetto r={x} sizes="(min-width: 64rem) 31vw, (min-width: 40rem) 50vw, 100vw" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
 </Base>
 
-<script>
-  const visore = document.querySelector<HTMLDialogElement>('.visore');
-  const binario = visore?.querySelector<HTMLElement>('.visore__binario');
-  const conta = visore?.querySelector<HTMLElement>('[data-conta]');
-  if (visore && binario && conta) {
-    const totale = binario.children.length;
-    const indice = () => Math.round(binario.scrollLeft / binario.clientWidth);
-    const aggiorna = () => (conta.textContent = `${indice() + 1} di ${totale}`);
-    const vai = (i: number) => binario.scrollTo({ left: Math.max(0, Math.min(totale - 1, i)) * binario.clientWidth, behavior: 'smooth' });
-    document.querySelectorAll<HTMLAnchorElement>('.galleria a').forEach((a) =>
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        visore.showModal();
-        binario.scrollTo({ left: Number(a.dataset.indice) * binario.clientWidth });
-        aggiorna();
-      }),
-    );
-    binario.addEventListener('scroll', aggiorna, { passive: true });
-    visore.querySelector('[data-prec]')?.addEventListener('click', () => vai(indice() - 1));
-    visore.querySelector('[data-succ]')?.addEventListener('click', () => vai(indice() + 1));
-    visore.querySelector('[data-chiudi]')?.addEventListener('click', () => visore.close());
-    visore.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') vai(indice() + 1);
-      if (e.key === 'ArrowLeft') vai(indice() - 1);
-    });
-  }
-</script>
-
 <style>
-  .scheda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem 2.5rem;
-    margin-top: 0.5rem;
-  }
-  .scheda dt {
-    font-size: var(--t-piccolo);
-    color: var(--nebbia-testo);
-  }
-  .scheda dd {
-    margin: 0;
-    font-weight: 540;
-  }
-  .progetto {
+  .progetto__griglia {
     display: grid;
-    gap: 3rem;
-    padding-bottom: var(--sezione);
+    gap: 2.5rem;
+  }
+  .progetto__dati {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .progetto__dati dt {
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+  .progetto__dati dd {
+    margin: 0.2rem 0 0;
+    font-size: 1.125rem;
+  }
+  .progetto__dati a {
+    display: inline-block;
+    padding-block: 0.2rem;
+    text-decoration-color: var(--cuoio);
+  }
+  .progetto__dati a:hover {
+    color: var(--cuoio);
   }
   .progetto__testo {
-    font-size: var(--t-1);
-    line-height: 1.5;
+    font-size: var(--t-lead);
+    line-height: 1.55;
   }
-  .progetto__testo :global(p:last-child) {
-    font-size: var(--t-base);
+  @media (min-width: 64rem) {
+    .progetto__griglia {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      gap: 4rem;
+    }
   }
-  .galleria {
-    list-style: none;
-    padding: 0;
-    columns: 1;
-    column-gap: 1rem;
+  .altri__testa {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
   }
-  .galleria li {
-    break-inside: avoid;
-    margin-bottom: 1rem;
-  }
-  .galleria a {
-    display: block;
-    cursor: zoom-in;
-  }
-  .galleria :global(img) {
-    width: 100%;
-    height: auto;
+  .altri__griglia {
+    display: grid;
+    gap: 3rem 1.5rem;
   }
   @media (min-width: 40rem) {
-    .galleria {
-      columns: 2;
+    .altri__griglia {
+      grid-template-columns: repeat(2, 1fr);
     }
   }
   @media (min-width: 64rem) {
-    .galleria {
-      columns: 3;
-      column-gap: 1.5rem;
+    .altri__griglia {
+      grid-template-columns: repeat(3, 1fr);
     }
-    .galleria li {
-      margin-bottom: 1.5rem;
-    }
-  }
-
-  .visore {
-    width: 100%;
-    max-width: none;
-    height: 100dvh;
-    max-height: none;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: #0f1412;
-    color: var(--neve);
-  }
-  .visore[open] {
-    display: grid;
-    grid-template-rows: 1fr auto;
-  }
-  .visore::backdrop {
-    background: #0f1412;
-  }
-  .visore__binario {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-  .visore__binario figure {
-    flex: 0 0 100%;
-    scroll-snap-align: center;
-    display: grid;
-    place-items: center;
-    padding: 1rem;
-  }
-  .visore__binario img {
-    max-width: 100%;
-    max-height: calc(100dvh - 6rem);
-    width: auto;
-    height: auto;
-    object-fit: contain;
-  }
-  .visore__comandi {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem 1rem;
-    padding: 0.75rem var(--gutter) calc(0.75rem + env(safe-area-inset-bottom));
-  }
-  .visore__comandi button {
-    min-height: 2.75rem;
-    padding: 0 1rem;
-    border: 1px solid rgb(247 247 244 / 0.4);
-    border-radius: 999px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-size: 0.9375rem;
-    cursor: pointer;
-  }
-  .visore__comandi [data-conta] {
-    min-width: 5rem;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    font-size: 0.9375rem;
   }
 </style>

@@ -1,10 +1,10 @@
 ---
-// Stella alpina ridisegnata dal logo originale: otto brattee a tratto sottile, fiori centrali pieni.
+// Marchio: la stella alpina del logo originale (tratto sottile, fiori centrali nel colore cuoio) e la scritta in Geist.
 interface Props {
-  conTesto?: boolean;
   class?: string;
+  conTesto?: boolean;
 }
-const { conTesto = true, class: classe } = Astro.props;
+const { class: classe, conTesto = true } = Astro.props;
 ---
 
 <span class:list={['logo', classe]}>
@@ -12,20 +12,19 @@ const { conTesto = true, class: classe } = Astro.props;
     <path
       fill="none"
       stroke="currentColor"
-      stroke-width="2.1"
+      stroke-width="2.4"
       stroke-linecap="round"
       stroke-linejoin="round"
-      d="M29.83 25.50Q25.80 17.15 32.00 5.00Q38.20 17.15 34.17 25.50M32.00 23.50L32.00 12.56M35.52 26.19Q38.47 18.64 50.58 15.27Q45.97 26.96 38.14 29.11M38.32 26.31L45.38 19.96M38.63 30.36Q47.78 27.09 59.93 33.95Q46.94 39.06 38.34 34.55M40.48 32.59L52.11 33.41M37.75 35.57Q44.85 38.20 48.06 49.84Q36.82 45.42 34.94 38.10M37.69 38.32L43.56 44.84M33.76 38.60Q37.24 46.59 30.64 57.96Q25.26 45.97 29.56 38.38M31.56 40.49L31.02 50.690M28.58 37.87Q25.76 45.47 13.72 49.05Q18.12 37.28 25.91 35.00M25.78 37.80L18.84 44.28M25.40 33.76Q16.58 37.20 4.54 30.56Q17.21 25.22 25.62 29.56M23.51 31.56L12.23 30.96M26.25 28.43Q18.97 25.60 15.61 13.79Q27.00 18.37 29.06 25.90M26.31 25.68L20.20 18.89"
+      d="M29.83 25.50Q25.80 17.15 32.00 5.00Q38.20 17.15 34.17 25.50M32.00 23.50L32.00 12.56M35.52 26.19Q38.47 18.64 50.58 15.27Q45.97 26.96 38.14 29.11M38.32 26.31L45.38 19.96M38.63 30.36Q47.78 27.09 59.93 33.95Q46.94 39.06 38.34 34.55M40.48 32.59L52.11 33.41M37.75 35.57Q44.85 38.20 48.06 49.84Q36.82 45.42 34.94 38.10M37.69 38.32L43.56 44.84M33.76 38.60Q37.24 46.59 30.64 57.96Q25.26 45.97 29.56 38.38M31.56 40.49L31.02 50.69M28.58 37.87Q25.76 45.47 13.72 49.05Q18.12 37.28 25.91 35.00M25.78 37.80L18.84 44.28M25.40 33.76Q16.58 37.20 4.54 30.56Q17.21 25.22 25.62 29.56M23.51 31.56L12.23 30.96M26.25 28.43Q18.97 25.60 15.61 13.79Q27.00 18.37 29.06 25.90M26.31 25.68L20.20 18.89"
     ></path>
-    <g fill="var(--larice-chiaro, #c08a50)">
-      <circle cx="32" cy="32" r="1.55"></circle><circle cx="32" cy="28.6" r="1.55"></circle><circle cx="35.2" cy="31" r="1.55"></circle><circle cx="34" cy="34.8" r="1.55"></circle><circle cx="30" cy="34.8" r="1.55"></circle><circle cx="28.8" cy="31" r="1.55"></circle>
+    <g fill="var(--cuoio)">
+      <circle cx="32" cy="32" r="1.7"></circle><circle cx="32" cy="28.6" r="1.7"></circle><circle cx="35.2" cy="31" r="1.7"></circle><circle cx="34" cy="34.8" r="1.7"></circle><circle cx="30" cy="34.8" r="1.7"></circle><circle cx="28.8" cy="31" r="1.7"></circle>
     </g>
   </svg>
   {
     conTesto && (
-      <span class="logo__testo">
-        <span class="logo__nome">Edelweiss</span>{' '}
-        <span class="logo__sotto">Carpenteria</span>
+      <span class="logo__testo" translate="no">
+        Edelweiss <span class="logo__sotto">Carpenteria</span>
       </span>
     )
   }
@@ -35,31 +34,24 @@ const { conTesto = true, class: classe } = Astro.props;
   .logo {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    color: inherit;
+    gap: 0.65rem;
+    color: var(--testo);
   }
   .logo__fiore {
-    width: 2.6rem;
-    height: 2.6rem;
+    width: 2.1rem;
+    height: 2.1rem;
     flex: none;
+    transition: transform 0.6s var(--curva);
   }
   .logo__testo {
-    display: flex;
-    flex-direction: column;
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: -0.025em;
     line-height: 1;
-  }
-  .logo__nome {
-    font-weight: 600;
-    font-stretch: 125%;
-    font-size: 1.125rem;
-    letter-spacing: -0.01em;
+    white-space: nowrap;
   }
   .logo__sotto {
-    margin-top: 0.2rem;
-    font-size: 0.8125rem;
-    font-stretch: 112%;
-    letter-spacing: 0.01em;
-    color: inherit;
-    opacity: 0.75;
+    font-weight: 350;
+    color: var(--testo-2);
   }
 </style>

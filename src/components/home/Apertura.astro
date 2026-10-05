@@ -1,0 +1,163 @@
+---
+// Apertura della home: il titolo sopra il modello 3D, ancora in linee di progetto.
+import { CTA } from '@/data/sito';
+
+const parole = 'Case e tetti in legno, al millimetro.'.split(' ');
+---
+
+<section class="apertura" data-capitolo="progetto" data-nascondi-barra aria-labelledby="apertura-titolo">
+  <div class="contenitore apertura__corpo">
+    <h1 id="apertura-titolo" class="apertura__titolo">
+      {
+        parole.map((p, i) => (
+          <>
+            <span class="apertura__parola">
+              <span style={`--i:${i}`}>{p}</span>
+            </span>{' '}
+          </>
+        ))
+      }
+    </h1>
+    <p class="apertura__sotto">
+      Tetti, case e sopraelevazioni in provincia di Trento: progettati in 3D nel nostro ufficio tecnico, montati dalla nostra squadra.
+    </p>
+    <div class="apertura__azioni">
+      <a class="pulsante" href={CTA.href}>{CTA.label}</a>
+      <a class="collegamento" href="/realizzazioni/">Tutte le realizzazioni</a>
+    </div>
+  </div>
+  <p class="contenitore apertura__nota">Modello illustrativo: piano terra in XLAM, piano primo a telaio, tetto a due falde</p>
+</section>
+
+<section class="metodo-breve" data-dissolvi aria-labelledby="metodo-breve-titolo">
+  <div class="contenitore metodo-breve__corpo">
+    <h2 id="metodo-breve-titolo" class="metodo-breve__titolo">Prima lo disegniamo.</h2>
+    <p class="metodo-breve__testo">
+      Ogni struttura nasce nel nostro ufficio tecnico, modellata in 3D con il software SEMA. Dal modello escono le misure di ogni pezzo: in
+      cantiere si monta, non si improvvisa.
+    </p>
+    <p class="metodo-breve__firma">
+      Luca Di Bello, titolare. Formato alla HTL di Rankweil, nel Vorarlberg. <a class="collegamento" href="/chi-siamo/">Chi siamo</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .apertura {
+    position: relative;
+    display: grid;
+    align-content: end;
+    min-height: 100svh;
+    padding-top: var(--testata);
+    padding-bottom: calc(var(--margine) + 1rem + env(safe-area-inset-bottom));
+  }
+  .apertura__corpo {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .apertura__titolo {
+    max-width: 12ch;
+    font-size: clamp(2.7rem, 1rem + 5.2vw, 6rem);
+    font-weight: 300;
+    line-height: 0.98;
+    letter-spacing: -0.048em;
+  }
+  .apertura__parola {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .apertura__parola > span {
+    display: inline-block;
+  }
+  .apertura__sotto {
+    max-width: 30rem;
+    font-size: var(--t-lead);
+    line-height: 1.45;
+    color: var(--testo-2);
+  }
+  .apertura__azioni {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.75rem;
+    margin-top: 0.4rem;
+  }
+  .apertura__nota {
+    margin-top: 2rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--testo-2);
+  }
+  @media (min-width: 64rem) and (orientation: landscape) {
+    .apertura__nota {
+      position: absolute;
+      right: 0;
+      bottom: calc(var(--margine) + 1rem);
+      width: auto;
+      margin: 0;
+      text-align: right;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .apertura__parola > span {
+      animation: apertura-sale 1.1s var(--curva) both;
+      animation-delay: calc(0.1s + var(--i) * 0.06s);
+    }
+    .apertura__sotto,
+    .apertura__azioni,
+    .apertura__nota {
+      animation: apertura-appare 1s var(--curva) 0.5s both;
+    }
+  }
+  @keyframes apertura-sale {
+    from {
+      transform: translateY(105%);
+    }
+  }
+  @keyframes apertura-appare {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  .metodo-breve {
+    position: relative;
+    display: grid;
+    align-content: center;
+    min-height: 90svh;
+    padding-block: var(--sezione);
+  }
+  .metodo-breve__corpo {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .metodo-breve__titolo {
+    font-size: var(--t-h2);
+  }
+  .metodo-breve__testo {
+    max-width: 30rem;
+    font-size: var(--t-lead);
+    line-height: 1.5;
+    color: var(--testo);
+  }
+  .metodo-breve__firma {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1.25rem;
+    max-width: 30rem;
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+  @media (max-width: 63.99rem), (orientation: portrait) {
+    .metodo-breve {
+      align-content: end;
+      min-height: 110svh;
+      padding-bottom: calc(var(--margine) + 5rem);
+    }
+  }
+</style>

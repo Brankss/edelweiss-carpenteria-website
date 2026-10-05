@@ -24,101 +24,53 @@ _Redatto il 5 ottobre 2026. Versioni e prezzi verificati in questa data._
 
 | Tema | Decisione |
 |---|---|
-| Skill di design | **frontend-design** (installata). Niente UI UX Pro Max (rischio di effetto template), niente "website orchestrator" (inutile per un sito di questa dimensione), niente 21st.dev (a pagamento e basato su React, troppo pesante) |
+| Skill di design | **Rifatto da zero il 5/10/2026 (v2)** con UI UX Pro Max (design system di partenza), taste skill `design-taste-frontend` (controllo anti-slop), find-skills (installate `gsap-scrolltrigger` di GreenSock e `web-design-guidelines` di Vercel) e 21st.dev via MCP: due componenti presi come idea e riscritti senza React, vedi §3 |
 | Ricerca | Ricerca web, lettura delle pagine e browser integrato, a costo zero. Firecrawl (1.000 crediti al mese gratis) solo se serve scansionare interi siti |
 | Framework | **Astro 7.3** con output statico e zero JavaScript di default. Nessun framework UI, CSS scritto a mano con token di design |
-| Animazioni | Animazioni CSS legate allo scroll e transizioni di pagina native. GSAP 3.15 (gratuito) solo se strettamente necessario: probabilmente non servirà |
+| Animazioni | **Three.js 0.186** per il cantiere 3D e **GSAP 3.15 + ScrollTrigger** per collegarlo allo scroll, solo in home e caricati alla prima interazione. **Lenis 1.3** per lo scorrimento fluido con la rotella; su touch resta quello nativo. Il resto è in CSS: reveal con `animation-timeline: view()` e transizioni di pagina con `@view-transition`. Tutto si disattiva con "riduci movimento" |
 | Hosting | **Vercel** (`@astrojs/vercel@11`), con deploy automatico da GitHub. ⚠️ Il piano Hobby è solo per uso personale e non commerciale: per la demo va bene, **per la messa online serve il piano Pro** (a pagamento) sull'account di chi gestisce il sito. Le immagini vengono ottimizzate da Astro durante la build, non dal servizio immagini di Vercel, così non si consumano i suoi limiti |
 | Repository | GitHub privato sull'account `Brankss`, `gh` già autenticato |
-| Cookie | **Nessun cookie non tecnico, quindi nessun banner.** Statistiche con Vercel Web Analytics (senza cookie), antispam con campo nascosto e controllo del tempo di compilazione (Turnstile se arriva spam), mappa in SVG statico più link a Google Maps, social solo come link, font ospitati sul nostro server |
+| Cookie | **Banner conforme alle Linee guida del Garante (10/6/2021)**: Accetta e Rifiuta con lo stesso peso, la X vale come rifiuto, preferenze riapribili dal footer, scelta valida 6 mesi. Serve perché la **mappa di Google** nella pagina Contatti si carica solo con il consenso. Per il resto il sito usa solo strumenti tecnici: font sul nostro server, social solo come link, antispam con campo nascosto |
 | Lingua | **Solo italiano**, con struttura pronta per aggiungere tedesco o inglese (cartelle e testi separati, `lang` e `hreflang` già previsti) |
 | Foto | **Le loro**, scaricate dai due siti e ridimensionate. Dove mancano, solo immagini che **non possono essere scambiate per lavori loro**: paesaggi del Trentino (Brenta, Bondone, Paganella) da Unsplash, macro di legno e materiali per le sezioni tecniche, eventualmente generate con l'AI. Mai in una galleria di progetti e mai con didascalie che le attribuiscono a un cantiere. Ogni immagine è tracciata in `docs/crediti-immagini.md` con la sua fonte |
 | Prima del pitch | **Tutto il sito pubblico quasi completo, senza backend.** Il form è costruito e valida i campi; nell'anteprima mostra la conferma con la nota "invio attivo alla messa online" |
 
-## 3. Direzione visiva — "Il profilo del tetto"
+## 3. Direzione visiva (v3, 5 ottobre 2026)
 
-### Riferimento
-Il punto di partenza è l'architettura in legno del Vorarlberg, dove si è formato Luca. Ne riprendiamo i tratti:
-- grande spazio vuoto;
-- fotografia protagonista;
-- tipografia precisa;
-- facciate in larice che col tempo diventano grigio argento.
+**Perché la v2 sembrava low quality:**
+- le foto di cantiere (circa 1050 px, cieli saturi, ponteggi) erano usate a tutto schermo e sgranate;
+- l'effetto a doghe su foto così sembrava un caricamento rotto;
+- il lusso era affidato al nero e al vuoto, non a un contenuto proprio.
 
-A questo si aggiungono materiali e luoghi del Trentino: il **larice**, l'**abete**, il **calcare dolomitico** e il **porfido trentino** delle strade di Trento.
+La v3 tiene palette e tipografia della v2 e cambia il protagonista.
 
-### Palette
-| Nome | Hex | Uso |
-|---|---|---|
-| Calcare | `#ECEDE9` | Sfondo. Un grigio-pietra freddo, volutamente non crema |
-| Abete | `#1E2723` | Testo, sezioni scure, pulsante principale |
-| Larice | `#8C5A2B` | L'unico accento: link, linee dei disegni tecnici, stato attivo (contrasto 5:1 sul Calcare) |
-| Larice chiaro | `#C08A50` | Linee e accento sopra le sezioni scure |
-| Nebbia | `#8D979A` / `#4E5853` | Filetti e linee / testo secondario (il secondo è conforme AA) |
-| Porfido | `#6A3A3D` | Usato **una sola volta**: il blocco finale "contatti + footer", come una lastra di porfido (contrasto 7,8:1 con il Calcare) |
+### Il cantiere 3D (home)
+Un modello 3D di una casa in legno, generato in codice con Three.js 0.186 (`src/scripts/cantiere/`), resta fisso dietro tutta la home e si costruisce mentre si scorre:
+- **Progetto:** prima si vede in linee di progetto, color cuoio, come nel modello dell'ufficio tecnico.
+- **Montaggio:** poi i pezzi scendono come portati dalla gru e si materializzano, nell'ordine:
+  - fondazione e pareti XLAM (Case in legno);
+  - solaio e piano a telaio (Sopraelevazioni);
+  - travi, perlinato, freno, isolante, telo, listelli e manto (Tetti);
+  - intonaco, doghe in larice e vetri (Facciate);
+  - pavimento esterno e pergola (Su misura).
+- **Tetto esploso:** dopo il montaggio il tetto si apre nei sette strati di "Com'è fatto un nostro tetto".
+- **Casa finita:** in fondo alla pagina la casa è finita, al tramonto, con le finestre accese.
 
-### Tipografia
-Una sola famiglia, **Mona Sans** (variabile, licenza OFL, ospitata sul nostro server tramite l'API Fonts di Astro).
-- **Titoli:** larghezza espansa (wdth 118–125), peso 540–600, in minuscolo come una frase normale, spaziatura leggermente stretta. La riga lunga e orizzontale richiama la linea di colmo di un tetto e le travi.
-- **Testo:** larghezza normale, peso 400, interlinea 1,55, righe di 60–70 caratteri. Corpo 17 px su mobile e 18 px su desktop.
-- **Scala dei caratteri:** rapporto 1,25 su mobile e 1,333 su desktop.
-- Un solo file woff2 ridotto all'alfabeto latino e precaricato. Font di riserva con le stesse metriche, così il testo non si sposta durante il caricamento.
+**Pezzi veri:** pareti XLAM con le aperture, montanti ogni 62,5 cm, puntoni ogni 80 cm a 30°, pacchetto del tetto con spessori realistici. Etichette tecniche (Pannelli XLAM, Trave di colmo, …) seguono i pezzi sullo schermo. Una nota dichiara che è un **modello illustrativo**, non un loro cantiere.
 
-### Il dettaglio memorabile (l'unico punto audace)
-1. **L'apertura del tetto.** Nella home la foto principale è ritagliata a forma di sezione di casa a capanna. Scorrendo, il ritaglio si allarga fino a riempire tutto lo schermo. È l'**unica animazione non comandata dall'utente** del sito.
-   - Usa solo CSS (`animation-timeline: view()` + `clip-path`), zero JavaScript.
-   - Sui browser che non lo supportano resta la capanna statica, comunque bella.
-   - Se il visitatore ha attivato "riduci movimento", l'animazione è disattivata.
-2. **"Com'è fatto un nostro tetto".** Un disegno tecnico in SVG della stratigrafia del tetto, nello stesso tratto della capanna, con gli strati:
-   - travi;
-   - perlinato;
-   - freno al vapore;
-   - isolante in fibra di legno ≥140 kg/m³;
-   - telo traspirante;
-   - ventilazione;
-   - manto.
+**Prestazioni:**
+- Three.js (138 KB compressi) e GSAP si caricano solo alla prima interazione. Fino ad allora si vede un'immagine statica identica, ricavata dalla stessa scena (`src/assets/render/`).
+- La scena disegna solo quando qualcosa cambia. Su mobile pixel ratio e ombre sono ridotti.
+- Con "riduci movimento" o senza WebGL si vede l'immagine della casa finita.
 
-   Toccando uno strato si legge a cosa serve. Su mobile diventa un elenco a fisarmonica collegato al disegno, accessibile anche da tastiera. Sono contenuti veri, presi dal loro sito attuale.
+**Le foto vere** restano dove sono una prova: realizzazioni, pagine servizio, chi siamo. Non sono mai più larghe della loro risoluzione e hanno una correzione colore unica (CSS).
 
-Tutto il resto resta sobrio e disciplinato.
+### Palette e tipografia (dalla v2)
+Tema scuro "nero e cuoio": fondo `#0D0D0B`, testo `#EDEAE3` (16:1), secondario `#A8A49B` (7,8:1), accento `#D1AC82` (9,2:1). Angoli vivi. Geist per i testi, Geist Mono per le note tecniche (etichette, link dei capitoli, briciole).
 
-### Altri elementi presi dal mondo della carpenteria (non decorazioni)
-- **Segni del carpentiere:** i numeri romani incisi sulle travi per il montaggio (I, II, III, IV). Li usiamo **solo** per le fasi del metodo, perché quella è davvero una sequenza.
-- **Altitudine dei cantieri:** ogni realizzazione mostra il comune e la quota, per esempio "Folgaria, 1166 m". È un dato utile, perché il carico neve cambia con la quota. Le altitudini vanno verificate su fonti ufficiali.
-- **Mappa del Trentino in SVG** disegnata da noi, con i punti dei cantieri. Leggera e senza cookie.
-
-### Cosa evitiamo (controllo contro i default generati dall'AI)
-- Sfondo crema con serif e accento terracotta.
-- Fondo nero con accento acido.
-- Schede tutte uguali con la stessa ombra.
-- Etichette in maiuscolo sopra ogni titolo.
-- Metadati separati da punti mediani.
-- Frecce aggiunte ai pulsanti.
-- Effetto dissolvenza-dal-basso su ogni sezione.
-- Hero con "numerone + statistiche".
-- Una parola del titolo in corsivo o colorata.
-
-**Revisione fatta:** la prima idea era una foto scura a pieno schermo con un grande titolo bianco in serif, cioè il default del "lusso" generico. L'ho sostituita con la capanna ritagliata su fondo Calcare e con il titolo espanso allineato alla linea di gronda.
-
-### Wireframe mobile della home (375 px)
-```
-┌─────────────────────────┐
-│ ✿ Edelweiss        Menu │  header sottile, il logo non ruba spazio
-│                         │
-│        ╱╲               │
-│      ╱    ╲             │  foto ritagliata a capanna
-│    ╱  FOTO  ╲           │  (si apre scorrendo)
-│    │ TETTO  │           │
-│    └────────┘           │
-│ Tetti e case in legno,  │  titolo espanso, allineato a sinistra
-│ costruiti in Trentino.  │
-│ Sopralluogo gratuito in │
-│ tutta la provincia.     │
-│ [Richiedi sopralluogo]  │
-├─────────────────────────┤
-│ Chiama │ WhatsApp │ Form│  barra fissa in basso, raggiungibile col pollice
-└─────────────────────────┘
-```
-Su desktop la stessa composizione è asimmetrica: capanna a destra (7 colonne), titolo e pulsanti a sinistra (5 colonne). Tutto il testo è allineato a sinistra.
+### Verifica fatta (5/10/2026, build di produzione)
+- **Lighthouse mobile:** home **98** (LCP 2,4 s, TBT 0, 208 KB al caricamento), pagine interne **93-100**, accessibilità **100** e best practice **100** ovunque. La SEO risulta 66-69 solo per il `noindex` dell'anteprima.
+- **Mobile:** le 31 pagine non hanno scorrimento orizzontale. Ho controllato la coreografia completa a 390 e 1440 px, poi menu, banner cookie, galleria, modulo e "riduci movimento".
 
 ## 4. Mappa del sito
 
@@ -133,14 +85,14 @@ Su desktop la stessa composizione è asimmetrica: capanna a destra (7 colonne), 
 | `/realizzazioni/` e `/realizzazioni/[slug]/` | Raccolta di contenuti (Astro content collections). Per ogni progetto: luogo, quota, tipo di lavoro, anno, materiali, galleria. Circa 20 progetti già esistenti |
 | `/chi-siamo/` | Luca, il Vorarlberg, la squadra con nomi e mestieri, abilitazioni |
 | `/contatti/` | Form, orari (lun–ven 8–12 / 13:30–18), mappa statica, WhatsApp |
-| `/privacy/`, `/cookie/`, `/note-legali/` | Pagine legali |
+| `/privacy/`, `/cookie/`, `/termini/`, `/note-legali/` | Pagine legali (i termini d'uso sono nuovi nella v2) |
 | `/grazie/`, `404` | Pagine di servizio |
 
 **Niente pagine fotocopia per ogni comune** (Google le considera "doorway" e le penalizza). La rilevanza locale arriva dalle pagine dei singoli progetti.
 
 ## 5. Mobile prima di tutto
 
-- **Barra fissa in basso:** Chiama (`tel:`), WhatsApp (`wa.me`), Sopralluogo. Si nasconde quando il form è visibile sullo schermo.
+- **Barra fissa in basso:** Chiama (`tel:`) e Richiedi un sopralluogo. Si nasconde quando sullo schermo c'è già un invito (hero, modulo, footer) e mentre è aperto il banner dei cookie.
 - **Leggibilità e tocco:** aree toccabili ≥48 px, testo ≥16 px nei campi (così iOS non ingrandisce la pagina), margini laterali di 20 px.
 - **Form corto con le tastiere giuste:** nome, telefono (tastiera numerica), comune del cantiere, tipo di lavoro (scelta a pulsanti), messaggio.
 - **Gallerie:** `<dialog>` nativo con scorrimento a scatto, si sfoglia col dito, zero librerie.
@@ -152,7 +104,7 @@ Su desktop la stessa composizione è asimmetrica: capanna a destra (7 colonne), 
 |---|---|
 | Lighthouse mobile | ≥95 in performance, 100 in accessibilità, best practice e SEO |
 | LCP / CLS / INP | <2,0 s / <0,05 / <150 ms |
-| JavaScript per pagina | ≤20 KB compresso (solo menu, form, galleria) |
+| JavaScript per pagina | ≤20 KB compresso all'avvio (circa 8 KB nella v2). In home GSAP + ScrollTrigger (44 KB) si caricano dopo, alla prima interazione |
 | Peso della home su mobile | ≤600 KB (foto principale in AVIF ≈120 KB) |
 | Font | 1 file woff2 precaricato |
 
@@ -188,8 +140,9 @@ Come ci arriviamo:
 ## 8. Adempimenti legali
 
 - **Footer:** ragione sociale, sede, P.IVA corretta, **REA e PEC (da chiedere al cliente)**. Il capitale sociale non serve, perché una S.a.s. è una società di persone.
-- **Privacy policy (GDPR art. 13):** dati del form, Cloudflare (hosting, statistiche, Turnstile), Resend (invio delle email).
-- **Cookie policy:** solo cookie tecnici, quindi nessun banner.
+- **Privacy policy (GDPR art. 13):** dati del form, fornitore di hosting, servizio di invio email, mappa di Google solo con consenso.
+- **Cookie policy:** tabella con gli strumenti usati (scelta sui cookie in localStorage, mappa di Google solo con consenso) e banner conforme al Garante.
+- **Termini d'uso:** nuova pagina `/termini/` (informazioni non vincolanti, richieste che non creano contratti, proprietà di testi e foto, foro del consumatore).
 - **Note legali.**
 - **Nel form:** link all'informativa. La casella di consenso non è obbligatoria, perché la base giuridica è la richiesta di un preventivo.
 - **Accessibilità:** WCAG 2.2 AA come buona pratica (le microimprese sono escluse dall'European Accessibility Act). Link per saltare al contenuto, focus visibile, rispetto di "riduci movimento", testi alternativi per le immagini.

@@ -1,7 +1,8 @@
 ---
+// Pagine legali: titolo, data di aggiornamento, indice dei paragrafi (fisso su desktop) e testo.
 import Base from '@/layouts/Base.astro';
-import IntestazionePagina from '@/components/IntestazionePagina.astro';
-import { ANTEPRIMA } from '@/data/sito';
+import IntestazionePagina from './IntestazionePagina.astro';
+import { ANTEPRIMA, legali } from '@/data/sito';
 
 interface Props {
   titolo: string;
@@ -9,42 +10,116 @@ interface Props {
   url: string;
   intro: string;
   aggiornamento: string;
+  indice: { id: string; titolo: string }[];
 }
-const { titolo, descrizione, url, intro, aggiornamento } = Astro.props;
+const { titolo, descrizione, url, intro, aggiornamento, indice } = Astro.props;
+const altre = legali.filter((l) => l.href !== url);
 ---
 
-<Base titolo={titolo} descrizione={descrizione} briciole={[{ nome: titolo, url }]}>
+<Base titolo={titolo} descrizione={descrizione} briciole={[{ nome: titolo, url }]} invito={false}>
   <IntestazionePagina titolo={titolo} intro={intro} briciole={[{ nome: titolo, url }]}>
-    <p class="secondario">Ultimo aggiornamento: {aggiornamento}</p>
+    <p class="legale__data">Ultimo aggiornamento: {aggiornamento}</p>
+    {ANTEPRIMA && <p class="legale__bozza">Bozza preparata per l’anteprima: da far verificare a un consulente prima della messa online.</p>}
   </IntestazionePagina>
-  <section class="contenitore legale">
-    {
-      ANTEPRIMA && (
-        <p class="legale__bozza">
-          Bozza preparata per l'anteprima del sito. Prima della pubblicazione va verificata da un consulente privacy e completata con i dati
-          mancanti.
-        </p>
-      )
-    }
-    <div class="testo">
-      <slot />
+
+  <section class="sezione legale">
+    <div class="contenitore legale__griglia">
+      <nav class="legale__indice" aria-label="Indice della pagina">
+        <p>In questa pagina</p>
+        <ol role="list">
+          {
+            indice.map((v) => (
+              <li>
+                <a href={`#${v.id}`}>{v.titolo}</a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+      <div class="prosa legale__testo">
+        <slot />
+      </div>
+      <nav class="legale__altre" aria-label="Altre informazioni legali">
+        <p>Altre informazioni legali</p>
+        <ul role="list">
+          {
+            altre.map((l) => (
+              <li>
+                <a class="collegamento" href={l.href}>
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
     </div>
   </section>
 </Base>
 
 <style>
-  .legale {
-    padding-bottom: var(--sezione);
+  .legale__data {
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
   }
   .legale__bozza {
-    max-width: var(--misura);
-    margin-bottom: 2.5rem;
-    padding: 1rem 1.25rem;
-    border-left: 3px solid var(--larice);
-    background: var(--calcare-scuro);
+    max-width: 40rem;
+    padding: 0.75rem 1rem;
     font-size: var(--t-piccolo);
+    color: var(--testo);
+    border-left: 2px solid var(--cuoio);
+    background: var(--fondo-2);
   }
-  .legale :global(h2) {
-    font-size: var(--t-1);
+  .legale {
+    padding-top: 0;
+  }
+  .legale__griglia {
+    display: grid;
+    gap: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--linea);
+  }
+  .legale__indice p,
+  .legale__altre p {
+    margin-bottom: 0.75rem;
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+  }
+  .legale__indice ol {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .legale__indice a {
+    display: inline-block;
+    padding-block: 0.35rem;
+    font-size: 0.9375rem;
+    color: var(--testo);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .legale__indice a:hover {
+    color: var(--cuoio);
+  }
+  .legale__testo :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .legale__altre ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+  }
+  @media (min-width: 64rem) {
+    .legale__griglia {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 8fr);
+      gap: 2rem 5rem;
+    }
+    .legale__indice {
+      position: sticky;
+      top: calc(var(--testata) + 2rem);
+      align-self: start;
+    }
+    .legale__altre {
+      grid-column: 2;
+    }
   }
 </style>

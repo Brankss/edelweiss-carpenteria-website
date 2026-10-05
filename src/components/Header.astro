@@ -1,19 +1,21 @@
 ---
 import Logo from './Logo.astro';
-import { azienda, navigazione } from '@/data/sito';
+import Icona from './Icona.astro';
+import { azienda, CTA, menuCompleto, navigazione } from '@/data/sito';
 
-const corrente = Astro.url.pathname;
-const attivo = (href: string) => corrente === href || (href !== '/' && corrente.startsWith(href));
+const percorso = Astro.url.pathname;
+const attivo = (href: string) => (href === '/' ? percorso === '/' : percorso.startsWith(href));
 ---
 
-<header class="testata">
-  <div class="contenitore testata__riga">
-    <a href="/" class="testata__logo">
+<div class="sentinella" data-sentinella aria-hidden="true"></div>
+<header class="testata" data-testata>
+  <div class="testata__barra">
+    <a class="testata__logo" href="/" aria-label="Edelweiss Carpenteria, pagina iniziale">
       <Logo />
     </a>
 
     <nav class="testata__nav" aria-label="Principale">
-      <ul>
+      <ul role="list">
         {
           navigazione.map((v) => (
             <li>
@@ -26,25 +28,29 @@ const attivo = (href: string) => corrente === href || (href !== '/' && corrente.
       </ul>
     </nav>
 
-    <a class="testata__telefono" href={azienda.telefonoLink}>{azienda.telefono}</a>
-
-    <button class="testata__menu" type="button" aria-haspopup="dialog" aria-controls="menu-mobile" data-apri-menu>
-      Menu
-    </button>
+    <div class="testata__azioni">
+      <a class="pulsante testata__cta" href={CTA.href}>{CTA.label}</a>
+      <button class="testata__menu" type="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" data-apri-menu>
+        <span>Menu</span>
+        <Icona nome="menu" dimensione="1.4rem" />
+      </button>
+    </div>
   </div>
 </header>
 
-<dialog id="menu-mobile" class="menu" aria-label="Menu">
+<dialog class="menu" id="menu" aria-label="Menu" data-menu data-lenis-prevent>
   <div class="menu__testa">
-    <Logo />
-    <button type="button" class="menu__chiudi" data-chiudi-menu>Chiudi</button>
+    <a class="testata__logo" href="/" aria-label="Edelweiss Carpenteria, pagina iniziale"><Logo /></a>
+    <button class="menu__chiudi" type="button" data-chiudi-menu>
+      <span>Chiudi</span>
+      <Icona nome="chiudi" dimensione="1.4rem" />
+    </button>
   </div>
-  <nav aria-label="Menu mobile">
-    <ul class="menu__voci">
-      <li><a href="/">Home</a></li>
+  <nav class="menu__nav" aria-label="Menu completo">
+    <ul role="list">
       {
-        navigazione.map((v) => (
-          <li>
+        menuCompleto.map((v, i) => (
+          <li style={`--i:${i}`}>
             <a href={v.href} aria-current={attivo(v.href) ? 'page' : undefined}>
               {v.label}
             </a>
@@ -53,82 +59,143 @@ const attivo = (href: string) => corrente === href || (href !== '/' && corrente.
       }
     </ul>
   </nav>
-  <div class="menu__contatti">
-    <a class="pulsante" href={azienda.telefonoLink}>Chiama {azienda.telefono}</a>
-    <a class="pulsante pulsante--vuoto" href={azienda.whatsapp}>Scrivi su WhatsApp</a>
+  <div class="menu__piede">
+    <a class="pulsante pulsante--pieno" href={CTA.href}>{CTA.label}</a>
+    <div class="menu__recapiti">
+      <a href={azienda.telefonoLink}><Icona nome="telefono" /> {azienda.telefono}</a>
+      <a href={azienda.whatsapp} rel="noopener" target="_blank"><Icona nome="whatsapp" /> WhatsApp</a>
+    </div>
   </div>
 </dialog>
 
-<script>
-  const menu = document.getElementById('menu-mobile') as HTMLDialogElement | null;
-  document.querySelector('[data-apri-menu]')?.addEventListener('click', () => menu?.showModal());
-  document.querySelector('[data-chiudi-menu]')?.addEventListener('click', () => menu?.close());
-  menu?.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement).closest('a')) menu.close();
-  });
-</script>
-
 <style>
-  .testata {
-    position: relative;
-    z-index: 10;
+  .sentinella {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2rem;
+    pointer-events: none;
   }
-  .testata__riga {
+  .testata {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--z-testata);
+    padding-top: env(safe-area-inset-top);
+    transition:
+      background-color 0.4s var(--curva),
+      border-color 0.4s var(--curva),
+      backdrop-filter 0.4s var(--curva);
+    border-bottom: 1px solid transparent;
+  }
+  /* Sopra le foto: velatura leggera dall'alto per la leggibilità */
+  .testata::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 -2.5rem 0;
+    background: linear-gradient(to bottom, rgb(13 13 11 / 0.55), rgb(13 13 11 / 0));
+    pointer-events: none;
+    transition: opacity 0.4s var(--curva);
+  }
+  .testata[data-solida] {
+    background: rgb(13 13 11 / 0.82);
+    border-bottom-color: var(--linea);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+  }
+  .testata[data-solida]::before {
+    opacity: 0;
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .testata[data-solida] {
+      background: var(--fondo);
+    }
+  }
+  .testata__barra {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 2rem;
-    min-height: 4.5rem;
-    padding-block: 0.75rem;
+    justify-content: space-between;
+    gap: 1.5rem;
+    height: var(--testata);
+    max-width: var(--larghezza);
+    margin-inline: auto;
+    padding-inline: var(--margine);
   }
   .testata__logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
     text-decoration: none;
-    margin-right: auto;
+  }
+  .testata__logo:hover :global(.logo__fiore) {
+    transform: rotate(30deg);
   }
   .testata__nav {
     display: none;
   }
   .testata__nav ul {
     display: flex;
-    gap: clamp(1rem, 1.6vw, 1.75rem);
-    list-style: none;
-    padding: 0;
+    gap: clamp(1rem, 1.6vw, 2rem);
   }
   .testata__nav a {
-    text-decoration: none;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
     font-size: 0.9375rem;
-    font-weight: 500;
-    padding-block: 0.5rem;
-    border-bottom: 1px solid transparent;
+    color: var(--testo-2);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .testata__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.55rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.45s var(--curva);
   }
   .testata__nav a:hover,
   .testata__nav a[aria-current='page'] {
-    border-bottom-color: var(--larice);
+    color: var(--testo);
   }
-  .testata__telefono {
+  .testata__nav a:hover::after,
+  .testata__nav a[aria-current='page']::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  .testata__azioni {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .testata__cta {
     display: none;
-    font-size: 0.9375rem;
-    font-weight: 560;
-    font-variant-numeric: tabular-nums;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .testata__menu {
     min-height: 2.75rem;
-    padding: 0 1.1rem;
-    border: 1px solid var(--abete);
-    border-radius: 999px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
+    padding: 0.6rem 1.2rem;
     font-size: 0.9375rem;
-    font-weight: 540;
-    cursor: pointer;
   }
-
-  @media (min-width: 64rem) {
-    .testata__riga {
-      min-height: 5.5rem;
+  .testata__menu,
+  .menu__chiudi {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0 0.25rem 0 0.75rem;
+    margin-right: -0.25rem;
+    font-size: 0.9375rem;
+    color: var(--testo);
+  }
+  @media (min-width: 48rem) {
+    .testata__cta {
+      display: inline-flex;
     }
+  }
+  @media (min-width: 80rem) {
     .testata__nav {
       display: block;
     }
@@ -136,91 +203,149 @@ const attivo = (href: string) => corrente === href || (href !== '/' && corrente.
       display: none;
     }
   }
-  @media (min-width: 80rem) {
-    .testata__telefono {
-      display: inline;
-    }
-  }
 
   /* Menu a tutto schermo */
   .menu {
+    position: fixed;
+    inset: 0;
     width: 100%;
     max-width: none;
     height: 100dvh;
     max-height: none;
-    margin: 0;
-    padding: 0.75rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom));
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    background: var(--fondo);
+    color: var(--testo);
     border: 0;
-    background: var(--abete);
-    color: var(--neve);
-    display: none;
-    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    transition:
+      opacity 0.35s var(--curva),
+      overlay 0.35s allow-discrete,
+      display 0.35s allow-discrete;
   }
   .menu[open] {
     display: flex;
+    flex-direction: column;
+    opacity: 1;
+  }
+  @starting-style {
+    .menu[open] {
+      opacity: 0;
+    }
   }
   .menu::backdrop {
-    background: var(--abete);
+    background: var(--fondo);
   }
   .menu__testa {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    min-height: 3rem;
+    justify-content: space-between;
+    height: var(--testata);
+    padding-inline: var(--margine);
+    flex: none;
   }
-  .menu__chiudi {
-    min-height: 2.75rem;
-    padding: 0 1.1rem;
-    border: 1px solid rgb(247 247 244 / 0.5);
-    border-radius: 999px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-size: 0.9375rem;
-    font-weight: 540;
+  .menu__nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 1.5rem var(--margine);
   }
-  .menu__voci {
-    list-style: none;
-    padding: 0;
-    margin-top: 2.5rem;
+  .menu__nav ul {
+    width: 100%;
   }
-  .menu__voci a {
+  .menu__nav a {
     display: block;
-    padding-block: 0.45rem;
-    font-size: clamp(1.75rem, 8vw, 2.5rem);
-    font-weight: 540;
-    font-stretch: 122%;
-    letter-spacing: -0.02em;
+    padding-block: 0.35rem;
+    font-size: clamp(1.9rem, 1.2rem + 3.6vw, 3.25rem);
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    text-decoration: none;
+    color: var(--testo);
+    transition: color 0.2s, transform 0.5s var(--curva);
+  }
+  .menu__nav a[aria-current='page'] {
+    color: var(--cuoio);
+  }
+  .menu__nav a:hover {
+    color: var(--cuoio);
+    transform: translateX(0.4rem);
+  }
+  .menu__nav li {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.5s var(--curva) calc(var(--i) * 35ms + 80ms),
+      transform 0.6s var(--curva) calc(var(--i) * 35ms + 80ms);
+  }
+  @starting-style {
+    .menu[open] .menu__nav li {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+  }
+  .menu__piede {
+    display: grid;
+    gap: 1.25rem;
+    padding: 1.25rem var(--margine) 1.75rem;
+    border-top: 1px solid var(--linea);
+  }
+  .menu__recapiti {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+  }
+  .menu__recapiti a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    color: var(--testo-2);
     text-decoration: none;
   }
-  .menu__voci a[aria-current='page'] {
-    color: var(--larice-chiaro);
+  .menu__recapiti a:hover {
+    color: var(--testo);
   }
-  .menu__contatti {
-    margin-top: auto;
-    display: grid;
-    gap: 0.75rem;
-  }
-  .menu .pulsante {
-    background: var(--neve);
-    color: var(--abete);
-    border-color: var(--neve);
-  }
-  .menu .pulsante--vuoto {
-    background: transparent;
-    color: var(--neve);
-    border-color: rgb(247 247 244 / 0.5);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .menu[open] {
-      animation: menu-entra 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+  @media (min-width: 48rem) {
+    .menu__piede {
+      grid-template-columns: auto 1fr;
+      align-items: center;
     }
-    @keyframes menu-entra {
-      from {
-        opacity: 0;
-        transform: translateY(0.75rem);
-      }
+    .menu__piede .pulsante {
+      width: auto;
+    }
+    .menu__recapiti {
+      justify-content: flex-end;
     }
   }
 </style>
+
+<script>
+  const testata = document.querySelector<HTMLElement>('[data-testata]');
+  const sentinella = document.querySelector('[data-sentinella]');
+  if (testata && sentinella) {
+    new IntersectionObserver(([voce]) => {
+      testata.toggleAttribute('data-solida', !voce.isIntersecting);
+    }).observe(sentinella);
+  }
+
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]');
+  const apri = document.querySelector<HTMLButtonElement>('[data-apri-menu]');
+  const chiudi = menu?.querySelector<HTMLButtonElement>('[data-chiudi-menu]');
+  if (menu && apri && chiudi) {
+    apri.addEventListener('click', () => {
+      menu.showModal();
+      apri.setAttribute('aria-expanded', 'true');
+      document.dispatchEvent(new CustomEvent('edw:blocca'));
+    });
+    chiudi.addEventListener('click', () => menu.close());
+    menu.addEventListener('close', () => {
+      apri.setAttribute('aria-expanded', 'false');
+      document.dispatchEvent(new CustomEvent('edw:sblocca'));
+      apri.focus();
+    });
+    // Un link verso un'ancora della stessa pagina deve chiudere il menu
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.close()));
+  }
+</script>

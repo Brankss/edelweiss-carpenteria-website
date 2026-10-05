@@ -1,41 +1,42 @@
 ---
-// Le fasi sono una vera sequenza: le numeriamo con i segni romani che i carpentieri incidono sulle travi per il montaggio.
+// Il metodo: una vera sequenza di quattro fasi. La linea a sinistra si riempie scorrendo (CSS scroll-driven, nessun JS).
+// In home ("cantiere") sta in una sola colonna a sinistra, sopra il modello 3D.
+interface Props {
+  cantiere?: boolean;
+}
+const { cantiere = false } = Astro.props;
 const fasi = [
   {
-    segno: 'I',
     titolo: 'Sopralluogo',
-    testo: 'Veniamo a vedere il tetto o l’edificio, prendiamo le misure e ascoltiamo cosa vi serve. Gratuito in tutta la provincia di Trento.',
+    testo: 'Veniamo a vedere il tetto o l’edificio, prendiamo le misure e ascoltiamo cosa vi serve. È gratuito in tutta la provincia di Trento.',
   },
   {
-    segno: 'II',
-    titolo: 'Progetto',
-    testo: 'Il nostro ufficio tecnico disegna la struttura in 3D con il software SEMA e la dimensiona. Ricevete un preventivo chiaro, voce per voce.',
+    titolo: 'Progetto in 3D',
+    testo: 'Il nostro ufficio tecnico disegna e dimensiona la struttura in 3D con il software SEMA. Ricevete un preventivo chiaro, voce per voce.',
   },
   {
-    segno: 'III',
     titolo: 'Preparazione',
-    testo: 'Ogni elemento viene preparato su misura partendo dal modello 3D, con materiali certificati e documentati.',
+    testo: 'Dal modello escono le misure di ogni pezzo. Ogni elemento viene preparato su misura, con materiali certificati e documentati.',
   },
   {
-    segno: 'IV',
     titolo: 'Montaggio',
-    testo: 'La nostra squadra monta con gru e piattaforme, con tutte le abilitazioni. Il cantiere resta aperto il meno possibile.',
+    testo: 'La nostra squadra monta con gru e piattaforme, con tutte le abilitazioni per il lavoro in quota. Il cantiere resta aperto il meno possibile.',
   },
 ];
 ---
 
-<section class="sezione sezione--scura metodo" aria-labelledby="metodo-titolo">
-  <div class="contenitore">
-    <h2 id="metodo-titolo">Come lavoriamo</h2>
-    <ol class="metodo__fasi">
+<section class:list={['sezione metodo', { 'metodo--cantiere': cantiere }]} data-capitolo={cantiere ? 'metodo' : undefined} aria-labelledby="metodo-titolo">
+  <div class="contenitore metodo__griglia">
+    <div class="metodo__testa">
+      <h2 id="metodo-titolo" class="t-h2">Dal sopralluogo al montaggio.</h2>
+      <p class="t-lead">Le stesse persone dall’inizio alla fine, per una tettoia come per una casa intera.</p>
+    </div>
+    <ol class="metodo__fasi" role="list">
       {
         fasi.map((f) => (
-          <li>
-            <span class="metodo__segno" aria-hidden="true">
-              {f.segno}
-            </span>
-            <h3>{f.titolo}</h3>
-            <p>{f.testo}</p>
+          <li class="fase">
+            <h3 class="fase__titolo">{f.titolo}</h3>
+            <p class="secondario">{f.testo}</p>
           </li>
         ))
       }
@@ -44,47 +45,101 @@ const fasi = [
 </section>
 
 <style>
-  .metodo h2 {
-    margin-bottom: clamp(2.5rem, 2rem + 2vw, 4rem);
-    max-width: 14ch;
+  .metodo__griglia {
+    display: grid;
+    gap: 3rem;
+  }
+  .metodo__testa {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .metodo__testa .t-lead {
+    max-width: 26rem;
   }
   .metodo__fasi {
-    list-style: none;
-    padding: 0;
+    position: relative;
     display: grid;
-    gap: 2.5rem;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    padding-left: 1.75rem;
   }
-  .metodo__fasi li {
-    display: grid;
-    gap: 0.6rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgb(247 247 244 / 0.25);
+  /* binario e riempimento */
+  .metodo__fasi::before,
+  .metodo__fasi::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    width: 1px;
+    background: var(--linea-forte);
   }
-  .metodo__segno {
-    font-size: var(--t-3);
-    font-weight: 400;
-    font-stretch: 125%;
-    letter-spacing: 0.04em;
-    line-height: 1;
-    color: var(--larice-chiaro);
-    margin-bottom: 0.6rem;
+  .metodo__fasi::after {
+    background: var(--cuoio);
+    transform-origin: top;
+    transform: scaleY(1);
   }
-  .metodo h3 {
-    font-size: var(--t-1);
-  }
-  .metodo p {
-    color: #c9d0cc;
-    max-width: 30rem;
-  }
-  @media (min-width: 48rem) {
-    .metodo__fasi {
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem 2.5rem;
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .metodo__fasi::after {
+        animation: metodo-riempi linear both;
+        animation-timeline: view();
+        animation-range: entry 40% cover 62%;
+      }
     }
   }
+  @keyframes metodo-riempi {
+    from {
+      transform: scaleY(0);
+    }
+  }
+  .fase {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    max-width: 34rem;
+  }
+  .fase::before {
+    content: '';
+    position: absolute;
+    left: calc(-1.75rem - 4px);
+    top: 0.55rem;
+    width: 9px;
+    height: 9px;
+    background: var(--fondo);
+    border: 1px solid var(--cuoio);
+    z-index: 1;
+  }
+  .fase__titolo {
+    font-size: var(--t-h3);
+    font-weight: 400;
+  }
+  .metodo--cantiere {
+    position: relative;
+    padding-block: 20svh 30svh;
+  }
+  .metodo--cantiere .metodo__griglia > * {
+    max-width: 34rem;
+  }
+  .metodo--cantiere .fase {
+    padding: 1rem 1.25rem;
+    background: rgb(13 13 11 / 0.72);
+  }
   @media (min-width: 64rem) {
+    .metodo:not(.metodo--cantiere) .metodo__griglia {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      gap: 6rem;
+    }
+    .metodo:not(.metodo--cantiere) .metodo__testa {
+      position: sticky;
+      top: calc(var(--testata) + 3rem);
+      align-self: start;
+    }
     .metodo__fasi {
-      grid-template-columns: repeat(4, 1fr);
+      padding-left: 3rem;
+    }
+    .fase::before {
+      left: calc(-3rem - 4px);
     }
   }
 </style>

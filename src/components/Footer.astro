@@ -1,0 +1,289 @@
+---
+import Logo from './Logo.astro';
+import Icona from './Icona.astro';
+import { azienda, CTA, legali, menuCompleto } from '@/data/sito';
+
+interface Props {
+  // Nella pagina contatti il modulo è già sopra: niente invito ripetuto
+  invito?: boolean;
+  // In home l'invito finale lascia vedere la casa del modello 3D, la sera
+  cantiere?: boolean;
+}
+const { invito = true, cantiere = false } = Astro.props;
+const anno = new Date().getFullYear();
+---
+
+<footer class:list={['piede', { 'piede--cantiere': cantiere }]} data-nascondi-barra>
+  {
+    invito && (
+      <div class="contenitore piede__invito" data-capitolo={cantiere ? 'fine' : undefined}>
+        <h2 class="t-display">Raccontateci il vostro progetto.</h2>
+        <div class="piede__invito-azioni">
+          <p class="t-lead">Sopralluogo e preventivo gratuiti in tutta la provincia di Trento.</p>
+          <div class="piede__pulsanti">
+            <a class="pulsante" href={CTA.href}>{CTA.label}</a>
+            <a class="pulsante pulsante--vuoto" href={azienda.telefonoLink}>
+              <Icona nome="telefono" /> {azienda.telefono}
+            </a>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  <div class="contenitore piede__griglia">
+    <div class="piede__marchio">
+      <a href="/" class="piede__logo" aria-label="Edelweiss Carpenteria, pagina iniziale"><Logo /></a>
+      <p class="secondario">Carpenteria del legno a Cognola, Trento. Tetti, case, sopraelevazioni e facciate in legno.</p>
+      <div class="piede__social">
+        <a href={azienda.social.instagram} rel="noopener" target="_blank" aria-label="Instagram (si apre in una nuova scheda)"><Icona nome="instagram" dimensione="1.4rem" /></a>
+        <a href={azienda.social.facebook} rel="noopener" target="_blank" aria-label="Facebook (si apre in una nuova scheda)"><Icona nome="facebook" dimensione="1.4rem" /></a>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="piede__titolo">Contatti</h2>
+      <ul role="list" class="piede__lista">
+        <li><a href={azienda.telefonoLink}>{azienda.telefono}</a></li>
+        <li><a href={azienda.whatsapp} rel="noopener" target="_blank">WhatsApp</a></li>
+        <li><a href={`mailto:${azienda.email}`}>{azienda.email}</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="piede__titolo">Sede</h2>
+      <address class="piede__lista">
+        <a href={azienda.mappa} rel="noopener" target="_blank">
+          {azienda.indirizzo.via}<br />
+          {azienda.indirizzo.cap} {azienda.indirizzo.frazione}, {azienda.indirizzo.citta}
+        </a>
+      </address>
+      <p class="piede__orari">
+        Dal lunedì al venerdì<br />
+        8:00-12:00 e 13:30-18:00
+      </p>
+    </div>
+
+    <nav aria-label="Pagine del sito">
+      <h2 class="piede__titolo">Pagine</h2>
+      <ul role="list" class="piede__lista piede__lista--colonne">
+        {
+          menuCompleto.map((v) => (
+            <li>
+              <a href={v.href}>{v.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <div class="contenitore piede__fondo">
+    <p class="piede__societa">
+      {azienda.ragioneSociale}<br />
+      P.IVA e C.F. {azienda.piva}{azienda.rea && <>, REA {azienda.rea}</>}{azienda.pec && <>, PEC {azienda.pec}</>}<br />
+      © {anno} Edelweiss Carpenteria
+    </p>
+    <ul role="list" class="piede__legali">
+      {
+        legali.map((v) => (
+          <li>
+            <a href={v.href}>{v.label}</a>
+          </li>
+        ))
+      }
+      <li><button type="button" data-apri-consenso>Preferenze cookie</button></li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .piede {
+    position: relative;
+    background: var(--fondo-2);
+    border-top: 1px solid var(--linea);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 5rem);
+  }
+  @media (min-width: 64rem) {
+    .piede {
+      padding-bottom: 2rem;
+    }
+  }
+  .piede--cantiere {
+    position: relative;
+    background: linear-gradient(to bottom, rgb(21 21 18 / 0), rgb(21 21 18 / 0) 60svh, var(--fondo-2) calc(60svh + 12rem));
+    border-top: 0;
+  }
+  .piede--cantiere .piede__invito {
+    min-height: 92svh;
+    align-content: end;
+  }
+  /* In home la casa la sera sta a destra: invito tutto nella colonna di sinistra */
+  @media (min-width: 64rem) {
+    .piede--cantiere .piede__invito {
+      grid-template-columns: minmax(0, 34rem);
+      gap: 2rem;
+    }
+  }
+  .piede__invito {
+    display: grid;
+    gap: 2.5rem;
+    padding-top: var(--sezione);
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+  }
+  .piede__invito h2 {
+    max-width: 14ch;
+  }
+  .piede__invito-azioni {
+    display: grid;
+    gap: 1.75rem;
+    align-content: end;
+  }
+  .piede__invito-azioni .t-lead {
+    max-width: 30rem;
+  }
+  .piede__pulsanti {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  @media (max-width: 30rem) {
+    .piede__pulsanti .pulsante {
+      width: 100%;
+    }
+  }
+  @media (min-width: 64rem) {
+    .piede__invito {
+      grid-template-columns: 1.35fr 1fr;
+      align-items: end;
+      gap: 4rem;
+    }
+  }
+
+  .piede__griglia {
+    display: grid;
+    gap: 2.5rem 2rem;
+    padding-block: 3rem;
+    border-top: 1px solid var(--linea);
+  }
+  @media (min-width: 40rem) {
+    .piede__griglia {
+      grid-template-columns: 1fr 1fr;
+    }
+    .piede__marchio {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (min-width: 64rem) {
+    .piede__griglia {
+      grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+      padding-block: 4rem;
+    }
+    .piede__marchio {
+      grid-column: auto;
+    }
+  }
+  .piede__marchio {
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+  .piede__marchio p {
+    max-width: 22rem;
+    font-size: var(--t-piccolo);
+  }
+  .piede__logo {
+    text-decoration: none;
+    width: fit-content;
+  }
+  .piede__social {
+    display: flex;
+    gap: 0.25rem;
+    margin-left: -0.6rem;
+  }
+  .piede__social a {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--testo-2);
+    transition: color 0.2s;
+  }
+  .piede__social a:hover {
+    color: var(--cuoio);
+  }
+  .piede__titolo {
+    margin-bottom: 0.9rem;
+    font-size: var(--t-piccolo);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--testo-2);
+  }
+  .piede__lista {
+    font-style: normal;
+    font-size: 0.9375rem;
+  }
+  .piede__lista li + li {
+    margin-top: 0.15rem;
+  }
+  .piede__lista a {
+    display: inline-block;
+    padding-block: 0.35rem;
+    color: var(--testo);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color 0.2s;
+  }
+  .piede__lista a:hover {
+    color: var(--cuoio);
+  }
+  .piede__lista--colonne {
+    columns: 2;
+    column-gap: 1.5rem;
+  }
+  .piede__lista--colonne li {
+    break-inside: avoid;
+  }
+  .piede__orari {
+    margin-top: 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--testo-2);
+  }
+
+  .piede__fondo {
+    display: grid;
+    gap: 1.25rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--linea);
+    font-size: var(--t-micro);
+    color: var(--testo-2);
+  }
+  .piede__societa {
+    line-height: 1.7;
+  }
+  .piede__legali {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+  }
+  .piede__legali a,
+  .piede__legali button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--testo-2);
+    text-decoration: none;
+    font-size: var(--t-micro);
+    transition: color 0.2s;
+  }
+  .piede__legali a:hover,
+  .piede__legali button:hover {
+    color: var(--testo);
+  }
+  @media (min-width: 64rem) {
+    .piede__fondo {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+</style>

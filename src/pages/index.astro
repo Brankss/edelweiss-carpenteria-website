@@ -1,66 +1,56 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Apertura from '@/components/Apertura.astro';
-import IndiceServizi from '@/components/IndiceServizi.astro';
-import Stratigrafia from '@/components/Stratigrafia.astro';
-import GrigliaLavori from '@/components/GrigliaLavori.astro';
+import Cantiere from '@/components/home/Cantiere.astro';
+import Apertura from '@/components/home/Apertura.astro';
+import Capitolo from '@/components/home/Capitolo.astro';
+import Esploso from '@/components/home/Esploso.astro';
+import Lavori from '@/components/home/Lavori.astro';
 import Metodo from '@/components/Metodo.astro';
-import Squadra from '@/components/Squadra.astro';
-import Zona from '@/components/Zona.astro';
-import { azienda } from '@/data/sito';
-import { realizzazioni } from '@/lib/foto';
-import hero from '@/assets/foto/folgaria/folgaria-hero.jpg';
 
-const inEvidenza = (await realizzazioni()).filter((r) => r.data.inEvidenza).slice(0, 5);
+// I capitoli seguono il montaggio della casa nel modello 3D: struttura, piano, tetto, facciata, su misura
+const capitoli = [
+  {
+    capitolo: 'struttura',
+    titolo: 'Pareti in XLAM, già tagliate su misura.',
+    testo: 'Pannelli massicci di tavole incrociate e incollate. Arrivano in cantiere con le aperture già fatte e la casa si alza in tempi brevi.',
+    link: { href: '/case-in-legno/', label: 'Case in legno' },
+  },
+  {
+    capitolo: 'piano',
+    titolo: 'Un piano in più, senza appesantire la casa.',
+    testo: 'Il legno pesa una frazione della muratura: carica poco l’edificio che c’è già e lo lascia scoperto per meno tempo.',
+    link: { href: '/sopraelevazioni-in-legno/', label: 'Sopraelevazioni' },
+  },
+  {
+    capitolo: 'tetto',
+    titolo: 'Il tetto, strato per strato.',
+    testo: 'Travi dimensionate per il carico neve della quota, isolanti densi da almeno 140 kg/m³ e una camera d’aria ventilata sotto il manto.',
+    link: { href: '/tetti-in-legno/', label: 'Tetti in legno' },
+  },
+  {
+    capitolo: 'facciata',
+    titolo: 'Una facciata che respira.',
+    testo: 'Doghe in larice o abete montate su listelli: dietro circola l’aria e il legno resta asciutto, in stile montano o contemporaneo.',
+    link: { href: '/facciate-in-legno/', label: 'Facciate in legno' },
+  },
+  {
+    capitolo: 'misura',
+    titolo: 'E poi tutto il resto.',
+    testo: 'Pergole, tettoie, carport, verande, soppalchi e pavimenti esterni in larice, seguiti con la stessa cura dei tetti.',
+    link: { href: '/tettoie-e-carport/', label: 'Tettoie e su misura' },
+  },
+];
 ---
 
 <Base
-  titolo="Carpenteria in legno a Trento: tetti, case e sopraelevazioni | Edelweiss"
-  descrizione="Edelweiss Carpenteria progetta e costruisce tetti in legno, case in XLAM e a telaio, sopraelevazioni e facciate in provincia di Trento. Sopralluogo e preventivo gratuiti."
-  immagine={hero}
-  modulo
+  titolo="Edelweiss Carpenteria: tetti e case in legno a Trento"
+  descrizione="Carpenteria del legno a Trento: tetti, case in XLAM e a telaio, sopraelevazioni e facciate in legno. Progetto in 3D, montaggio con la nostra squadra. Sopralluogo gratuito."
+  cantiere
 >
-  <Apertura
-    foto={hero}
-    alt="Un abbaino in legno appeso alla gru sopra i tetti di Folgaria, con le montagne all'orizzonte"
-    didascalia="Folgaria, 1166 m. Un abbaino assemblato a terra sale in quota con la gru."
-  >
-    <Fragment slot="titolo">Tetti e case in legno, costruiti in Trentino.</Fragment>
-    <p>
-      Siamo una carpenteria di Trento: progettiamo e montiamo tetti, case, sopraelevazioni e facciate in legno. Sopralluogo e preventivo
-      sono gratuiti in tutta la provincia.
-    </p>
-    <div class="azioni">
-      <a class="pulsante" href="#richiesta">Richiedi un sopralluogo</a>
-      <a class="pulsante pulsante--vuoto" href={azienda.telefonoLink}>Chiama {azienda.telefono}</a>
-    </div>
-  </Apertura>
-
-  <IndiceServizi />
-
-  <section class="sezione tetto">
-    <div class="contenitore">
-      <Stratigrafia />
-    </div>
-  </section>
-
-  <GrigliaLavori lavori={inEvidenza} />
-
-  <Metodo />
-
-  <Squadra />
-
-  <Zona />
+  <Cantiere slot="sfondo" />
+  <Apertura />
+  {capitoli.map((c) => <Capitolo {...c} />)}
+  <Esploso />
+  <Lavori />
+  <Metodo cantiere />
 </Base>
-
-<style>
-  .tetto {
-    background: var(--calcare-scuro);
-  }
-  .tetto :global(.strg__fondo) {
-    fill: var(--calcare-scuro);
-  }
-  .tetto :global(.strg__tag circle) {
-    fill: var(--calcare-scuro);
-  }
-</style>

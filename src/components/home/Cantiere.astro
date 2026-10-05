@@ -1,0 +1,180 @@
+---
+// Il cantiere 3D: fisso dietro tutta la home. Finché la scena non è pronta (e sempre con "riduci movimento"
+// o senza WebGL) si vede l'immagine statica dello stesso modello.
+import { Picture } from 'astro:assets';
+import posterLargo from '@/assets/render/cantiere-progetto-largo.png';
+import posterAlto from '@/assets/render/cantiere-progetto-alto.png';
+import finitaLarga from '@/assets/render/cantiere-finita-largo.png';
+import finitaAlta from '@/assets/render/cantiere-finita-alto.png';
+
+const etichette = [
+  ['xlam', 'Pannelli XLAM'],
+  ['solaio', 'Solaio in XLAM'],
+  ['telaio', 'Parete a telaio'],
+  ['colmo', 'Trave di colmo'],
+  ['manto', 'Manto di copertura'],
+  ['doghe', 'Doghe in larice'],
+  ['pergola', 'Pergola'],
+] as const;
+---
+
+<div class="cantiere" data-gsap="cantiere" aria-hidden="true">
+  <div class="cantiere__poster cantiere__poster--progetto">
+    <Picture src={posterAlto} alt="" widths={[480, 780]} sizes="100vw" formats={['avif', 'webp']} quality={70} loading="eager" fetchpriority="high" class="solo-alto" />
+    <Picture src={posterLargo} alt="" widths={[1280, 1920]} sizes="100vw" formats={['avif', 'webp']} quality={70} loading="eager" class="solo-largo" />
+  </div>
+  <div class="cantiere__poster cantiere__poster--finita">
+    <Picture src={finitaAlta} alt="" widths={[480, 780]} sizes="100vw" formats={['avif', 'webp']} quality={70} loading="lazy" class="solo-alto" />
+    <Picture src={finitaLarga} alt="" widths={[1280, 1920]} sizes="100vw" formats={['avif', 'webp']} quality={70} loading="lazy" class="solo-largo" />
+  </div>
+  <canvas class="cantiere__tela" data-tela></canvas>
+  <div class="cantiere__etichette">
+    {
+      etichette.map(([k, testo]) => (
+        <span class="etichetta" data-etichetta={k}>
+          <span>{testo}</span>
+        </span>
+      ))
+    }
+  </div>
+  <div class="cantiere__velo"></div>
+</div>
+
+<style>
+  .cantiere {
+    position: fixed;
+    inset: 0;
+    height: 100lvh;
+    z-index: 0;
+    pointer-events: none;
+    background: var(--fondo);
+  }
+  .cantiere__tela,
+  .cantiere__poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .cantiere__tela {
+    opacity: 0;
+    transition: opacity 0.9s var(--curva);
+  }
+  :global(.cantiere--pronto) .cantiere__tela {
+    opacity: 1;
+  }
+  .cantiere__poster {
+    transition: opacity 0.9s var(--curva);
+  }
+  .cantiere__poster :global(picture) {
+    display: contents;
+  }
+  .cantiere__poster :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .solo-largo,
+  .cantiere__poster :global(.solo-largo) {
+    display: none;
+  }
+  @media (orientation: landscape) {
+    .cantiere__poster :global(.solo-largo) {
+      display: block;
+    }
+    .cantiere__poster :global(.solo-alto) {
+      display: none;
+    }
+  }
+  /* Con il movimento: prima il progetto, poi la tela. Senza movimento: la casa finita, ferma. */
+  .cantiere__poster--finita {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cantiere__poster--progetto {
+      opacity: 0;
+    }
+    .cantiere__poster--finita {
+      opacity: 1;
+    }
+  }
+  :global(.cantiere--pronto) .cantiere__poster {
+    opacity: 0;
+  }
+
+  /* Velature per la leggibilità del testo: a sinistra su schermi larghi, in basso su quelli alti */
+  .cantiere__velo {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(13 13 11 / 0.92) 0%, rgb(13 13 11 / 0.55) 30%, rgb(13 13 11 / 0) 52%);
+  }
+  @media (orientation: landscape) and (min-width: 64rem) {
+    .cantiere__velo {
+      background: linear-gradient(to right, rgb(13 13 11 / 0.88) 0%, rgb(13 13 11 / 0.5) 34%, rgb(13 13 11 / 0) 55%);
+    }
+  }
+
+  /* Etichette tecniche agganciate ai pezzi */
+  .cantiere__etichette {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .etichetta {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    transition: opacity 0.5s var(--curva);
+    will-change: transform;
+  }
+  .etichetta[data-visibile] {
+    opacity: 1;
+  }
+  .etichetta::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: -3px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid var(--cuoio);
+    background: var(--fondo);
+  }
+  .etichetta::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0;
+    width: 2.25rem;
+    height: 1px;
+    background: var(--cuoio);
+    transform: rotate(-35deg);
+    transform-origin: left center;
+  }
+  .etichetta[data-sinistra]::after {
+    left: auto;
+    right: 4px;
+    transform: rotate(35deg);
+    transform-origin: right center;
+  }
+  .etichetta[data-sinistra] > span {
+    left: auto;
+    right: calc(1.85rem + 2px);
+  }
+  .etichetta > span {
+    position: absolute;
+    left: calc(1.85rem + 2px);
+    top: -1.75rem;
+    padding: 0.2rem 0.45rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    color: var(--testo);
+    background: rgb(13 13 11 / 0.82);
+    border: 1px solid var(--linea-forte);
+  }
+</style>

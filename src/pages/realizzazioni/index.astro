@@ -1,13 +1,14 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import IntestazionePagina from '@/components/IntestazionePagina.astro';
-import { etichetteCategoria, fotoDi, luogoDi, realizzazioni } from '@/lib/foto';
+import SchedaProgetto from '@/components/SchedaProgetto.astro';
+import { etichetteCategoria, fotoDi, realizzazioni } from '@/lib/foto';
 
 const lavori = await realizzazioni();
 const categorie = Object.entries(etichetteCategoria).filter(([k]) => lavori.some((r) => r.data.categoria === k));
+// Filtro senza JavaScript: il radio selezionato nasconde i lavori delle altre categorie (:has)
 const filtro = categorie
-  .map(([k]) => `.archivio:has(input[value="${k}"]:checked) .archivio__voce:not([data-categoria="${k}"]) { display: none; }`)
+  .map(([k]) => `.archivio:has(input[value="${k}"]:checked) .archivio__voce:not(:has([data-categoria="${k}"])) { display: none; }`)
   .join('\n');
 ---
 
@@ -17,20 +18,21 @@ const filtro = categorie
   immagine={fotoDi('sopraelevazione-cadore')[0]}
   briciole={[{ nome: 'Realizzazioni', url: '/realizzazioni/' }]}
 >
+  <style is:inline set:html={filtro}></style>
   <IntestazionePagina
     titolo="Realizzazioni"
-    intro="Una selezione dei lavori degli ultimi anni: tetti, sopraelevazioni, facciate, case al grezzo e lavori su misura. Le foto sono scattate in cantiere dalla nostra squadra."
+    intro="Tetti, sopraelevazioni, facciate, case al grezzo e lavori su misura degli ultimi anni. Le foto sono scattate in cantiere dalla nostra squadra."
     briciole={[{ nome: 'Realizzazioni', url: '/realizzazioni/' }]}
   />
 
-  <section class="sezione archivio" aria-label="Elenco dei lavori">
+  <section class="archivio" aria-label="Elenco dei lavori">
     <div class="contenitore">
-      <fieldset class="archivio__filtri">
-        <legend class="solo-lettori">Mostra</legend>
-        <label><input type="radio" name="categoria" value="tutti" checked /><span>Tutti</span></label>
+      <fieldset class="filtri">
+        <legend class="visually-hidden">Mostra i lavori per tipo</legend>
+        <label class="filtro"><input type="radio" name="categoria" value="tutti" checked /><span>Tutti</span></label>
         {
           categorie.map(([k, v]) => (
-            <label>
+            <label class="filtro">
               <input type="radio" name="categoria" value={k} />
               <span>{v}</span>
             </label>
@@ -38,112 +40,80 @@ const filtro = categorie
         }
       </fieldset>
 
-      <ul class="archivio__elenco" role="list">
+      <ul class="archivio__griglia" role="list">
         {
-          lavori.map((r, i) => {
-            const luogo = luogoDi(r);
-            const foto = fotoDi(r.data.cartella);
-            return (
-              <li class="archivio__voce" data-categoria={r.data.categoria}>
-                <a href={`/realizzazioni/${r.id}/`}>
-                  <div class="archivio__foto">
-                    <Image src={foto[r.data.copertina - 1]!} alt="" widths={[400, 640, 900]} sizes="(min-width: 64rem) 31vw, (min-width: 40rem) 46vw, 100vw" loading={i < 3 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : undefined} quality={66} layout="none" />
-                  </div>
-                  <h2>{r.data.titolo}</h2>
-                  <p class="secondario">
-                    {luogo ? `${luogo}. ` : ''}
-                    {r.data.sintesi}
-                  </p>
-                </a>
-              </li>
-            );
-          })
+          lavori.map((r, i) => (
+            <li class="archivio__voce">
+              <SchedaProgetto r={r} livello="h2" prioritaria={i < 2} sizes="(min-width: 80rem) 30vw, (min-width: 40rem) 46vw, 100vw" />
+            </li>
+          ))
         }
       </ul>
     </div>
   </section>
-  <Fragment set:html={`<style>${filtro}</style>`} />
 </Base>
 
 <style>
   .archivio {
-    padding-top: 0;
+    padding-bottom: var(--sezione);
   }
-  .archivio__filtri {
+  .filtri {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    border: 0;
+    margin: 0 0 clamp(2rem, 4vw, 3.5rem);
     padding: 0;
-    margin: 0 0 2.5rem;
+    border: 0;
   }
-  .archivio__filtri label {
+  .filtro {
     position: relative;
   }
-  .archivio__filtri input {
+  .filtro input {
     position: absolute;
     inset: 0;
     opacity: 0;
+    margin: 0;
+    cursor: pointer;
   }
-  .archivio__filtri span {
+  .filtro span {
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    padding: 0.5rem 1.1rem;
-    border: 1px solid var(--abete);
-    border-radius: 999px;
-    font-size: 0.9375rem;
-    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: var(--t-piccolo);
+    color: var(--testo-2);
+    border: 1px solid var(--linea-forte);
+    transition:
+      color 0.2s,
+      background-color 0.2s,
+      border-color 0.2s;
   }
-  .archivio__filtri input:checked + span {
-    background: var(--abete);
-    color: var(--neve);
+  .filtro:hover span {
+    color: var(--testo);
+    border-color: var(--testo-2);
   }
-  .archivio__filtri input:focus-visible + span {
-    outline: 2px solid var(--larice);
+  .filtro input:checked + span {
+    color: var(--fondo);
+    background: var(--cuoio);
+    border-color: var(--cuoio);
+  }
+  .filtro input:focus-visible + span {
+    outline: 2px solid var(--cuoio);
     outline-offset: 3px;
   }
-  .archivio__elenco {
-    list-style: none;
-    padding: 0;
+  .archivio__griglia {
     display: grid;
-    gap: 2.5rem 2rem;
+    gap: 3rem 1.5rem;
   }
   @media (min-width: 40rem) {
-    .archivio__elenco {
+    .archivio__griglia {
       grid-template-columns: 1fr 1fr;
     }
   }
-  @media (min-width: 64rem) {
-    .archivio__elenco {
+  @media (min-width: 80rem) {
+    .archivio__griglia {
       grid-template-columns: repeat(3, 1fr);
-      gap: 3.5rem 2rem;
+      row-gap: 4.5rem;
     }
-  }
-  .archivio__voce a {
-    display: grid;
-    gap: 0.35rem;
-    text-decoration: none;
-  }
-  .archivio__foto {
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background: var(--calcare-scuro);
-    margin-bottom: 0.6rem;
-  }
-  .archivio__foto :global(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .archivio__voce a:hover :global(img) {
-    transform: scale(1.03);
-  }
-  .archivio__voce h2 {
-    font-size: var(--t-1);
-  }
-  .archivio__voce p {
-    font-size: 0.9375rem;
   }
 </style>

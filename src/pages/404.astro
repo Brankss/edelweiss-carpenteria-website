@@ -1,24 +1,41 @@
 ---
 import Base from '@/layouts/Base.astro';
-import IntestazionePagina from '@/components/IntestazionePagina.astro';
+import { CTA } from '@/data/sito';
 ---
 
-<Base titolo="Pagina non trovata" descrizione="La pagina cercata non esiste o è stata spostata.">
-  <IntestazionePagina
-    titolo="Questa pagina non c'è"
-    intro="Forse il link è vecchio o l'indirizzo ha un errore di battitura. Le pagine del sito sono tutte nel menu in alto."
-  >
-    <div class="azioni">
-      <a class="pulsante" href="/">Torna alla home</a>
-      <a class="pulsante pulsante--vuoto" href="/realizzazioni/">Vedi le realizzazioni</a>
+<Base titolo="Pagina non trovata" descrizione="La pagina che cercavate non esiste o è stata spostata." indicizza={false} invito={false}>
+  <section class="nontrovata contenitore">
+    <p class="secondario">Errore 404</p>
+    <h1 class="t-display">Questa pagina non c’è.</h1>
+    <p class="t-lead">Forse è stata spostata, oppure l’indirizzo ha un errore di battitura. Ripartite da qui:</p>
+    <div class="nontrovata__azioni">
+      <a class="pulsante" href="/">Pagina iniziale</a>
+      <a class="pulsante pulsante--vuoto" href="/realizzazioni/">Realizzazioni</a>
+      <a class="collegamento" href={CTA.href}>{CTA.label}</a>
     </div>
-  </IntestazionePagina>
+  </section>
 </Base>
 
 <style>
-  .azioni {
+  .nontrovata {
+    display: grid;
+    gap: 1.5rem;
+    align-content: center;
+    min-height: 80svh;
+    padding-top: calc(var(--testata) + 4rem);
+    padding-bottom: 4rem;
+  }
+  .nontrovata h1 {
+    max-width: 12ch;
+  }
+  .nontrovata .t-lead {
+    max-width: 32rem;
+  }
+  .nontrovata__azioni {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 0.5rem;
   }
 </style>
