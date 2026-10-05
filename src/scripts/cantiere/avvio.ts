@@ -1,7 +1,7 @@
 // Collega la scena 3D alla pagina: ogni sezione con data-capitolo dice alla scena quanto è avanzata.
 import type { gsap as G } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { creaCantiere, type Capitolo } from './scena';
+import { creaCantiere, type Banda, type Capitolo } from './scena';
 
 function webglDisponibile() {
   try {
@@ -40,12 +40,14 @@ export function avvia(contenitore: HTMLElement, _gsap: typeof G) {
   });
 
   // Etichette tecniche: compaiono quando il pezzo a cui si riferiscono è montato e il capitolo è in corso
-  const ETICHETTE: Partial<Record<Capitolo, [string, number][]>> = {
-    struttura: [['xlam', 0.55]],
-    piano: [['solaio', 0.25], ['telaio', 0.7]],
-    tetto: [['colmo', 0.25], ['manto', 0.92]],
-    facciata: [['doghe', 0.7]],
-    misura: [['pergola', 0.85]],
+  // [nome, da, a]: visibili mentre l'avanzamento del capitolo è tra "da" e "a"
+  const ETICHETTE: Partial<Record<Capitolo, [string, number, number][]>> = {
+    progetto: [['quotaL', -1, 0.45], ['quotaP', -1, 0.45], ['falda', -1, 0.45]],
+    struttura: [['xlam', 0.55, 0.995]],
+    piano: [['solaio', 0.25, 0.995], ['telaio', 0.7, 0.995]],
+    tetto: [['colmo', 0.25, 0.995], ['manto', 0.92, 0.995]],
+    facciata: [['doghe', 0.7, 0.995]],
+    misura: [['pergola', 0.85, 0.995]],
   };
 
   const avanzamento: Partial<Record<Capitolo, number>> = {};
@@ -56,10 +58,12 @@ export function avvia(contenitore: HTMLElement, _gsap: typeof G) {
     avanzamento[capitolo] = p;
     cantiere.aggiorna({ [capitolo]: p });
     const nuove = new Set<string>();
-    for (const [c, lista] of Object.entries(ETICHETTE) as [Capitolo, [string, number][]][]) {
+    for (const [c, lista] of Object.entries(ETICHETTE) as [Capitolo, [string, number, number][]][]) {
       const v = avanzamento[c] ?? 0;
-      for (const [nome, soglia] of lista) if (v > soglia && v < 0.995) nuove.add(nome);
+      for (const [nome, da, a] of lista) if (v > da && v < a) nuove.add(nome);
     }
+    // Le quote della prima schermata spariscono appena inizia il cantiere
+    if ((avanzamento.struttura ?? 0) > 0.02) ['quotaL', 'quotaP', 'falda'].forEach((n) => nuove.delete(n));
     attiveEtichette = nuove;
   };
 
@@ -104,6 +108,24 @@ export function avvia(contenitore: HTMLElement, _gsap: typeof G) {
       onUpdate: (st) => el.style.setProperty('--a', st.progress.toFixed(4)),
       onRefresh: (st) => el.style.setProperty('--a', st.progress.toFixed(4)),
     });
+  }
+
+  // Fasce di colore (pietra, tavola tecnica): quanto schermo coprono. La scena adatta nebbia, griglia e casa,
+  // e la velatura scura dietro il testo si spegne
+  const presenze: Partial<Record<Banda, number>> = {};
+  for (const el of document.querySelectorAll<HTMLElement>('[data-banda]')) {
+    const nome = el.dataset.banda as Banda;
+    if (nome !== 'chiara' && nome !== 'tavola') continue;
+    const misura = () => {
+      const r = el.getBoundingClientRect();
+      const vh = innerHeight;
+      const copertura = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0)) / vh;
+      const presenza = Math.min(1, Math.max(0, (copertura - 0.3) / 0.45));
+      presenze[nome] = presenza;
+      cantiere.banda(nome, presenza);
+      contenitore.style.setProperty('--velo', String(1 - Math.max(presenze.chiara ?? 0, presenze.tavola ?? 0)));
+    };
+    ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'bottom top', onUpdate: misura, onRefresh: misura, onLeave: misura, onLeaveBack: misura });
   }
 
   // Solo per generare le immagini statiche (scripts di render): ?render espone la scena

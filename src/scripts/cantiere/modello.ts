@@ -3,7 +3,7 @@
 // facciata in doghe di larice al piano primo, intonaco al piano terra, pergola sul lato.
 // Ogni pezzo sa in che fase si monta e in che ordine: la scena lo fa "arrivare" quando la pagina ci arriva.
 
-export type Materiale = 'legno' | 'xlam' | 'cls' | 'membrana' | 'isolante' | 'metallo' | 'intonaco' | 'vetro';
+export type Materiale = 'legno' | 'xlam' | 'cls' | 'membrana' | 'isolante' | 'metallo' | 'intonaco' | 'vetro' | 'acciaio';
 export type Fase =
   | 'fondazione'
   | 'pareti'
@@ -275,4 +275,23 @@ export const ANCORE = {
   manto: [-3, sottoFalda(2.2) + 0.6, 2.2],
   doghe: [-3.6, 4.8, 4.1],
   pergola: [8.8, 3.2, 2.4],
+  quotaL: [2.4, 0.05, 5.6],
+  quotaP: [-6.8, 0.05, 0],
+  falda: [-2.6, sottoFalda(2.0) + 0.9, 2.0],
 } as const;
+
+// Quote del disegno (linee a terra, come in una tavola): misure vere del modello
+export const QUOTE: [number, number, number][][] = [
+  // larghezza 10,40 m davanti alla casa
+  [[-5.2, 0.02, 5.6], [5.2, 0.02, 5.6]],
+  [[-5.2, 0.02, 4.25], [-5.2, 0.02, 5.9]],
+  [[5.2, 0.02, 4.25], [5.2, 0.02, 5.9]],
+  [[-5.4, 0.02, 5.8], [-5.0, 0.02, 5.4]],
+  [[5.0, 0.02, 5.8], [5.4, 0.02, 5.4]],
+  // profondità 8,00 m sul lato ovest
+  [[-6.8, 0.02, -4], [-6.8, 0.02, 4]],
+  [[-5.45, 0.02, -4], [-7.1, 0.02, -4]],
+  [[-5.45, 0.02, 4], [-7.1, 0.02, 4]],
+  [[-7.0, 0.02, -4.2], [-6.6, 0.02, -3.8]],
+  [[-7.0, 0.02, 3.8], [-6.6, 0.02, 4.2]],
+];

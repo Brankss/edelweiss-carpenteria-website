@@ -1,5 +1,6 @@
 ---
-// Realizzazioni in home: sei lavori veri, a misura di foto (mai più larghe della risoluzione originale).
+// Realizzazioni in home, su una fascia chiara color pietra. Il modello 3D si rimpicciolisce e si sposta a destra
+// come un plastico sul tavolo, le foto vere stanno a sinistra (mai più larghe della loro risoluzione).
 import SchedaProgetto from '@/components/SchedaProgetto.astro';
 import { realizzazioni } from '@/lib/foto';
 
@@ -7,18 +8,18 @@ const tutte = await realizzazioni();
 const scelte = tutte.filter((r) => r.data.inEvidenza).slice(0, 6);
 ---
 
-<section class="lavori" data-capitolo="lavori" aria-labelledby="lavori-titolo">
-  <div class="contenitore">
+<section class="lavori" data-capitolo="lavori" data-banda="chiara" aria-labelledby="lavori-titolo">
+  <div class="contenitore lavori__corpo">
     <div class="lavori__testa">
       <h2 id="lavori-titolo" class="lavori__titolo">Dal modello ai cantieri veri.</h2>
-      <p class="lavori__intro">Alcuni lavori degli ultimi anni, fotografati dalla nostra squadra durante il montaggio.</p>
+      <p class="lavori__intro">Il modello qui accanto è un esempio. Questi sono lavori nostri, fotografati dalla squadra durante il montaggio.</p>
       <a class="collegamento lavori__link" href="/realizzazioni/">Tutte le realizzazioni</a>
     </div>
     <ul role="list" class="lavori__griglia">
       {
         scelte.map((r) => (
           <li>
-            <SchedaProgetto r={r} sizes="(min-width: 64rem) 30vw, (min-width: 40rem) 45vw, 100vw" />
+            <SchedaProgetto r={r} sizes="(min-width: 64rem) 28vw, (min-width: 40rem) 45vw, 100vw" />
           </li>
         ))
       }
@@ -28,15 +29,12 @@ const scelte = tutte.filter((r) => r.data.inEvidenza).slice(0, 6);
 
 <style>
   .lavori {
-    position: relative;
-    padding-block: 28svh;
-    /* Sfuma dal modello a un fondo pieno, così le foto non si sovrappongono al 3D */
-    background: linear-gradient(to bottom, rgb(13 13 11 / 0) 0, var(--fondo) 22svh, var(--fondo) calc(100% - 22svh), rgb(13 13 11 / 0) 100%);
+    padding-block: clamp(6rem, 14svh, 10rem);
   }
   .lavori__testa {
     display: grid;
     gap: 1rem;
-    max-width: 34rem;
+    max-width: 30rem;
     margin-bottom: clamp(2.5rem, 5vw, 4rem);
   }
   .lavori__titolo {
@@ -58,10 +56,16 @@ const scelte = tutte.filter((r) => r.data.inEvidenza).slice(0, 6);
       grid-template-columns: repeat(2, 1fr);
     }
   }
+  /* Desktop: tutto nella parte sinistra, a destra resta il plastico */
   @media (min-width: 64rem) {
+    .lavori__corpo > * {
+      max-width: 60%;
+    }
+    .lavori__testa {
+      max-width: 30rem;
+    }
     .lavori__griglia {
-      grid-template-columns: repeat(3, 1fr);
-      row-gap: 3.5rem;
+      row-gap: 3rem;
     }
   }
 </style>

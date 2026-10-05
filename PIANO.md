@@ -65,6 +65,20 @@ Un modello 3D di una casa in legno, generato in codice con Three.js 0.186 (`src/
 
 **Le foto vere** restano dove sono una prova: realizzazioni, pagine servizio, chi siamo. Non sono mai più larghe della loro risoluzione e hanno una correzione colore unica (CSS).
 
+### Prova "sfondi e scena" (branch `prova-sfondi-scena`, ritorno sicuro: tag `v3-base`)
+- **Fasce di colore sotto la tela 3D** (che ora è trasparente):
+  - Realizzazioni su pietra chiara `#DEDCD6`: la casa si rimpicciolisce a destra come un plastico su carta millimetrata;
+  - Metodo su tavola tecnica blu `#13212D`: la casa torna disegno bianco, e c'è un cartiglio con ufficio tecnico, SEMA, sopralluogo e montaggio;
+  - footer con cielo al tramonto.
+- **Su mobile** nelle fasce la casa sfuma, perché il testo scorre su tutta la larghezza.
+- **Sfondo vivo, legato alla casa:**
+  - gru a torre dietro la casa, col gancio che segue il pezzo in arrivo; si monta con le pareti e si smonta quando il tetto si apre;
+  - Dolomiti all'orizzonte, rosa al tramonto (enrosadira);
+  - sole che ruota durante il cantiere;
+  - quote del disegno nella prima schermata (10,40 m, 8,00 m, falda a 30°).
+- **Immagini statiche:** l'hero è opaca e si scarica in una sola versione (orizzontale o verticale); la casa finita, di giorno e trasparente, si scarica solo con "riduci movimento".
+- **Verifica:** Lighthouse mobile in home 99 (LCP 1,8 s, CLS 0, 117 KB), accessibilità 100.
+
 ### Palette e tipografia (dalla v2)
 Tema scuro "nero e cuoio": fondo `#0D0D0B`, testo `#EDEAE3` (16:1), secondario `#A8A49B` (7,8:1), accento `#D1AC82` (9,2:1). Angoli vivi. Geist per i testi, Geist Mono per le note tecniche (etichette, link dei capitoli, briciole).
 

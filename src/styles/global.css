@@ -14,7 +14,7 @@
   src: url('/fonts/geist-mono-latin.woff2') format('woff2-variations'), url('/fonts/geist-mono-latin.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
+  font-display: optional; /* le note tecniche non devono far saltare il layout se il font arriva tardi */
 }
 
 /* Font di riserva con metriche vicine, per ridurre lo spostamento quando arriva Geist */
@@ -141,11 +141,79 @@ body {
   opacity: clamp(0, min(var(--a, 0.5) * 7, (0.9 - var(--a, 0.5)) * 8), 1);
 }
 
-/* Home con il cantiere 3D fisso sullo sfondo: i contenuti stanno sopra */
+/* Home con il cantiere 3D. Strati, dal basso: fondo della pagina, fasce colorate delle sezioni (z 0),
+   tela 3D trasparente (z 1), contenuti (z 2), pannelli pieni del footer (z 3). */
 .con-cantiere main,
+.con-cantiere main > section,
 .con-cantiere .piede {
   position: relative;
-  z-index: 1;
+}
+.con-cantiere main > section > *,
+.con-cantiere .piede > * {
+  position: relative;
+  z-index: 2;
+}
+.con-cantiere .piede {
+  padding-bottom: 0;
+}
+.con-cantiere .piede__griglia,
+.con-cantiere .piede__fondo {
+  z-index: 3;
+  background: var(--fondo-2);
+  /* fondo pieno a tutta larghezza anche se il blocco è un contenitore centrato */
+  box-shadow: 0 0 0 100vmax var(--fondo-2);
+  clip-path: inset(0 -100vmax);
+}
+.con-cantiere .piede__fondo {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 5.5rem);
+}
+@media (min-width: 64rem) {
+  .con-cantiere .piede__fondo {
+    padding-bottom: 2rem;
+  }
+}
+
+/* Fasce di colore: lo sfondo della sezione passa sotto la tela 3D, i colori del testo si adattano */
+[data-banda] {
+  position: relative;
+  color: var(--testo);
+}
+[data-banda]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--sfondo-banda);
+}
+/* Con "riduci movimento" la casa è un'immagine ferma: le fasce la coprono (stesso livello, ma vengono dopo nel documento) */
+@media (prefers-reduced-motion: reduce) {
+  [data-banda]::before {
+    z-index: 1;
+  }
+}
+/* Pietra chiara: contrasti 15,9:1 (testo) e 6,4:1 (secondario) */
+[data-banda='chiara'] {
+  --sfondo-banda: #dedcd6;
+  --fondo: #dedcd6;
+  --fondo-3: #cbc8c1;
+  --testo: #161614;
+  --testo-2: #4c4a45;
+  --testo-3: #66635d;
+  --linea: rgb(22 22 20 / 0.14);
+  --linea-forte: rgb(22 22 20 / 0.32);
+}
+/* Tavola tecnica: blu da disegno con la griglia, contrasti 14,9:1 e 7,5:1 */
+[data-banda='tavola'] {
+  --sfondo-banda:
+    linear-gradient(rgb(234 240 244 / 0.05) 1px, transparent 1px) 0 0 / 2rem 2rem,
+    linear-gradient(90deg, rgb(234 240 244 / 0.05) 1px, transparent 1px) 0 0 / 2rem 2rem,
+    #13212d;
+  --fondo: #13212d;
+  --fondo-2: #172838;
+  --testo: #eaf0f4;
+  --testo-2: #a3b4c2;
+  --linea: rgb(234 240 244 / 0.16);
+  --linea-forte: rgb(234 240 244 / 0.34);
 }
 
 img,

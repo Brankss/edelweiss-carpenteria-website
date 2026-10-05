@@ -25,7 +25,12 @@ const fasi = [
 ];
 ---
 
-<section class:list={['sezione metodo', { 'metodo--cantiere': cantiere }]} data-capitolo={cantiere ? 'metodo' : undefined} aria-labelledby="metodo-titolo">
+<section
+  class:list={['sezione metodo', { 'metodo--cantiere': cantiere }]}
+  data-capitolo={cantiere ? 'metodo' : undefined}
+  data-banda={cantiere ? 'tavola' : undefined}
+  aria-labelledby="metodo-titolo"
+>
   <div class="contenitore metodo__griglia">
     <div class="metodo__testa">
       <h2 id="metodo-titolo" class="t-h2">Dal sopralluogo al montaggio.</h2>
@@ -41,6 +46,28 @@ const fasi = [
         ))
       }
     </ol>
+    {
+      cantiere && (
+        <dl class="cartiglio" aria-label="In sintesi">
+          <div>
+            <dt>Ufficio tecnico</dt>
+            <dd>Edelweiss Carpenteria, Cognola (TN)</dd>
+          </div>
+          <div>
+            <dt>Modellazione</dt>
+            <dd>In 3D, con SEMA</dd>
+          </div>
+          <div>
+            <dt>Sopralluogo</dt>
+            <dd>Gratuito in provincia di Trento</dd>
+          </div>
+          <div>
+            <dt>Montaggio</dt>
+            <dd>La nostra squadra, con gru e piattaforme</dd>
+          </div>
+        </dl>
+      )
+    }
   </div>
 </section>
 
@@ -123,7 +150,56 @@ const fasi = [
   }
   .metodo--cantiere .fase {
     padding: 1rem 1.25rem;
-    background: rgb(13 13 11 / 0.72);
+    background: rgb(19 33 45 / 0.84);
+  }
+  .metodo--cantiere .fase__titolo {
+    font-family: var(--mono);
+    font-size: 1rem;
+    letter-spacing: 0.01em;
+  }
+  /* Cartiglio: il riquadro delle informazioni in basso nelle tavole tecniche */
+  .cartiglio {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 34rem;
+    margin: 1rem 0 0;
+    border: 1px solid var(--linea-forte);
+    background: rgb(19 33 45 / 0.9);
+  }
+  .cartiglio > div {
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+    border-right: 1px solid var(--linea);
+    border-bottom: 1px solid var(--linea);
+  }
+  .cartiglio > div:nth-child(2n) {
+    border-right: 0;
+  }
+  .cartiglio > div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+  .cartiglio dt {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    color: var(--testo-2);
+  }
+  .cartiglio dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.35;
+  }
+  @media (max-width: 26rem) {
+    .cartiglio {
+      grid-template-columns: 1fr;
+    }
+    .cartiglio > div {
+      border-right: 0;
+    }
+    .cartiglio > div:nth-last-child(2) {
+      border-bottom: 1px solid var(--linea);
+    }
   }
   @media (min-width: 64rem) {
     .metodo:not(.metodo--cantiere) .metodo__griglia {
